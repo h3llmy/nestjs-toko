@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome to Our Service</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+      }
+      table.container {
+        max-width: 600px;
+        margin: 20px auto;
+        padding: 20px;
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      table.header {
+        width: 100%;
+        text-align: center;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #ddd;
+      }
+      table.content {
+        width: 100%;
+        padding: 20px;
+      }
+      table.footer {
+        width: 100%;
+        text-align: center;
+        padding-top: 20px;
+        border-top: 1px solid #ddd;
+        font-size: 0.9em;
+        color: #666;
+      }
+      a.button {
+        display: block;
+        width: 100%;
+        padding: 15px 0;
+        background-color: black;
+        border-radius: 4px;
+        text-align: center;
+        color: white;
+        text-decoration: none;
+        font-size: 16px;
+      }
+    </style>
+  </head>
+  <body>
+    <table class="container">
+      <tr>
+        <td>
+          <table class="header">
+            <tr>
+              <td>
+                <h1>Welcome to Our Service, <%= user.username %>!</h1>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table class="content">
+            <tr>
+              <td>
+                <p>Hi <%= user.username %>,</p>
+                <p>
+                  Thank you for registering at Our Service. We are excited to
+                  have you on board.
+                </p>
+                <p>
+                  Please confirm your email address by clicking the link below:
+                </p>
+                <p>
+                  <a href="<%= confirmationLink %>">Confirm Email</a>
+                </p>
+                <p>
+                  If you did not sign up for this account, please ignore this
+                  email.
+                </p>
+                <p>Best regards,<br />The Our Service Team</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+      <tr>
+        <td>
+          <table class="footer">
+            <tr>
+              <td>
+                <p>&copy; 2024 Our Service. All rights reserved.</p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

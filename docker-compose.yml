@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  api:
+    container_name: api
+    restart: always
+    build: .
+    ports:
+      - '5000:5000'
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    networks:
+      - internal_network
+
+  db:
+    image: postgres:latest
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - '5432:5432'
+    networks:
+      - internal_network
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    restart: always
+    ports:
+      - '6379:6379'
+    networks:
+      - internal_network
+
+networks:
+  internal_network:
+    driver: bridge
+
+volumes:
+  postgres_data:
