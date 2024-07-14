@@ -85,7 +85,7 @@ export class ProductCategoryController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  findAll(@Query() findQuery: PaginationProductCategoryDto) {
+  findAllAndPaginate(@Query() findQuery: PaginationProductCategoryDto) {
     return this.productCategoryService.findAllAndPaginate(findQuery);
   }
 

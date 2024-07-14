@@ -93,9 +93,7 @@ describe('ProductsController', () => {
 
     it('should throw NotFoundException if product not found', async () => {
       productsService.findOne.mockResolvedValue(null);
-      await expect(controller.findOne('1')).rejects.toThrow(
-        'Product with id 1 not found',
-      );
+      await expect(controller.findOne('1')).rejects.toThrow(NotFoundException);
     });
   });
 
