@@ -5,6 +5,7 @@ import { AuthModule } from './domains/auth/auth.module';
 import { ProductsModule } from './domains/products/products.module';
 import { InventoriesModule } from './domains/inventories/inventories.module';
 import { ProductCategoryModule } from './domains/product-category/product-category.module';
+import { DiscountsModule } from './domains/discounts/discounts.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { ProductCategoryModule } from './domains/product-category/product-catego
     ProductsModule,
     ProductCategoryModule,
     InventoriesModule,
+    DiscountsModule,
   ],
 })
 export class AppModule {}

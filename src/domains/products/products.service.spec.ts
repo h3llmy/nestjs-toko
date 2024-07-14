@@ -196,6 +196,15 @@ describe('ProductsService', () => {
     });
   });
 
+  describe('findMany', () => {
+    it('should get list products', async () => {
+      productsRepository.find.mockResolvedValue([mockProduct]);
+      const products = await service.findMany();
+      expect(productsRepository.find).toHaveBeenCalled();
+      expect(products).toEqual([mockProduct]);
+    });
+  });
+
   describe('findAllPagination', () => {
     it('should get list products with pagination', async () => {
       productsRepository.findPagination.mockResolvedValue(
