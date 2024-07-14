@@ -18,7 +18,6 @@ import {
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import {
   BasicErrorSchema,
-  AuthTokenSchema,
   BasicSuccessSchema,
   validationErrorSchemaFactory,
   ErrorMessageSchema,
@@ -31,6 +30,7 @@ import { ResetPasswordErrorValidationDto } from './dto/reset-password-error-vali
 import { RefreshTokenErrorValidationDto } from './dto/refresh-token-error-validation';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { ResendRegisterEmailErrorValidationDto } from './dto/resend-register-email-error-validation.dto';
+import { AuthTokenSchema } from './dto/authToken.schema';
 
 @ApiTags('Auth')
 @Controller('auth')

@@ -77,7 +77,7 @@ describe('AuthService', () => {
       expect(user).toEqual({ message: 'Registration Success' });
       expect(usersServices.register).toHaveBeenCalled();
       expect(mailerService.sendMail).toHaveBeenCalledWith({
-        template: 'email/register',
+        template: 'email/auth/register',
         to: 'testing@example.com',
         subject: 'Registration Email',
         context: {
@@ -125,7 +125,7 @@ describe('AuthService', () => {
       await authService.resendEmail({ email: mockEmail });
 
       expect(mailerService.sendMail).toHaveBeenCalledWith({
-        template: 'email/register',
+        template: 'email/auth/register',
         to: mockEmail,
         subject: 'Registration Email',
         context: {
@@ -254,7 +254,7 @@ describe('AuthService', () => {
           redirectLink,
           user: userMock,
         },
-        template: 'email/forget-password',
+        template: 'email/auth/forget-password',
       });
     });
   });

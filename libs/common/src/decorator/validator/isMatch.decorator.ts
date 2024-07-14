@@ -18,7 +18,7 @@ export class MatchConstraint implements ValidatorConstraintInterface {
    * @param {ValidationArguments} args - The validation arguments containing related property constraints.
    * @return {boolean} Indicates whether the value matches the related property value.
    */
-  validate(value: any, args: ValidationArguments) {
+  validate(value: any, args: ValidationArguments): boolean {
     const [relatedPropertyName] = args.constraints;
     const relatedValue = (args.object as any)[relatedPropertyName];
     return value === relatedValue;
@@ -30,7 +30,7 @@ export class MatchConstraint implements ValidatorConstraintInterface {
    * @param {ValidationArguments} args - The validation arguments containing constraints and property information.
    * @return {string} The error message indicating properties that do not match.
    */
-  defaultMessage(args: ValidationArguments) {
+  defaultMessage(args: ValidationArguments): string {
     const [relatedPropertyName] = args.constraints;
     return `${relatedPropertyName} and ${args.property} do not match`;
   }
@@ -46,7 +46,7 @@ export class MatchConstraint implements ValidatorConstraintInterface {
 export function IsMatchWith(
   property: string,
   validationOptions?: ValidationOptions,
-) {
+): Function {
   return function (object: object, propertyName: string) {
     // Changed from `Object` to `object`
     registerDecorator({

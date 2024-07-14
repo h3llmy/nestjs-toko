@@ -45,6 +45,12 @@ export class DiscountsService {
     return this.discountsRepository.saveEntity({ ...discountDto, products });
   }
 
+  /**
+   * Retrieves a paginated list of discounts based on the provided search query.
+   *
+   * @param {PaginationDiscountDto} findQuery - The search query for pagination.
+   * @return {Promise<IPaginationResponse<Discount>>} A promise that resolves to the paginated response containing the discounts.
+   */
   findAllPaginate(
     findQuery: PaginationDiscountDto,
   ): Promise<IPaginationResponse<Discount>> {
@@ -65,6 +71,13 @@ export class DiscountsService {
     return this.discountsRepository.findPagination(query);
   }
 
+  /**
+   * Finds a single discount by its ID.
+   *
+   * @param {string} id - The ID of the discount to find.
+   * @param {FindOptionsRelations<Discount>} [relations] - Optional relations to include in the result.
+   * @return {Promise<Discount | null>} A promise that resolves to the found discount, or null if not found.
+   */
   findOne(
     id: string,
     relations?: FindOptionsRelations<Discount>,
@@ -72,10 +85,17 @@ export class DiscountsService {
     return this.discountsRepository.findOne({ where: { id }, relations });
   }
 
+  /**
+   * Updates a discount based on the provided ID and DTO.
+   *
+   * @param {string} id - The ID of the discount to update.
+   * @param {UpdateDiscountDto} updateDiscountDto - The DTO containing the updated data.
+   * @return {Promise<Discount | null>} A promise that resolves to the updated discount or null if not found.
+   */
   async update(
     id: string,
     updateDiscountDto: UpdateDiscountDto,
-  ): Promise<Discount | null> {
+  ): Promise<DeepPartial<Discount>> {
     const { productId, ...discountDto } = updateDiscountDto;
     const products = await this.productsService.findMany({
       where: { id: In(productId) },
@@ -88,12 +108,20 @@ export class DiscountsService {
         `Product with id ${notFoundProducts.join(', ')} not found`,
       );
     }
-    return this.discountsRepository.updateAndFind(
-      { id },
-      { ...discountDto, products },
-    );
+
+    return this.discountsRepository.saveEntity({
+      id,
+      ...discountDto,
+      products,
+    });
   }
 
+  /**
+   * Removes a discount by its ID.
+   *
+   * @param {string} id - The ID of the discount to remove.
+   * @return {Promise<UpdateResult>} A promise that resolves to the update result.
+   */
   remove(id: string): Promise<UpdateResult> {
     return this.discountsRepository.softDelete(id);
   }

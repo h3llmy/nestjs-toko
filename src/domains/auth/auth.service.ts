@@ -18,9 +18,10 @@ import {
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
-import { AuthTokenSchema, BasicSuccessSchema } from '@app/common';
+import { BasicSuccessSchema } from '@app/common';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { AuthTokenService } from './authToken.service';
+import { AuthTokenSchema } from './dto/authToken.schema';
 
 /**
  * AuthService handles the authentication and authorization logic.
@@ -56,7 +57,7 @@ export class AuthService {
     const confirmationLink = `${webUrl}/${webVerifyRoute}/${token}`;
 
     this.mailerService.sendMail({
-      template: 'email/register',
+      template: 'email/auth/register',
       to: registerDto.email,
       subject: 'Registration Email',
       context: {
@@ -102,7 +103,7 @@ export class AuthService {
     const confirmationLink = `${webUrl}/${webVerifyRoute}/${token}`;
 
     this.mailerService.sendMail({
-      template: 'email/register',
+      template: 'email/auth/register',
       to: resendEmailDto.email,
       subject: 'Registration Email',
       context: {
@@ -196,7 +197,7 @@ export class AuthService {
         redirectLink,
         user,
       },
-      template: 'email/forget-password',
+      template: 'email/auth/forget-password',
     });
 
     return { message: 'Email Sended' };
