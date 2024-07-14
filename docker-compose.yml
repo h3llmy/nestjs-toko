@@ -10,12 +10,12 @@ services:
     env_file:
       - .env
     depends_on:
-      - db
+      - postgre
       - redis
     networks:
       - internal_network
 
-  db:
+  postgre:
     image: postgres:latest
     container_name: postgres
     restart: always

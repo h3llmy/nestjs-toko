@@ -50,7 +50,7 @@ export class PaginationProductCategoryDto {
   @Type(() => Number)
   @IsOptional()
   @IsNumber()
-  page: number;
+  page?: number;
 
   @ApiPropertyOptional({
     description: 'Page size',
@@ -60,14 +60,14 @@ export class PaginationProductCategoryDto {
   @Type(() => Number)
   @IsOptional()
   @IsNumber()
-  limit: number;
+  limit?: number;
 
   @ApiPropertyOptional({
     description: 'Search query',
     required: false,
   })
   @IsOptional()
-  search: string;
+  search?: string;
 
   @ApiPropertyOptional({
     description: 'Ordering criteria',
