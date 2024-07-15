@@ -139,6 +139,7 @@ describe('DiscountsService', () => {
         relations: {
           products: {
             category: true,
+            inventory: true,
           },
         },
       });

@@ -40,11 +40,11 @@ export class ProductDto {
     type: ProductCategoryDto,
     description: 'Product category',
   })
-  category: ProductCategoryDto;
+  category?: ProductCategoryDto;
 
   @ApiProperty({
     type: InventoryDto,
     description: 'Product inventory',
   })
-  inventory: InventoryDto;
+  inventory?: InventoryDto;
 }

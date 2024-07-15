@@ -66,6 +66,7 @@ export class DiscountsService {
     query.relations = {
       products: {
         category: true,
+        inventory: true,
       },
     };
     return this.discountsRepository.findPagination(query);
