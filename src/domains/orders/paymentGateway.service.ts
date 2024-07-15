@@ -14,6 +14,11 @@ import { PaymentOrderResponseDto } from './dto/payment-order-response.dto';
 export class PaymentGatewayService {
   private client: midtrans.Snap;
 
+  /**
+   * Initializes a new instance of the PaymentGatewayService class.
+   *
+   * @param {ConfigService} configService - The configuration service used to retrieve environment variables.
+   */
   constructor(private readonly configService: ConfigService) {
     this.client = new midtrans.Snap({
       isProduction:
@@ -24,6 +29,14 @@ export class PaymentGatewayService {
     });
   }
 
+  /**
+   * Asynchronously creates a payment transaction using the provided payload.
+   *
+   * @param {CreatePaymentTransaction} payload - The payload containing the transaction details.
+   * @return {Promise<PaymentOrderResponseDto>} A promise that resolves to the created transaction response.
+   * @throws {InternalServerErrorException} If the transaction creation fails.
+   * @throws {BadRequestException} If an error occurs during the transaction creation process.
+   */
   async createTransaction(
     payload: CreatePaymentTransaction,
   ): Promise<PaymentOrderResponseDto> {
@@ -38,6 +51,12 @@ export class PaymentGatewayService {
     }
   }
 
+  /**
+   * A description of the entire function.
+   *
+   * @param {paymentCheckDto} payload - description of the payload parameter
+   * @return {Promise<any>} A promise that resolves to the transaction status
+   */
   async paymentCheck(payload: paymentCheckDto): Promise<any> {
     try {
       const transactionStatus =

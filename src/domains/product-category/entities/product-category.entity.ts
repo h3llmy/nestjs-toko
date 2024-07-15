@@ -1,9 +1,11 @@
+import { OrderDetails } from '../../orders/entities/orderDetails.entity';
 import { Product } from '../../products/entities/product.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -19,6 +21,9 @@ export class ProductCategory {
 
   @OneToMany(() => Product, (product) => product.category)
   product?: Product;
+
+  @ManyToOne(() => OrderDetails, (orderDetails) => orderDetails.category)
+  orderDetails?: OrderDetails;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

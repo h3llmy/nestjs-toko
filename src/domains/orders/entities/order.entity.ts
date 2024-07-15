@@ -1,5 +1,13 @@
 import { User } from '../../users/entities/user.entity';
-import { Column, Entity, OneToMany, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  CreateDateColumn,
+  DeleteDateColumn,
+  Entity,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
+import { OrderDetails } from './orderDetails.entity';
 
 export enum OrderStatus {
   PAID = 'paid',
@@ -21,4 +29,16 @@ export class Order {
     default: OrderStatus.UNPAID,
   })
   status: OrderStatus;
+
+  @Column({ nullable: false })
+  totalAmount: number;
+
+  @OneToMany(() => OrderDetails, (orderDetails) => orderDetails.order)
+  orderDetails?: OrderDetails;
+
+  @CreateDateColumn({ type: 'timestamp' })
+  createdAt: Date;
+
+  @DeleteDateColumn({ type: 'timestamp' })
+  deletedAt: Date;
 }

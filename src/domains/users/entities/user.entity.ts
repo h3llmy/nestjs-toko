@@ -34,7 +34,7 @@ export class User {
   role: Role;
 
   @ManyToOne(() => Order, (order) => order.user)
-  order: Order;
+  order?: Order;
 
   @Column({ nullable: true, type: 'bigint' })
   emailVerifiedAt: number;
