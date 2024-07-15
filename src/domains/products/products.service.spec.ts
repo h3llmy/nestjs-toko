@@ -128,6 +128,13 @@ describe('ProductsService', () => {
         },
       );
       expect(productCategoryService.findOne).toHaveBeenCalledWith('1');
+      expect(productsRepository.findOne).toHaveBeenCalledWith({
+        where: { id: '1' },
+        relations: {
+          inventory: true,
+          category: true,
+        },
+      });
       expect(inventoryServices.saveEntity).toHaveBeenCalledWith(
         {
           quantity: mockCreateProduct.quantity,

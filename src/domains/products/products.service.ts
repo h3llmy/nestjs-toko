@@ -56,9 +56,13 @@ export class ProductsService {
       );
 
       await queryRunner.commitTransaction();
+
       return await this.productRepository.findOne({
         where: { id: product.id },
-        relations: ['inventory', 'category'],
+        relations: {
+          inventory: true,
+          category: true,
+        },
       });
     } catch (error) {
       await queryRunner.rollbackTransaction();
