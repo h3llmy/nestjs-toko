@@ -46,7 +46,7 @@ export class MatchConstraint implements ValidatorConstraintInterface {
 export function IsMatchWith(
   property: string,
   validationOptions?: ValidationOptions,
-): Function {
+): (object: object, propertyName: string) => void {
   return function (object: object, propertyName: string) {
     // Changed from `Object` to `object`
     registerDecorator({

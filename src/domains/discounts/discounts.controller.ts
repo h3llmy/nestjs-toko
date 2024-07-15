@@ -7,6 +7,7 @@ import {
   Param,
   Delete,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { DiscountsService } from './discounts.service';
 import { CreateDiscountDto } from './dto/create-discount.dto';
@@ -30,8 +31,14 @@ export class DiscountsController {
   }
 
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.discountsService.findOne(id);
+  async findOne(@Param('id') id: string) {
+    const discount = await this.discountsService.findOne(id);
+
+    if (!discount) {
+      throw new NotFoundException(`Discount with id ${id} not found`);
+    }
+
+    return discount;
   }
 
   @Patch(':id')
@@ -43,7 +50,13 @@ export class DiscountsController {
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.discountsService.remove(id);
+  async remove(@Param('id') id: string) {
+    const discount = await this.discountsService.remove(id);
+
+    if (discount.affected === 0) {
+      throw new NotFoundException(`Discount with id ${id} not found`);
+    }
+
+    return { message: `Discount with id ${id} deleted` };
   }
 }
