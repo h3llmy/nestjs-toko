@@ -5,9 +5,9 @@ import {
   ILoginTokenPayload,
   IRegisterTokenPayload,
 } from './auth.interface';
-import { AuthTokenSchema } from '@app/common';
 import { User } from '../users/entities/user.entity';
 import { Injectable } from '@nestjs/common';
+import { AuthTokenSchema } from './dto/authToken.schema';
 
 @Injectable()
 export class AuthTokenService {

@@ -5,11 +5,13 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToMany,
   ManyToOne,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Discount } from '../../discounts/entities/discount.entity';
 
 @Entity('Products')
 export class Product {
@@ -34,6 +36,9 @@ export class Product {
     cascade: true,
   })
   category?: ProductCategory;
+
+  @ManyToMany(() => Discount, (discount) => discount.products)
+  discounts?: Discount[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

@@ -14,7 +14,6 @@ export * from './database/database.interface';
 
 export * from './dto/basicError.schema';
 export * from './dto/basicSuccess.schema';
-export * from './dto/authToken.schema';
 export * from './dto/validationError.schema';
 export * from './dto/errorMessage.schema';
 export * from './dto/pagination.schema';

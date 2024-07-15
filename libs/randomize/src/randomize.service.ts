@@ -1,6 +1,19 @@
 import { randomBytes, randomInt } from 'crypto';
 
 export class RandomizeService {
+  private lowercaseCharacter: string = 'abcdefghijklmnopqrstuvwxyz';
+
+  private uppercaseCharacter: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
+
+  private numberCharacter: string = '0123456789';
+
+  private symbolCharacter: string = '!@#$%^&*()_+[]{}|;:,.<>?';
+
+  private mixCharacter: string = `${this.lowercaseCharacter}
+    ${this.uppercaseCharacter}
+    ${this.numberCharacter}
+    ${this.symbolCharacter}`;
+
   /**
    * Generates a random string of numbers with a specified length.
    *
@@ -25,12 +38,11 @@ export class RandomizeService {
    * @return {string} The random lowercase string.
    */
   public lowercaseString(length: number = 6): string {
-    const characters = 'abcdefghijklmnopqrstuvwxyz';
     let randomString = '';
 
     for (let i = 0; i < length; i++) {
-      const randomIndex = randomInt(0, characters.length);
-      randomString += characters.charAt(randomIndex);
+      const randomIndex = randomInt(0, this.lowercaseCharacter.length);
+      randomString += this.lowercaseCharacter.charAt(randomIndex);
     }
 
     return randomString;
@@ -43,12 +55,11 @@ export class RandomizeService {
    * @return {string} The random uppercase string.
    */
   public uppercaseString(length: number = 6): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ';
     let randomString = '';
 
     for (let i = 0; i < length; i++) {
-      const randomIndex = randomInt(0, characters.length);
-      randomString += characters.charAt(randomIndex);
+      const randomIndex = randomInt(0, this.uppercaseCharacter.length);
+      randomString += this.uppercaseCharacter.charAt(randomIndex);
     }
 
     return randomString;
@@ -61,15 +72,11 @@ export class RandomizeService {
    * @return {string} The random string.
    */
   public random(length: number = 10): string {
-    const characters =
-      'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*()_+[]{}|;:,.<>?';
-
     let randomString = '';
-    const charactersLength = characters.length;
 
     for (let i = 0; i < length; i++) {
-      const randomIndex = randomInt(0, charactersLength);
-      randomString += characters.charAt(randomIndex);
+      const randomIndex = randomInt(0, this.mixCharacter.length);
+      randomString += this.mixCharacter.charAt(randomIndex);
     }
 
     return randomString;

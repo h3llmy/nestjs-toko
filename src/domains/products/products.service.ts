@@ -5,7 +5,13 @@ import { ProductsRepository } from './products.repository';
 import { PaginationProductDto } from './dto/pagination-product.dto';
 import { IPaginationPayload, IPaginationResponse } from '@app/common';
 import { Product } from './entities/product.entity';
-import { DataSource, FindOptionsRelations, ILike, UpdateResult } from 'typeorm';
+import {
+  DataSource,
+  FindManyOptions,
+  FindOptionsRelations,
+  ILike,
+  UpdateResult,
+} from 'typeorm';
 import { InventoriesService } from '../inventories/inventories.service';
 import { ProductCategoryService } from '../product-category/product-category.service';
 
@@ -60,6 +66,19 @@ export class ProductsService {
     } finally {
       await queryRunner.release();
     }
+  }
+
+  /**
+   * Finds multiple products based on the provided query.
+   *
+   * @param {any} findQuery - The query to find multiple products.
+   * @return {Promise<Product[]>} A promise that resolves to an array of products.
+   */
+  findMany(
+    findQuery?: FindManyOptions<Product>,
+    relations?: FindOptionsRelations<Product>,
+  ): Promise<Product[]> {
+    return this.productRepository.find({ ...findQuery, relations });
   }
 
   /**

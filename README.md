@@ -1,73 +1,82 @@
-<p align="center">
-  <a href="http://nestjs.com/" target="blank"><img src="https://nestjs.com/img/logo-small.svg" width="200" alt="Nest Logo" /></a>
-</p>
+# Nest Js E-commerce Documentation
 
-[circleci-image]: https://img.shields.io/circleci/build/github/nestjs/nest/master?token=abc123def456
-[circleci-url]: https://circleci.com/gh/nestjs/nest
+## Features
 
-  <p align="center">A progressive <a href="http://nodejs.org" target="_blank">Node.js</a> framework for building efficient and scalable server-side applications.</p>
-    <p align="center">
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/v/@nestjs/core.svg" alt="NPM Version" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/l/@nestjs/core.svg" alt="Package License" /></a>
-<a href="https://www.npmjs.com/~nestjscore" target="_blank"><img src="https://img.shields.io/npm/dm/@nestjs/common.svg" alt="NPM Downloads" /></a>
-<a href="https://circleci.com/gh/nestjs/nest" target="_blank"><img src="https://img.shields.io/circleci/build/github/nestjs/nest/master" alt="CircleCI" /></a>
-<a href="https://coveralls.io/github/nestjs/nest?branch=master" target="_blank"><img src="https://coveralls.io/repos/github/nestjs/nest/badge.svg?branch=master#9" alt="Coverage" /></a>
-<a href="https://discord.gg/G7Qnnhy" target="_blank"><img src="https://img.shields.io/badge/discord-online-brightgreen.svg" alt="Discord"/></a>
-<a href="https://opencollective.com/nest#backer" target="_blank"><img src="https://opencollective.com/nest/backers/badge.svg" alt="Backers on Open Collective" /></a>
-<a href="https://opencollective.com/nest#sponsor" target="_blank"><img src="https://opencollective.com/nest/sponsors/badge.svg" alt="Sponsors on Open Collective" /></a>
-  <a href="https://paypal.me/kamilmysliwiec" target="_blank"><img src="https://img.shields.io/badge/Donate-PayPal-ff3f59.svg"/></a>
-    <a href="https://opencollective.com/nest#sponsor"  target="_blank"><img src="https://img.shields.io/badge/Support%20us-Open%20Collective-41B883.svg" alt="Support us"></a>
-  <a href="https://twitter.com/nestframework" target="_blank"><img src="https://img.shields.io/twitter/follow/nestframework.svg?style=social&label=Follow"></a>
-</p>
-  <!--[![Backers on Open Collective](https://opencollective.com/nest/backers/badge.svg)](https://opencollective.com/nest#backer)
-  [![Sponsors on Open Collective](https://opencollective.com/nest/sponsors/badge.svg)](https://opencollective.com/nest#sponsor)-->
+- **Basic Authentication**: Secure authentication mechanism for users.
+- **Product Management**: Add, update, and delete products.
+- **Discount Management**: Create and manage discounts for products.
+- **Inventory Management**: Track and manage product inventory.
+- **Order Management**: Handle customer orders, including creation, update, and status tracking.
+- **Payment Gateway Integration**: Integration with [Midtrans](https://midtrans.com/) for processing payments.
+- **Order Notification**: Notify customers about their order status.
 
-## Description
+## Used Packages
 
-[Nest](https://github.com/nestjs/nest) framework TypeScript starter repository.
+- [Nest Js](https://github.com/nestjs/nest): A progressive Node.js framework for building efficient, reliable, and scalable server-side applications.
+- [fastify](https://github.com/fastify/fastify): A fast and low overhead web framework for Node.js.
+- [@nestjs/typeorm](https://github.com/nestjs/typeorm): A NestJS module for using TypeORM with Nest framework.
+- [class-validator](https://github.com/typestack/class-validator): Decorator-based property validation for classes.
+- [ejs](https://github.com/mde/ejs): Embedded JavaScript templating.
+- [@nestjs/jwt](https://github.com/nestjs/jwt): JWT utilities for Nest framework.
+- [@nestjs/swagger](https://github.com/nestjs/swagger): OpenAPI (Swagger) module for Nest framework.
+- [pg](https://github.com/brianc/node-postgres): PostgreSQL client for Node.js.
+- [@nestjs-modules/mailer](https://github.com/nest-modules/mailer): Mailer module for Nest framework.
+- [bcrypt](https://github.com/kelektiv/node.bcrypt.js): Library to help hash passwords.
+- [ioredis](https://github.com/redis/ioredis): A robust, full-featured Redis client for Node.js.
+
+## Tech Stack
+
+- [PostgreSQL](https://www.postgresql.org/): A powerful, open-source object-relational database system.
+- [Redis](https://redis.io/): An open-source, in-memory data structure store used as a database, cache, and message broker.
+- [Docker](https://www.docker.com/): A platform for developing, shipping, and running applications in containers.
 
 ## Installation
 
+To install the necessary dependencies, run:
+
 ```bash
-$ yarn install
+$ npm install
 ```
 
-## Running the app
+## Running the App
+
+To start the application in different modes:
 
 ```bash
 # development
-$ yarn run start
+$ npm run start
 
 # watch mode
-$ yarn run start:dev
+$ npm run start:dev
 
 # production mode
-$ yarn run start:prod
+$ npm run start:prod
 ```
 
 ## Test
 
+To run tests, use the following commands:
+
 ```bash
 # unit tests
-$ yarn run test
+$ npm run test
 
-# e2e tests
-$ yarn run test:e2e
+# unit tests in watch mode
+$ npm run test:watch
+
+# end-to-end (e2e) tests
+$ npm run test:e2e
 
 # test coverage
-$ yarn run test:cov
+$ npm run test:cov
 ```
 
-## Support
+## Docker
 
-Nest is an MIT-licensed open source project. It can grow thanks to the sponsors and support by the amazing backers. If you'd like to join them, please [read more here](https://docs.nestjs.com/support).
+To start the application using Docker, run:
 
-## Stay in touch
+```bash
+$ docker compose up -d
+```
 
-- Author - [Kamil Myśliwiec](https://kamilmysliwiec.com)
-- Website - [https://nestjs.com](https://nestjs.com/)
-- Twitter - [@nestframework](https://twitter.com/nestframework)
-
-## License
-
-Nest is [MIT licensed](LICENSE).
+This documentation provides an overview of the features, packages, tech stack, and instructions for installation, running, and testing the Nest Js E-commerce application.
