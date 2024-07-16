@@ -34,7 +34,7 @@ export class Order {
   totalAmount: number;
 
   @OneToMany(() => OrderDetails, (orderDetails) => orderDetails.order)
-  orderDetails?: OrderDetails;
+  orderDetails?: OrderDetails[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

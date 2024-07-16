@@ -31,8 +31,8 @@ export class ProductsService {
    * @return {Promise<Product>} The saved product.
    */
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.startTransaction();
+    const transaction = this.dataSource.createQueryRunner();
+    await transaction.startTransaction();
 
     try {
       const productCategoryCheck = await this.productsCategoryService.findOne(
@@ -44,7 +44,7 @@ export class ProductsService {
 
       const product = await this.productRepository.saveEntity(
         { ...createProductDto, category: productCategoryCheck },
-        { session: queryRunner },
+        { session: transaction },
       );
 
       await this.inventoryService.saveEntity(
@@ -52,10 +52,10 @@ export class ProductsService {
           quantity: createProductDto.quantity,
           product: product,
         },
-        { session: queryRunner },
+        { session: transaction },
       );
 
-      await queryRunner.commitTransaction();
+      await transaction.commitTransaction();
 
       return await this.productRepository.findOne({
         where: { id: product.id },
@@ -65,10 +65,10 @@ export class ProductsService {
         },
       });
     } catch (error) {
-      await queryRunner.rollbackTransaction();
+      await transaction.rollbackTransaction();
       throw error;
     } finally {
-      await queryRunner.release();
+      await transaction.release();
     }
   }
 
@@ -78,11 +78,8 @@ export class ProductsService {
    * @param {any} findQuery - The query to find multiple products.
    * @return {Promise<Product[]>} A promise that resolves to an array of products.
    */
-  findMany(
-    findQuery?: FindManyOptions<Product>,
-    relations?: FindOptionsRelations<Product>,
-  ): Promise<Product[]> {
-    return this.productRepository.find({ ...findQuery, relations });
+  findMany(findQuery?: FindManyOptions<Product>): Promise<Product[]> {
+    return this.productRepository.find(findQuery);
   }
 
   /**

@@ -8,9 +8,14 @@ import { PaymentGatewayService } from './paymentGateway.service';
 import { OrderRepository } from './order.repository';
 import { OrderDetailsRepository } from './order-details.repository';
 import { ProductsModule } from '../products/products.module';
+import { InventoriesModule } from '../inventories/inventories.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Order, OrderDetails]), ProductsModule],
+  imports: [
+    TypeOrmModule.forFeature([Order, OrderDetails]),
+    ProductsModule,
+    InventoriesModule,
+  ],
   controllers: [OrdersController],
   providers: [
     OrdersService,

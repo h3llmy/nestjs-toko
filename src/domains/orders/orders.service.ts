@@ -2,17 +2,21 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { UpdateOrderDto } from './dto/update-order.dto';
 import { PaymentGatewayService } from './paymentGateway.service';
-import { DataSource, In } from 'typeorm';
+import { DataSource, DeepPartial, In } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { OrderRepository } from './order.repository';
 import { User } from '../users/entities/user.entity';
 import { OrderDetailsRepository } from './order-details.repository';
+import { OrderDetails } from './entities/orderDetails.entity';
+import { InventoriesService } from '../inventories/inventories.service';
+import { PaymentItemDetails } from './dto/create-payment-transaction.dto';
 
 @Injectable()
 export class OrdersService {
   constructor(
     private readonly paymentGatewayService: PaymentGatewayService,
     private readonly productService: ProductsService,
+    private readonly inventoriesService: InventoriesService,
     private readonly orderRepository: OrderRepository,
     private readonly orderDetailsRepository: OrderDetailsRepository,
     private readonly dataSource: DataSource,
@@ -22,44 +26,86 @@ export class OrdersService {
     const transaction = this.dataSource.createQueryRunner();
     await transaction.startTransaction();
     try {
-      const productFind = await this.productService.findMany({
-        where: {
-          id: In(createOrderDto.orders.map((item) => item.productId)),
-        },
+      const productIds = createOrderDto.orders.map((item) => item.productId);
+      const products = await this.productService.findMany({
+        where: { id: In(productIds) },
+        relations: { category: true },
       });
 
-      if (productFind.length !== createOrderDto.orders.length)
-        throw new NotFoundException('Product not found');
+      if (products.length !== productIds.length) {
+        throw new NotFoundException('Some products were not found');
+      }
 
-      // const orderDetails = this.orderDetailsRepository.saveEntity([{
+      const orderItems: DeepPartial<OrderDetails>[] = createOrderDto.orders.map(
+        (order) => {
+          const product = products.find((p) => p.id === order.productId);
+          if (!product) {
+            throw new NotFoundException(
+              `Product with id ${order.productId} not found`,
+            );
+          }
+          const totalPrice = order.quantity * product.price;
+          return {
+            product,
+            productName: product.name,
+            productDescription: product.description,
+            productPrice: product.price,
+            category: product.category,
+            categoryName: product.category.name,
+            quantity: order.quantity,
+            totalPrice,
+          };
+        },
+      );
 
-      // }], {
-      //   session: transaction,
-      // });
+      const savedOrderItems = (await this.orderDetailsRepository.createEntity(
+        orderItems,
+        { session: transaction },
+      )) as OrderDetails[];
 
-      const order = await this.orderRepository.saveEntity(
+      const totalAmount = savedOrderItems.reduce(
+        (prev, curr) => prev + curr.totalPrice,
+        0,
+      );
+
+      const savedOrder = await this.orderRepository.createEntity(
         {
+          orderDetails: savedOrderItems,
           user,
+          totalAmount,
         },
         { session: transaction },
+      );
+
+      const itemsDetail: PaymentItemDetails[] = (
+        savedOrder.orderDetails as OrderDetails[]
+      ).map((orderDetail) => {
+        return {
+          id: orderDetail.id,
+          category: orderDetail.categoryName,
+          name: orderDetail.productName,
+          price: orderDetail.productPrice,
+          quantity: orderDetail.quantity,
+        };
+      });
+
+      await Promise.all(
+        savedOrderItems.map((item) => {
+          return this.inventoriesService.decreesStock(item.id, item.quantity, {
+            session: transaction,
+          });
+        }),
       );
 
       const paymentResponse =
         await this.paymentGatewayService.createTransaction({
           transaction_details: {
-            order_id: order.id,
-            gross_amount: order.totalAmount,
+            order_id: savedOrder.id,
+            gross_amount: savedOrder.totalAmount,
           },
-          item_details: [
-            {
-              id: 'item-123',
-              price: 10000,
-              quantity: 1,
-              name: 'test',
-              category: 'test',
-            },
-          ],
+          item_details: itemsDetail,
         });
+
       await transaction.commitTransaction();
       return paymentResponse;
     } catch (error) {
@@ -71,18 +117,19 @@ export class OrdersService {
   }
 
   findAll() {
-    return `This action returns all orders`;
+    return this.orderRepository.findPagination({});
   }
 
-  findOne(id: number) {
-    return `This action returns a #${id} order`;
+  findOne(id: string) {
+    return this.orderRepository.findOne({
+      where: { id },
+      relations: {
+        orderDetails: true,
+      },
+    });
   }
 
-  update(id: number, updateOrderDto: UpdateOrderDto) {
-    return `This action updates a #${id} order`;
-  }
-
-  remove(id: number) {
-    return `This action removes a #${id} order`;
+  remove(id: string) {
+    return this.orderRepository.softDelete(id);
   }
 }

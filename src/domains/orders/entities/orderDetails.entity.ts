@@ -24,26 +24,28 @@ export class OrderDetails {
   @Column({ nullable: false })
   productPrice: number;
 
-  @ManyToOne(() => Discount, (discount) => discount.orderDetails)
-  discount: Discount;
+  @ManyToOne(() => Discount, (discount) => discount.orderDetails, {
+    nullable: true,
+  })
+  discount?: Discount;
 
-  @Column()
-  discountName: string;
+  @Column({ nullable: true })
+  discountName?: string;
 
-  @Column({ type: 'text' })
-  discountDescription: string;
+  @Column({ type: 'text', nullable: true })
+  discountDescription?: string;
 
-  @Column()
-  discountCode: string;
+  @Column({ nullable: true })
+  discountCode?: string;
 
-  @Column()
-  discountPercentage: number;
+  @Column({ nullable: true })
+  discountPercentage?: number;
 
-  @Column()
-  discountStartDate: number;
+  @Column({ nullable: true })
+  discountStartDate?: number;
 
-  @Column()
-  discountEndDate: number;
+  @Column({ nullable: true })
+  discountEndDate?: number;
 
   @ManyToOne(() => ProductCategory, (category) => category.orderDetails)
   category: ProductCategory;

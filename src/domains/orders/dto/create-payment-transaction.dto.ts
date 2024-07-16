@@ -20,7 +20,7 @@ export class PaymentTransactionDetails {
 export class PaymentItemDetails {
   @IsString()
   @IsNotEmpty()
-  id: string;
+  id?: string;
 
   @IsNumber()
   @IsNotEmpty()
@@ -28,15 +28,15 @@ export class PaymentItemDetails {
 
   @IsNumber()
   @IsNotEmpty()
-  quantity: number;
+  quantity?: number;
 
   @IsString()
   @IsNotEmpty()
-  name: string;
+  name?: string;
 
   @IsString()
   @IsNotEmpty()
-  category: string;
+  category?: string;
 }
 
 export class CreatePaymentTransaction {
@@ -47,5 +47,5 @@ export class CreatePaymentTransaction {
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => PaymentItemDetails)
-  item_details: PaymentItemDetails[];
+  item_details?: PaymentItemDetails[];
 }
