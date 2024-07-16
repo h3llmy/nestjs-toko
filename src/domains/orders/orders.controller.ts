@@ -15,6 +15,17 @@ export class OrdersController {
     return this.ordersService.create(createOrderDto, user);
   }
 
+  @Post('notification')
+  async notification(@Body() payload: any) {
+    console.log(payload);
+
+    const res = await this.ordersService.notification(payload);
+
+    console.log(res);
+
+    return { message: 'success' };
+  }
+
   @Get()
   findAll() {
     return this.ordersService.findAll();

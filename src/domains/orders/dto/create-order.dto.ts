@@ -4,6 +4,7 @@ import {
   IsNotEmpty,
   IsNumber,
   IsString,
+  Min,
   ValidateNested,
 } from 'class-validator';
 
@@ -22,6 +23,7 @@ class ProductOrder {
   })
   @IsNotEmpty()
   @IsNumber()
+  @Min(1)
   quantity: number;
 }
 

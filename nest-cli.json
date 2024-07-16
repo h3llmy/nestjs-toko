@@ -33,6 +33,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/randomize/tsconfig.lib.json"
       }
+    },
+    "payment-gateway": {
+      "type": "library",
+      "root": "libs/payment-gateway",
+      "entryFile": "index",
+      "sourceRoot": "libs/payment-gateway/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/payment-gateway/tsconfig.lib.json"
+      }
     }
   }
 }

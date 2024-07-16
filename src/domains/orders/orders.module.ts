@@ -4,25 +4,21 @@ import { OrdersController } from './orders.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Order } from './entities/order.entity';
 import { OrderDetails } from './entities/orderDetails.entity';
-import { PaymentGatewayService } from './paymentGateway.service';
 import { OrderRepository } from './order.repository';
 import { OrderDetailsRepository } from './order-details.repository';
 import { ProductsModule } from '../products/products.module';
 import { InventoriesModule } from '../inventories/inventories.module';
+import { PaymentGatewayModule } from '@app/payment-gateway';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, OrderDetails]),
     ProductsModule,
     InventoriesModule,
+    PaymentGatewayModule,
   ],
   controllers: [OrdersController],
-  providers: [
-    OrdersService,
-    PaymentGatewayService,
-    OrderRepository,
-    OrderDetailsRepository,
-  ],
+  providers: [OrdersService, OrderRepository, OrderDetailsRepository],
   exports: [OrdersService],
 })
 export class OrdersModule {}

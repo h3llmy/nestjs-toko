@@ -1,14 +1,13 @@
 import {
-  BadRequestException,
   Injectable,
-  InternalServerErrorException,
   NotFoundException,
+  ServiceUnavailableException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import midtrans from 'midtrans-client';
 import { CreatePaymentTransaction } from './dto/create-payment-transaction.dto';
-import { paymentCheckDto } from './dto/payment-check.dto';
 import { PaymentOrderResponseDto } from './dto/payment-order-response.dto';
+import { PaymentCheckDto } from './dto/payment-check.dto';
 
 @Injectable()
 export class PaymentGatewayService {
@@ -22,10 +21,10 @@ export class PaymentGatewayService {
   constructor(private readonly configService: ConfigService) {
     this.client = new midtrans.Snap({
       isProduction:
-        this.configService.get<string>('NODE_ENV', 'development') ===
+        this.configService.getOrThrow<string>('NODE_ENV', 'development') ===
         'production',
-      serverKey: this.configService.get<string>('MIDTRANS_SERVER_KEY'),
-      clientKey: this.configService.get<string>('MIDTRANS_CLIENT_KEY'),
+      serverKey: this.configService.getOrThrow<string>('MIDTRANS_SERVER_KEY'),
+      clientKey: this.configService.getOrThrow<string>('MIDTRANS_CLIENT_KEY'),
     });
   }
 
@@ -43,21 +42,23 @@ export class PaymentGatewayService {
     try {
       const transaction = await this.client.createTransaction(payload);
       if (!transaction) {
-        throw new InternalServerErrorException('Failed to create transaction');
+        throw new ServiceUnavailableException('Failed to create transaction');
       }
       return transaction;
     } catch (error) {
-      throw new BadRequestException(error);
+      console.log(error);
+
+      throw new ServiceUnavailableException('payment error');
     }
   }
 
   /**
    * A description of the entire function.
    *
-   * @param {paymentCheckDto} payload - description of the payload parameter
+   * @param {PaymentCheckDto} payload - description of the payload parameter
    * @return {Promise<any>} A promise that resolves to the transaction status
    */
-  async paymentCheck(payload: paymentCheckDto): Promise<any> {
+  async paymentCheck(payload: PaymentCheckDto): Promise<any> {
     try {
       const transactionStatus =
         await this.client.transaction.notification(payload);
@@ -66,7 +67,7 @@ export class PaymentGatewayService {
       }
       return transactionStatus;
     } catch (error) {
-      throw new BadRequestException(error);
+      throw new ServiceUnavailableException('payment error');
     }
   }
 }

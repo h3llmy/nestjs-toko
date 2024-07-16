@@ -20,12 +20,30 @@
     "esModuleInterop": true,
     "resolveJsonModule": true,
     "paths": {
-      "@app/common": ["libs/common/src"],
-      "@app/common/*": ["libs/common/src/*"],
-      "@app/encryption": ["libs/encryption/src"],
-      "@app/encryption/*": ["libs/encryption/src/*"],
-      "@app/randomize": ["libs/randomize/src"],
-      "@app/randomize/*": ["libs/randomize/src/*"]
+      "@app/common": [
+        "libs/common/src"
+      ],
+      "@app/common/*": [
+        "libs/common/src/*"
+      ],
+      "@app/encryption": [
+        "libs/encryption/src"
+      ],
+      "@app/encryption/*": [
+        "libs/encryption/src/*"
+      ],
+      "@app/randomize": [
+        "libs/randomize/src"
+      ],
+      "@app/randomize/*": [
+        "libs/randomize/src/*"
+      ],
+      "@app/payment-gateway": [
+        "libs/payment-gateway/src"
+      ],
+      "@app/payment-gateway/*": [
+        "libs/payment-gateway/src/*"
+      ]
     }
   }
 }

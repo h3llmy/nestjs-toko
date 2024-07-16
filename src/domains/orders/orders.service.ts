@@ -1,7 +1,4 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { CreateOrderDto } from './dto/create-order.dto';
-import { UpdateOrderDto } from './dto/update-order.dto';
-import { PaymentGatewayService } from './paymentGateway.service';
 import { DataSource, DeepPartial, In } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { OrderRepository } from './order.repository';
@@ -9,7 +6,11 @@ import { User } from '../users/entities/user.entity';
 import { OrderDetailsRepository } from './order-details.repository';
 import { OrderDetails } from './entities/orderDetails.entity';
 import { InventoriesService } from '../inventories/inventories.service';
-import { PaymentItemDetails } from './dto/create-payment-transaction.dto';
+import { CreateOrderDto } from './dto/create-order.dto';
+import {
+  PaymentGatewayService,
+  PaymentItemDetails,
+} from '@app/payment-gateway';
 
 @Injectable()
 export class OrdersService {
@@ -114,6 +115,10 @@ export class OrdersService {
     } finally {
       await transaction.release();
     }
+  }
+
+  notification(payload: any) {
+    return this.paymentGatewayService.paymentCheck(payload);
   }
 
   findAll() {
