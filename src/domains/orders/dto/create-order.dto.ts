@@ -3,7 +3,9 @@ import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
+  IsUUID,
   Min,
   ValidateNested,
 } from 'class-validator';
@@ -15,6 +17,7 @@ class ProductOrder {
   })
   @IsString()
   @IsNotEmpty()
+  @IsUUID('4')
   productId: string;
 
   @ApiProperty({
@@ -25,6 +28,15 @@ class ProductOrder {
   @IsNumber()
   @Min(1)
   quantity: number;
+
+  @ApiProperty({
+    type: 'string',
+    description: 'Discount id',
+  })
+  @IsOptional()
+  @IsString()
+  @IsUUID('4')
+  discountId: string;
 }
 
 export class CreateOrderDto {

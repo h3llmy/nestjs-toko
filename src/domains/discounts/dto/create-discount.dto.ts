@@ -5,6 +5,7 @@ import {
   IsNumber,
   IsOptional,
   IsString,
+  IsUUID,
   Max,
   MaxLength,
   Min,
@@ -20,6 +21,7 @@ export class CreateDiscountDto {
   @IsArray()
   @IsString({ each: true })
   @IsOptional()
+  @IsUUID('4', { each: true })
   productId: string[];
 
   @ApiProperty({

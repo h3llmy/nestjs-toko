@@ -14,5 +14,6 @@ import { DiscountsRepository } from './discounts.repository';
   ],
   controllers: [DiscountsController],
   providers: [DiscountsService, DiscountsRepository],
+  exports: [DiscountsService],
 })
 export class DiscountsModule {}

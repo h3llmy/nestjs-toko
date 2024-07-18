@@ -3,13 +3,19 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsRepository } from './products.repository';
 import { PaginationProductDto } from './dto/pagination-product.dto';
-import { IPaginationPayload, IPaginationResponse } from '@app/common';
+import {
+  IPaginationPayload,
+  IPaginationResponse,
+  ITransactionManager,
+} from '@app/common';
 import { Product } from './entities/product.entity';
 import {
   DataSource,
+  DeepPartial,
   FindManyOptions,
   FindOptionsRelations,
   ILike,
+  SaveOptions,
   UpdateResult,
 } from 'typeorm';
 import { InventoriesService } from '../inventories/inventories.service';
@@ -70,6 +76,15 @@ export class ProductsService {
     } finally {
       await transaction.release();
     }
+  }
+
+  save(
+    entity: DeepPartial<Product>,
+    options?: SaveOptions & ITransactionManager,
+  ) {
+    console.log(entity);
+
+    return this.productRepository.saveEntity(entity, options);
   }
 
   /**

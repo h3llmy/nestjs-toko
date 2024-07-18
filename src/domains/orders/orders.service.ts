@@ -8,6 +8,7 @@ import { OrderDetails } from './entities/orderDetails.entity';
 import { InventoriesService } from '../inventories/inventories.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import {
+  PaymentCheckDto,
   PaymentGatewayService,
   PaymentItemDetails,
 } from '@app/payment-gateway';
@@ -30,7 +31,7 @@ export class OrdersService {
       const productIds = createOrderDto.orders.map((item) => item.productId);
       const products = await this.productService.findMany({
         where: { id: In(productIds) },
-        relations: { category: true },
+        relations: { category: true, discounts: true, inventory: true },
       });
 
       if (products.length !== productIds.length) {
@@ -45,7 +46,31 @@ export class OrdersService {
               `Product with id ${order.productId} not found`,
             );
           }
-          const totalPrice = order.quantity * product.price;
+          let totalPrice: number;
+
+          if (order.discountId) {
+            const discount = product.discounts.find(
+              (d) => d.id === order.discountId,
+            );
+            if (!discount) {
+              throw new NotFoundException(
+                `Discount with id ${order.discountId} not found`,
+              );
+            }
+
+            const discountPercentage = discount.percentage / 100;
+
+            totalPrice =
+              product.price * order.quantity * (1 - discountPercentage);
+          } else {
+            totalPrice = product.price * order.quantity;
+          }
+
+          if (product.inventory.quantity < order.quantity) {
+            throw new NotFoundException('Not enough product in stock');
+          }
+          product.inventory.quantity -= order.quantity;
+
           return {
             product,
             productName: product.name,
@@ -57,6 +82,14 @@ export class OrdersService {
             totalPrice,
           };
         },
+      );
+
+      await Promise.all(
+        orderItems.map((order) => {
+          return this.productService.save(order.product, {
+            session: transaction,
+          });
+        }),
       );
 
       const savedOrderItems = (await this.orderDetailsRepository.createEntity(
@@ -85,18 +118,18 @@ export class OrdersService {
           id: orderDetail.id,
           category: orderDetail.categoryName,
           name: orderDetail.productName,
-          price: orderDetail.productPrice,
+          price: orderDetail.product.price,
           quantity: orderDetail.quantity,
         };
       });
 
-      await Promise.all(
-        savedOrderItems.map((item) => {
-          return this.inventoriesService.decreesStock(item.id, item.quantity, {
-            session: transaction,
-          });
-        }),
-      );
+      console.log({
+        transaction_details: {
+          order_id: savedOrder.id,
+          gross_amount: savedOrder.totalAmount,
+        },
+        item_details: itemsDetail,
+      });
 
       const paymentResponse =
         await this.paymentGatewayService.createTransaction({
@@ -117,7 +150,7 @@ export class OrdersService {
     }
   }
 
-  notification(payload: any) {
+  notification(payload: PaymentCheckDto) {
     return this.paymentGatewayService.paymentCheck(payload);
   }
 

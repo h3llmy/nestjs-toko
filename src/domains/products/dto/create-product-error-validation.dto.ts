@@ -24,4 +24,10 @@ export class ProductErrorValidationDto {
     type: 'string',
   })
   quantity: number;
+
+  @ApiProperty({
+    isArray: true,
+    type: 'string',
+  })
+  categoryId: string;
 }

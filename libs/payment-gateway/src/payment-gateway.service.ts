@@ -46,7 +46,7 @@ export class PaymentGatewayService {
       }
       return transaction;
     } catch (error) {
-      console.log(error);
+      console.log(error.message);
 
       throw new ServiceUnavailableException('payment error');
     }

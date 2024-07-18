@@ -9,6 +9,7 @@ import {
   Query,
   NotFoundException,
   UseInterceptors,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { DiscountsService } from './discounts.service';
 import { CreateDiscountDto } from './dto/create-discount.dto';
@@ -99,7 +100,9 @@ export class DiscountsController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  async findOne(@Param('id') id: string): Promise<Discount> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<Discount> {
     const discount = await this.discountsService.findOne(id);
 
     if (!discount) {
@@ -130,7 +133,7 @@ export class DiscountsController {
     type: validationErrorSchemaFactory(CreateDiscountErrorValidationDto),
   })
   update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateDiscountDto: UpdateDiscountDto,
   ): Promise<DeepPartial<Discount>> {
     return this.discountsService.update(id, updateDiscountDto);
@@ -152,7 +155,9 @@ export class DiscountsController {
     description: 'Unauthorized',
     type: BasicErrorSchema,
   })
-  async remove(@Param('id') id: string): Promise<BasicSuccessSchema> {
+  async remove(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<BasicSuccessSchema> {
     const discount = await this.discountsService.remove(id);
 
     if (discount.affected === 0) {
