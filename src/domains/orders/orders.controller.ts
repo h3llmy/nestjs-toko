@@ -20,7 +20,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  // @Permission(Role.USER)
+  @Permission(Role.USER)
   @ApiBearerAuth()
   create(@Body() createOrderDto: CreateOrderDto, @Auth() user: User) {
     return this.ordersService.create(createOrderDto, user);

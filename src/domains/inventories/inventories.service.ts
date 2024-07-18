@@ -86,7 +86,7 @@ export class InventoriesService {
     option?: ITransactionManager,
   ): Promise<Inventory> {
     console.log(id);
-    
+
     return this.inventoriesRepository.updateDecrement(
       { id },
       { quantity },

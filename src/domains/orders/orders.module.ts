@@ -7,14 +7,12 @@ import { OrderDetails } from './entities/orderDetails.entity';
 import { OrderRepository } from './order.repository';
 import { OrderDetailsRepository } from './order-details.repository';
 import { ProductsModule } from '../products/products.module';
-import { InventoriesModule } from '../inventories/inventories.module';
 import { PaymentGatewayModule } from '@app/payment-gateway';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, OrderDetails]),
     ProductsModule,
-    InventoriesModule,
     PaymentGatewayModule,
   ],
   controllers: [OrdersController],

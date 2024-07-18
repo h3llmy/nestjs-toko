@@ -5,7 +5,6 @@ import { OrderRepository } from './order.repository';
 import { User } from '../users/entities/user.entity';
 import { OrderDetailsRepository } from './order-details.repository';
 import { OrderDetails } from './entities/orderDetails.entity';
-import { InventoriesService } from '../inventories/inventories.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import {
   PaymentCheckDto,
@@ -18,7 +17,6 @@ export class OrdersService {
   constructor(
     private readonly paymentGatewayService: PaymentGatewayService,
     private readonly productService: ProductsService,
-    private readonly inventoriesService: InventoriesService,
     private readonly orderRepository: OrderRepository,
     private readonly orderDetailsRepository: OrderDetailsRepository,
     private readonly dataSource: DataSource,
@@ -84,12 +82,11 @@ export class OrdersService {
         },
       );
 
-      await Promise.all(
-        orderItems.map((order) => {
-          return this.productService.save(order.product, {
-            session: transaction,
-          });
-        }),
+      this.productService.save(
+        orderItems.map((item) => item.product),
+        {
+          session: transaction,
+        },
       );
 
       const savedOrderItems = (await this.orderDetailsRepository.createEntity(
@@ -118,17 +115,9 @@ export class OrdersService {
           id: orderDetail.id,
           category: orderDetail.categoryName,
           name: orderDetail.productName,
-          price: orderDetail.product.price,
+          price: orderDetail.totalPrice / orderDetail.quantity,
           quantity: orderDetail.quantity,
         };
-      });
-
-      console.log({
-        transaction_details: {
-          order_id: savedOrder.id,
-          gross_amount: savedOrder.totalAmount,
-        },
-        item_details: itemsDetail,
       });
 
       const paymentResponse =

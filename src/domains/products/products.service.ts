@@ -79,11 +79,9 @@ export class ProductsService {
   }
 
   save(
-    entity: DeepPartial<Product>,
+    entity: DeepPartial<Product> | DeepPartial<Product>[],
     options?: SaveOptions & ITransactionManager,
   ) {
-    console.log(entity);
-
     return this.productRepository.saveEntity(entity, options);
   }
 

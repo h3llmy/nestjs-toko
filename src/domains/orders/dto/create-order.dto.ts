@@ -36,7 +36,7 @@ class ProductOrder {
   @IsOptional()
   @IsString()
   @IsUUID('4')
-  discountId: string;
+  discountId?: string;
 }
 
 export class CreateOrderDto {
