@@ -22,24 +22,7 @@ enum FraudStatus {
   Deny = 'deny',
 }
 
-class VANumber {
-  @IsNumberString()
-  va_number: string;
-
-  @IsString()
-  bank: string;
-}
-
-class PaymentAmount {
-  // Define properties if needed in the future
-}
-
 export class PaymentCheckDto {
-  @ValidateNested({ each: true })
-  @IsArray()
-  @ValidateNested({ each: true })
-  va_numbers: VANumber[];
-
   @IsDateString()
   transaction_time: string;
 
@@ -64,11 +47,6 @@ export class PaymentCheckDto {
   @IsString()
   payment_type: string;
 
-  @IsOptional()
-  @ValidateNested({ each: true })
-  @IsArray()
-  payment_amounts?: PaymentAmount[];
-
   @IsString()
   order_id: string;
 
@@ -80,9 +58,6 @@ export class PaymentCheckDto {
 
   @IsEnum(FraudStatus)
   fraud_status: FraudStatus;
-
-  @IsDateString()
-  expiry_time: string;
 
   @IsString()
   currency: string;

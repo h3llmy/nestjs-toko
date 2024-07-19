@@ -11,6 +11,7 @@ import {
   PaymentGatewayService,
   PaymentItemDetails,
 } from '@app/payment-gateway';
+import { OrderStatus } from './entities/order.entity';
 
 @Injectable()
 export class OrdersService {
@@ -36,15 +37,20 @@ export class OrdersService {
         throw new NotFoundException('Some products were not found');
       }
 
+      const productMap = new Map(
+        products.map((product) => [product.id, product]),
+      );
+
       const orderItems: DeepPartial<OrderDetails>[] = createOrderDto.orders.map(
         (order) => {
-          const product = products.find((p) => p.id === order.productId);
+          const product = productMap.get(order.productId);
           if (!product) {
             throw new NotFoundException(
               `Product with id ${order.productId} not found`,
             );
           }
-          let totalPrice: number;
+
+          let totalPrice = product.price * order.quantity;
 
           if (order.discountId) {
             const discount = product.discounts.find(
@@ -56,12 +62,18 @@ export class OrdersService {
               );
             }
 
-            const discountPercentage = discount.percentage / 100;
+            const currentDate = Date.now() / 1000;
+            if (
+              discount.startDate > currentDate ||
+              discount.endDate < currentDate
+            ) {
+              throw new NotFoundException(
+                `Discount ${discount.name} is not valid`,
+              );
+            }
 
-            totalPrice =
-              product.price * order.quantity * (1 - discountPercentage);
-          } else {
-            totalPrice = product.price * order.quantity;
+            const discountPercentage = discount.percentage / 100;
+            totalPrice *= 1 - discountPercentage;
           }
 
           if (product.inventory.quantity < order.quantity) {
@@ -82,18 +94,15 @@ export class OrdersService {
         },
       );
 
-      this.productService.save(
-        orderItems.map((item) => item.product),
-        {
-          session: transaction,
-        },
-      );
+      const productsToUpdate = orderItems.map((item) => item.product);
+      await this.productService.save(productsToUpdate, {
+        session: transaction,
+      });
 
       const savedOrderItems = (await this.orderDetailsRepository.createEntity(
         orderItems,
         { session: transaction },
       )) as OrderDetails[];
-
       const totalAmount = savedOrderItems.reduce(
         (prev, curr) => prev + curr.totalPrice,
         0,
@@ -108,17 +117,15 @@ export class OrdersService {
         { session: transaction },
       );
 
-      const itemsDetail: PaymentItemDetails[] = (
-        savedOrder.orderDetails as OrderDetails[]
-      ).map((orderDetail) => {
-        return {
+      const itemsDetail: PaymentItemDetails[] = savedOrder.orderDetails.map(
+        (orderDetail: DeepPartial<OrderDetails>) => ({
           id: orderDetail.id,
           category: orderDetail.categoryName,
           name: orderDetail.productName,
           price: orderDetail.totalPrice / orderDetail.quantity,
           quantity: orderDetail.quantity,
-        };
-      });
+        }),
+      );
 
       const paymentResponse =
         await this.paymentGatewayService.createTransaction({
@@ -139,8 +146,79 @@ export class OrdersService {
     }
   }
 
-  notification(payload: PaymentCheckDto) {
-    return this.paymentGatewayService.paymentCheck(payload);
+  async notification(payload: PaymentCheckDto) {
+    const paymentStatus =
+      await this.paymentGatewayService.paymentCheck(payload);
+    // {
+    //   status_code: '200',
+    //   transaction_id: 'd6d03c8b-df70-4abf-89b7-67d902676bb3',
+    //   gross_amount: '4050000.00',
+    //   currency: 'IDR',
+    //   order_id: '5fd020cf-2ba1-403e-a509-8e351c97455e',
+    //   payment_type: 'bank_transfer',
+    //   signature_key: '451b7e0f4e565295f473cc6c371836f04931598f430b7660b41c7420c9b93decb0fb9bc4465f6794a3fe15786e187d573f13cf6b51b8f53ba547f330481d11d1',
+    //   transaction_status: 'settlement',
+    //   fraud_status: 'accept',
+    //   status_message: 'Success, transaction is found',
+    //   merchant_id: 'G444672650',
+    //   va_numbers: [ { bank: 'bca', va_number: '72650252659' } ],
+    //   payment_amounts: [],
+    //   transaction_time: '2024-07-19 14:23:55',
+    //   settlement_time: '2024-07-19 14:24:03',
+    //   expiry_time: '2024-07-20 14:23:55'
+    // }
+    console.log(paymentStatus);
+
+    let orderStatus: OrderStatus;
+
+    const transaction = this.dataSource.createQueryRunner();
+    await transaction.startTransaction();
+
+    try {
+      switch (paymentStatus.transaction_status) {
+        // Success
+        case 'capture':
+        case 'settlement':
+          orderStatus = OrderStatus.PAID;
+          break;
+
+        // Failure
+        case 'deny':
+        case 'cancel':
+        case 'expire':
+        case 'failure':
+          orderStatus = OrderStatus.FAILED;
+          break;
+
+        // Pending
+        case 'pending':
+          orderStatus = OrderStatus.PENDING;
+          break;
+
+        // Refund
+        case 'refund':
+        case 'partial_refund':
+        case 'chargeback':
+        case 'partial_chargeback':
+          orderStatus = OrderStatus.REFUND;
+          break;
+
+        default:
+          orderStatus = OrderStatus.PENDING;
+          break;
+      }
+      await this.orderRepository.updateEntity(
+        { id: paymentStatus.order_id },
+        { status: orderStatus },
+        { session: transaction },
+      );
+      await transaction.commitTransaction();
+    } catch (error) {
+      await transaction.rollbackTransaction();
+      throw error;
+    } finally {
+      await transaction.release();
+    }
   }
 
   findAll() {

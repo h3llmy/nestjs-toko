@@ -10,9 +10,10 @@ import {
 import { OrderDetails } from './orderDetails.entity';
 
 export enum OrderStatus {
+  PENDING = 'pending',
   PAID = 'paid',
-  UNPAID = 'unpaid',
   FAILED = 'failed',
+  REFUND = 'refund',
 }
 
 @Entity('orders')
@@ -26,7 +27,7 @@ export class Order {
   @Column({
     type: 'enum',
     enum: OrderStatus,
-    default: OrderStatus.UNPAID,
+    default: OrderStatus.PENDING,
   })
   status: OrderStatus;
 

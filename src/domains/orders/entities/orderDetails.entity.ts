@@ -15,13 +15,13 @@ export class OrderDetails {
   @ManyToOne(() => Product, (product) => product.orderDetails)
   product: Product;
 
-  @Column({ nullable: false })
+  @Column()
   productName: string;
 
   @Column({ type: 'text' })
   productDescription: string;
 
-  @Column({ nullable: false })
+  @Column()
   productPrice: number;
 
   @ManyToOne(() => Discount, (discount) => discount.orderDetails, {

@@ -20,7 +20,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @Permission(Role.USER)
+  // @Permission(Role.USER)
   @ApiBearerAuth()
   create(@Body() createOrderDto: CreateOrderDto, @Auth() user: User) {
     return this.ordersService.create(createOrderDto, user);
@@ -28,11 +28,7 @@ export class OrdersController {
 
   @Post('notification')
   async notification(@Body() payload: PaymentCheckDto) {
-    console.log(payload);
-
-    const res = await this.ordersService.notification(payload);
-
-    console.log(res);
+    await this.ordersService.notification(payload);
 
     return { message: 'success' };
   }
