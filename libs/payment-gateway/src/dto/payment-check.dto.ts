@@ -1,25 +1,17 @@
-import {
-  IsArray,
-  IsDateString,
-  IsEnum,
-  IsNumberString,
-  IsOptional,
-  IsString,
-  ValidateNested,
-} from 'class-validator';
+import { IsDateString, IsEnum, IsString } from 'class-validator';
 
-enum TransactionStatus {
-  Settlement = 'settlement',
-  Pending = 'pending',
-  Failure = 'failure',
-  Refund = 'refund',
-  Cancel = 'cancel',
+export enum TransactionStatus {
+  SETTLEMENT = 'settlement',
+  PENDING = 'pending',
+  FAILURE = 'failure',
+  REFUND = 'refund',
+  CANCEL = 'cancel',
 }
 
-enum FraudStatus {
-  Accept = 'accept',
-  Challenge = 'challenge',
-  Deny = 'deny',
+export enum FraudStatus {
+  ACCEPT = 'accept',
+  CHALLENGE = 'challenge',
+  DENY = 'deny',
 }
 
 export class PaymentCheckDto {

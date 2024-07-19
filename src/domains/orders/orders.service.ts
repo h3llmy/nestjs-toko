@@ -1,5 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, DeepPartial, In } from 'typeorm';
+import { DataSource, DeepPartial, In, QueryRunner } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { OrderRepository } from './order.repository';
 import { User } from '../users/entities/user.entity';
@@ -11,7 +11,8 @@ import {
   PaymentGatewayService,
   PaymentItemDetails,
 } from '@app/payment-gateway';
-import { OrderStatus } from './entities/order.entity';
+import { Order, OrderStatus } from './entities/order.entity';
+import { Product } from '../products/entities/product.entity';
 
 @Injectable()
 export class OrdersService {
@@ -22,6 +23,17 @@ export class OrdersService {
     private readonly orderDetailsRepository: OrderDetailsRepository,
     private readonly dataSource: DataSource,
   ) {}
+
+  private async increaseInventory(order: Order, transaction: QueryRunner) {
+    const productList: Product[] = order.orderDetails.map((orderDetail) => {
+      const updatedProduct = orderDetail.product;
+      updatedProduct.inventory.quantity += orderDetail.quantity;
+      return updatedProduct;
+    });
+    this.productService.save(productList, {
+      session: transaction,
+    });
+  }
 
   async create(createOrderDto: CreateOrderDto, user: User) {
     const transaction = this.dataSource.createQueryRunner();
@@ -149,30 +161,24 @@ export class OrdersService {
   async notification(payload: PaymentCheckDto) {
     const paymentStatus =
       await this.paymentGatewayService.paymentCheck(payload);
-    // {
-    //   status_code: '200',
-    //   transaction_id: 'd6d03c8b-df70-4abf-89b7-67d902676bb3',
-    //   gross_amount: '4050000.00',
-    //   currency: 'IDR',
-    //   order_id: '5fd020cf-2ba1-403e-a509-8e351c97455e',
-    //   payment_type: 'bank_transfer',
-    //   signature_key: '451b7e0f4e565295f473cc6c371836f04931598f430b7660b41c7420c9b93decb0fb9bc4465f6794a3fe15786e187d573f13cf6b51b8f53ba547f330481d11d1',
-    //   transaction_status: 'settlement',
-    //   fraud_status: 'accept',
-    //   status_message: 'Success, transaction is found',
-    //   merchant_id: 'G444672650',
-    //   va_numbers: [ { bank: 'bca', va_number: '72650252659' } ],
-    //   payment_amounts: [],
-    //   transaction_time: '2024-07-19 14:23:55',
-    //   settlement_time: '2024-07-19 14:24:03',
-    //   expiry_time: '2024-07-20 14:23:55'
-    // }
-    console.log(paymentStatus);
-
-    let orderStatus: OrderStatus;
 
     const transaction = this.dataSource.createQueryRunner();
     await transaction.startTransaction();
+
+    const order = await this.orderRepository.findOne({
+      where: { id: paymentStatus.order_id },
+      relations: {
+        orderDetails: {
+          product: true,
+        },
+      },
+    });
+
+    if (!order) {
+      throw new NotFoundException('Order not found');
+    }
+
+    let orderStatus: OrderStatus;
 
     try {
       switch (paymentStatus.transaction_status) {
@@ -188,6 +194,7 @@ export class OrdersService {
         case 'expire':
         case 'failure':
           orderStatus = OrderStatus.FAILED;
+          await this.increaseInventory(order, transaction);
           break;
 
         // Pending
@@ -201,11 +208,11 @@ export class OrdersService {
         case 'chargeback':
         case 'partial_chargeback':
           orderStatus = OrderStatus.REFUND;
+          await this.increaseInventory(order, transaction);
           break;
 
         default:
-          orderStatus = OrderStatus.PENDING;
-          break;
+          throw new Error('Invalid transaction status');
       }
       await this.orderRepository.updateEntity(
         { id: paymentStatus.order_id },

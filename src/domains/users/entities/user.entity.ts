@@ -30,7 +30,7 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @Column({ enum: Role, default: Role.USER })
+  @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
   @ManyToOne(() => Order, (order) => order.user)

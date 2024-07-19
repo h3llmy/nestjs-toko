@@ -1,8 +1,4 @@
-import {
-  Injectable,
-  NotFoundException,
-  ServiceUnavailableException,
-} from '@nestjs/common';
+import { Injectable, ServiceUnavailableException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import midtrans from 'midtrans-client';
 import { CreatePaymentTransaction } from './dto/create-payment-transaction.dto';
@@ -46,8 +42,6 @@ export class PaymentGatewayService {
       }
       return transaction;
     } catch (error) {
-      console.log(error.message);
-
       throw new ServiceUnavailableException('payment error');
     }
   }
@@ -60,12 +54,7 @@ export class PaymentGatewayService {
    */
   async paymentCheck(payload: PaymentCheckDto): Promise<any> {
     try {
-      const transactionStatus =
-        await this.client.transaction.notification(payload);
-      if (!transactionStatus) {
-        throw new NotFoundException('transaction not found status');
-      }
-      return transactionStatus;
+      return await this.client.transaction.notification(payload);
     } catch (error) {
       throw new ServiceUnavailableException('payment error');
     }

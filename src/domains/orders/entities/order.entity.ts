@@ -41,5 +41,5 @@ export class Order {
   createdAt: Date;
 
   @DeleteDateColumn({ type: 'timestamp' })
-  deletedAt: Date;
+  deletedAt?: Date;
 }

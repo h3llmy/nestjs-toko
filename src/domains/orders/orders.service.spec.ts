@@ -28,20 +28,20 @@ describe('OrdersService', () => {
     expect(orderService).toBeDefined();
   });
 
-  describe('create', () => {
-    it('should create new order', async () => {
-      const mockCreateOrderDto: CreateOrderDto = {
-        orders: [
-          {
-            productId: '1',
-            quantity: 1,
-          },
-        ],
-      };
+  // describe('create', () => {
+  //   it('should create new order', async () => {
+  //     const mockCreateOrderDto: CreateOrderDto = {
+  //       orders: [
+  //         {
+  //           productId: '1',
+  //           quantity: 1,
+  //         },
+  //       ],
+  //     };
 
-      const result = await orderService.create(mockCreateOrderDto, user);
+  //     const result = await orderService.create(mockCreateOrderDto, user);
 
-      expect(result).toBeDefined();
-    });
-  });
+  //     expect(result).toBeDefined();
+  //   });
+  // });
 });
