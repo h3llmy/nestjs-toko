@@ -78,10 +78,17 @@ export class ProductsService {
     }
   }
 
+  /**
+   * Saves the given entity or array of entities to the database.
+   *
+   * @param {DeepPartial<Product> | DeepPartial<Product>[]} entity - The entity or array of entities to save.
+   * @param {SaveOptions & ITransactionManager} [options] - Optional save options and transaction manager.
+   * @return {Promise<DeepPartial<Product> | DeepPartial<Product>[]>} A promise that resolves to the saved entity or array of entities.
+   */
   save(
     entity: DeepPartial<Product> | DeepPartial<Product>[],
     options?: SaveOptions & ITransactionManager,
-  ) {
+  ): Promise<DeepPartial<Product> | DeepPartial<Product>[]> {
     return this.productRepository.saveEntity(entity, options);
   }
 
@@ -110,7 +117,7 @@ export class ProductsService {
     };
     if (search) {
       query.where = {
-        name: ILike(search),
+        name: ILike(`%${search}%`),
       };
     }
 

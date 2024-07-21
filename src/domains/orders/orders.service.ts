@@ -1,8 +1,16 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { DataSource, DeepPartial, In, QueryRunner } from 'typeorm';
+import {
+  DataSource,
+  DeepPartial,
+  FindOneOptions,
+  FindOptionsWhere,
+  ILike,
+  In,
+  QueryRunner,
+} from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { OrderRepository } from './order.repository';
-import { User } from '../users/entities/user.entity';
+import { Role, User } from '../users/entities/user.entity';
 import { OrderDetailsRepository } from './order-details.repository';
 import { OrderDetails } from './entities/orderDetails.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -10,21 +18,34 @@ import {
   PaymentCheckDto,
   PaymentGatewayService,
   PaymentItemDetails,
+  PaymentOrderResponseDto,
 } from '@app/payment-gateway';
 import { Order, OrderStatus } from './entities/order.entity';
 import { Product } from '../products/entities/product.entity';
+import { PaginationOrderDto } from './dto/pagination-order.dto';
+import { IPaginationPayload, IPaginationResponse } from '@app/common';
 
 @Injectable()
 export class OrdersService {
   constructor(
-    private readonly paymentGatewayService: PaymentGatewayService,
-    private readonly productService: ProductsService,
     private readonly orderRepository: OrderRepository,
     private readonly orderDetailsRepository: OrderDetailsRepository,
+    private readonly paymentGatewayService: PaymentGatewayService,
+    private readonly productService: ProductsService,
     private readonly dataSource: DataSource,
   ) {}
 
-  private async increaseInventory(order: Order, transaction: QueryRunner) {
+  /**
+   * Increases the inventory quantity for each product in the given order.
+   *
+   * @param {Order} order - The order containing the order details.
+   * @param {QueryRunner} transaction - The transaction to be used for the database operation.
+   * @return {Promise<void>} A promise that resolves when the inventory is successfully updated.
+   */
+  async increaseInventory(
+    order: Order,
+    transaction: QueryRunner,
+  ): Promise<void> {
     const productList: Product[] = order.orderDetails.map((orderDetail) => {
       const updatedProduct = orderDetail.product;
       updatedProduct.inventory.quantity += orderDetail.quantity;
@@ -35,7 +56,22 @@ export class OrdersService {
     });
   }
 
-  async create(createOrderDto: CreateOrderDto, user: User) {
+  /**
+   * Creates an order for a user based on the provided order details.
+   *
+   * @param {CreateOrderDto} createOrderDto - The order details to create the order from.
+   * @param {User} user - The user creating the order.
+   * @return {Promise<PaymentOrderResponseDto>} The payment response from the payment gateway.
+   * @throws {NotFoundException} If some products were not found.
+   * @throws {NotFoundException} If a product with the given ID was not found.
+   * @throws {NotFoundException} If a discount with the given ID was not found.
+   * @throws {NotFoundException} If the discount is not valid.
+   * @throws {NotFoundException} If there is not enough product in stock.
+   */
+  async create(
+    createOrderDto: CreateOrderDto,
+    user: User,
+  ): Promise<PaymentOrderResponseDto> {
     const transaction = this.dataSource.createQueryRunner();
     await transaction.startTransaction();
     try {
@@ -74,7 +110,7 @@ export class OrdersService {
               );
             }
 
-            const currentDate = Date.now() / 1000;
+            const currentDate = Math.round(Date.now() / 1000);
             if (
               discount.startDate > currentDate ||
               discount.endDate < currentDate
@@ -158,7 +194,13 @@ export class OrdersService {
     }
   }
 
-  async notification(payload: PaymentCheckDto) {
+  /**
+   * A function that handles notifications based on the payment status.
+   *
+   * @param {PaymentCheckDto} payload - The payment payload to process
+   * @return {Promise<void>} A promise that resolves when the notification process is completed
+   */
+  async notification(payload: PaymentCheckDto): Promise<void> {
     const paymentStatus =
       await this.paymentGatewayService.paymentCheck(payload);
 
@@ -228,20 +270,66 @@ export class OrdersService {
     }
   }
 
-  findAll() {
-    return this.orderRepository.findPagination({});
+  /**
+   * Finds paginated orders based on the given query and user.
+   *
+   * @param {PaginationOrderDto} findQuery - The query parameters for pagination.
+   * @param {User} user - The user object.
+   * @return {Promise<IPaginationResponse<Order>>} A promise that resolves to the paginated response containing the orders.
+   */
+  findPagination(
+    findQuery: PaginationOrderDto,
+    user: User,
+  ): Promise<IPaginationResponse<Order>> {
+    const { search, status, ...paginationQuery } = findQuery;
+    const query: IPaginationPayload<Order> = {
+      ...paginationQuery,
+    };
+    query.where = [];
+    if (user.role === Role.USER) {
+      query.where.push({
+        user: {
+          id: user.id,
+        },
+      });
+    } else if (search) {
+      query.where.push({
+        user: {
+          username: ILike(`%${search}%`),
+        },
+      });
+    }
+    if (status) {
+      query.where.push({
+        status,
+      });
+    }
+    return this.orderRepository.findPagination(query);
   }
 
-  findOne(id: string) {
-    return this.orderRepository.findOne({
-      where: { id },
+  /**
+   * Finds and returns an order by its ID, including its order details.
+   *
+   * @param {string} id - The ID of the order to find.
+   * @return {Promise<Order>} A promise that resolves to the found order,
+   * including its order details.
+   */
+  findOne(id: string, user: User): Promise<Order> {
+    const whereCondition: FindOptionsWhere<Order> = {
+      id,
+    };
+
+    if (user.role === Role.USER) {
+      whereCondition.user = { id: user.id };
+    }
+
+    const query: FindOneOptions<Order> = {
+      where: whereCondition,
       relations: {
         orderDetails: true,
       },
-    });
-  }
+    };
 
-  remove(id: string) {
-    return this.orderRepository.softDelete(id);
+    return this.orderRepository.findOne(query);
   }
 }

@@ -4,44 +4,35 @@ import { Type } from 'class-transformer';
 import {
   IsEnum,
   IsNumber,
-  IsObject,
   IsOptional,
+  IsString,
   ValidateNested,
 } from 'class-validator';
+import { OrderStatus } from '../entities/order.entity';
 
-export class ProductCategoryOrder {
+export class OrderOrder {
   @ApiPropertyOptional({
-    name: 'order[name]',
+    name: 'order[totalAmount]',
     enum: SortDirection,
-    description: 'Sort direction for name',
+    description: 'Sort direction for totalAmount',
     required: false,
   })
   @IsOptional()
   @IsEnum(SortDirection)
-  name?: SortDirection;
+  totalAmount?: SortDirection;
 
   @ApiPropertyOptional({
     name: 'order[createdAt]',
     enum: SortDirection,
-    description: 'Sort direction for created at',
+    description: 'Sort direction for createdAt',
     required: false,
   })
   @IsOptional()
   @IsEnum(SortDirection)
   createdAt?: SortDirection;
-
-  @ApiPropertyOptional({
-    name: 'order[updatedAt]',
-    enum: SortDirection,
-    description: 'Sort direction for updated at',
-    required: false,
-  })
-  @IsOptional()
-  @IsEnum(SortDirection)
-  updatedAt?: SortDirection;
 }
 
-export class PaginationProductCategoryDto {
+export class PaginationOrderDto {
   @ApiPropertyOptional({
     description: 'Page number (1-based index)',
     minimum: 1,
@@ -67,16 +58,26 @@ export class PaginationProductCategoryDto {
     required: false,
   })
   @IsOptional()
+  @IsString()
   search?: string;
 
   @ApiPropertyOptional({
-    description: 'Ordering criteria',
-    type: ProductCategoryOrder,
+    description: 'status filter',
     required: false,
   })
   @IsOptional()
-  @IsObject()
+  @IsString()
+  @IsEnum(OrderStatus)
+  status?: OrderStatus;
+
+  @ApiPropertyOptional({
+    name: 'order',
+    type: OrderOrder,
+    description: 'Sort order',
+    required: false,
+  })
+  @IsOptional()
   @ValidateNested()
-  @Type(() => ProductCategoryOrder)
-  order?: ProductCategoryOrder;
+  @Type(() => OrderOrder)
+  order?: OrderOrder;
 }

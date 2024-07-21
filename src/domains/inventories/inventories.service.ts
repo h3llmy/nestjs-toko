@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { InventoriesRepository } from './inventories.repository';
 import { Inventory } from './entities/inventory.entity';
-import { DeepPartial, SaveOptions } from 'typeorm';
+import { DeepPartial, In, SaveOptions } from 'typeorm';
 import { ITransactionManager } from '@app/common';
 
 @Injectable()
@@ -81,12 +81,13 @@ export class InventoriesService {
    * @return {Promise<Inventory>} A promise that resolves to the updated inventory item.
    */
   async decreesStock(
-    id: string,
+    id: string | string[],
     quantity: number,
     option?: ITransactionManager,
   ): Promise<Inventory> {
+    const findQuery = Array.isArray(id) ? In(id) : id;
     return this.inventoriesRepository.updateDecrement(
-      { id },
+      { id: findQuery },
       { quantity },
       option,
     );

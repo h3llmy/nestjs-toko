@@ -4,6 +4,7 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
@@ -21,7 +22,7 @@ export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @OneToMany(() => User, (user) => user.order)
+  @ManyToOne(() => User, (user) => user.order)
   user: User;
 
   @Column({

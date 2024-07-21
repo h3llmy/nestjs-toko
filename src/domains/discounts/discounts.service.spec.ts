@@ -132,6 +132,7 @@ describe('DiscountsService', () => {
       discountsRepository.findPagination.mockResolvedValue(
         mockDiscountPagination,
       );
+
       const discounts = await discountService.findAllPaginate(paginationOption);
       expect(discounts).toEqual(mockDiscountPagination);
       expect(discountsRepository.findPagination).toHaveBeenCalledWith({

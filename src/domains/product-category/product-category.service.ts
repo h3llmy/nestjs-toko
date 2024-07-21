@@ -41,7 +41,7 @@ export class ProductCategoryService {
 
     if (search) {
       query.where = {
-        name: ILike(search),
+        name: ILike(`%${search}%`),
       };
     }
     return this.productCategoryRepository.findPagination(query);

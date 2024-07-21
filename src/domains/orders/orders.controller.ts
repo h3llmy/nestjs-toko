@@ -4,15 +4,22 @@ import {
   Post,
   Body,
   Param,
-  Delete,
   ParseUUIDPipe,
+  Query,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { Auth, Permission } from '@app/common';
+import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Auth,
+  BasicSuccessSchema,
+  IPaginationResponse,
+  Permission,
+} from '@app/common';
 import { Role, User } from '../users/entities/user.entity';
-import { PaymentCheckDto } from '@app/payment-gateway';
+import { PaymentCheckDto, PaymentOrderResponseDto } from '@app/payment-gateway';
+import { PaginationOrderDto } from './dto/pagination-order.dto';
+import { Order } from './entities/order.entity';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -22,29 +29,43 @@ export class OrdersController {
   @Post()
   @Permission(Role.USER)
   @ApiBearerAuth()
-  create(@Body() createOrderDto: CreateOrderDto, @Auth() user: User) {
+  @ApiCreatedResponse({
+    description: 'The order has been successfully created',
+    type: PaymentOrderResponseDto,
+  })
+  create(
+    @Body() createOrderDto: CreateOrderDto,
+    @Auth() user: User,
+  ): Promise<PaymentOrderResponseDto> {
     return this.ordersService.create(createOrderDto, user);
   }
 
   @Post('notification')
-  async notification(@Body() notificationDto: PaymentCheckDto) {
+  async notification(
+    @Body() notificationDto: PaymentCheckDto,
+  ): Promise<BasicSuccessSchema> {
     await this.ordersService.notification(notificationDto);
 
     return { message: 'success' };
   }
 
   @Get()
-  findAll() {
-    return this.ordersService.findAll();
+  @Permission('Authorize')
+  @ApiBearerAuth()
+  findPagination(
+    @Query() findQuery: PaginationOrderDto,
+    @Auth() user: User,
+  ): Promise<IPaginationResponse<Order>> {
+    return this.ordersService.findPagination(findQuery, user);
   }
 
   @Get(':id')
-  findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.ordersService.findOne(id);
-  }
-
-  @Delete(':id')
-  remove(@Param('id', new ParseUUIDPipe()) id: string) {
-    return this.ordersService.remove(id);
+  @Permission('Authorize')
+  @ApiBearerAuth()
+  findOne(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Auth() user: User,
+  ): Promise<Order> {
+    return this.ordersService.findOne(id, user);
   }
 }

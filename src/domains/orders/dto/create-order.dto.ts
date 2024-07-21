@@ -14,6 +14,7 @@ class ProductOrder {
   @ApiProperty({
     type: 'string',
     description: 'List of product ids',
+    example: 'fd38a02d-0433-4bc6-860e-4d2ab24751c8',
   })
   @IsString()
   @IsNotEmpty()
@@ -23,6 +24,7 @@ class ProductOrder {
   @ApiProperty({
     type: 'number',
     description: 'Quantity of products',
+    example: 1,
   })
   @IsNotEmpty()
   @IsNumber()
@@ -32,6 +34,7 @@ class ProductOrder {
   @ApiProperty({
     type: 'string',
     description: 'Discount id',
+    example: 'fd38a02d-0433-4bc6-860e-4d2ab24751c8',
   })
   @IsOptional()
   @IsString()

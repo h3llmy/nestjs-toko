@@ -1,9 +1,13 @@
-import { Injectable, ServiceUnavailableException } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
+import {
+  Inject,
+  Injectable,
+  ServiceUnavailableException,
+} from '@nestjs/common';
 import midtrans from 'midtrans-client';
 import { CreatePaymentTransaction } from './dto/create-payment-transaction.dto';
 import { PaymentOrderResponseDto } from './dto/payment-order-response.dto';
 import { PaymentCheckDto } from './dto/payment-check.dto';
+import { PAYMENT_GATEWAY_OPTIONS } from './payment-gateway.constant';
 
 @Injectable()
 export class PaymentGatewayService {
@@ -14,14 +18,11 @@ export class PaymentGatewayService {
    *
    * @param {ConfigService} configService - The configuration service used to retrieve environment variables.
    */
-  constructor(private readonly configService: ConfigService) {
-    this.client = new midtrans.Snap({
-      isProduction:
-        this.configService.getOrThrow<string>('NODE_ENV', 'development') ===
-        'production',
-      serverKey: this.configService.getOrThrow<string>('MIDTRANS_SERVER_KEY'),
-      clientKey: this.configService.getOrThrow<string>('MIDTRANS_CLIENT_KEY'),
-    });
+  constructor(
+    @Inject(PAYMENT_GATEWAY_OPTIONS)
+    private readonly options: midtrans.SnapOptions,
+  ) {
+    this.client = new midtrans.Snap(options);
   }
 
   /**
@@ -52,6 +53,7 @@ export class PaymentGatewayService {
    * @param {PaymentCheckDto} payload - description of the payload parameter
    * @return {Promise<any>} A promise that resolves to the transaction status
    */
+  // TODO: add response type
   async paymentCheck(payload: PaymentCheckDto): Promise<any> {
     try {
       return await this.client.transaction.notification(payload);

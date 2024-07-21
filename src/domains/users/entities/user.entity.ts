@@ -5,7 +5,7 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
-  ManyToOne,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -33,7 +33,7 @@ export class User {
   @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
 
-  @ManyToOne(() => Order, (order) => order.user)
+  @OneToMany(() => Order, (order) => order.user)
   order?: Order;
 
   @Column({ nullable: true, type: 'bigint' })

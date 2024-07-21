@@ -41,7 +41,7 @@ export class Discount {
   @JoinTable({
     name: 'ProductsDiscounts',
   })
-  products: Product[];
+  products?: Product[];
 
   @OneToMany(() => OrderDetails, (orderDetails) => orderDetails.discount)
   orderDetails?: OrderDetails;
@@ -52,6 +52,6 @@ export class Discount {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({ type: 'timestamp' })
   deletedAt?: Date;
 }

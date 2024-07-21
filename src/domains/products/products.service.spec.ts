@@ -203,6 +203,14 @@ describe('ProductsService', () => {
     });
   });
 
+  describe('save', () => {
+    it('should save product', async () => {
+      productsRepository.saveEntity.mockResolvedValueOnce(mockProduct);
+      const result = await service.save(mockProduct);
+      expect(result).toEqual(mockProduct);
+    });
+  });
+
   describe('findMany', () => {
     it('should get list products', async () => {
       productsRepository.find.mockResolvedValue([mockProduct]);

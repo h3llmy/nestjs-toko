@@ -11,7 +11,7 @@ import {
 import { Type } from 'class-transformer';
 import { SortDirection } from '@app/common';
 
-class UserOrder {
+export class UserOrder {
   @ApiPropertyOptional({
     name: 'order[username]',
     enum: SortDirection,

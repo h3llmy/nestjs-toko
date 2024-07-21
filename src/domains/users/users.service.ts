@@ -42,8 +42,8 @@ export class UsersService {
     };
     if (search) {
       query.where = {
-        username: ILike(search),
-        email: ILike(search),
+        username: ILike(`%${search}%`),
+        email: ILike(`%${search}%`),
       };
     }
 

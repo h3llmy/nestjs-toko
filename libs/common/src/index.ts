@@ -4,6 +4,7 @@ export * from './decorator/user.decorator';
 export * from './decorator/permissions.decorator';
 
 export * from './decorator/validator/isMatch.decorator';
+export * from './decorator/validator/toBoolean.decorator';
 
 export * from './errorHandler/httpErrorHandler';
 export * from './errorHandler/validationErrorHandler';
