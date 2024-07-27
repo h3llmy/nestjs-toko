@@ -84,3 +84,7 @@ $ docker compose up -d
 ```
 
 This documentation provides an overview of the features, packages, tech stack, and instructions for installation, running, and testing the Nest Js E-commerce application.
+
+## License
+
+[MIT](LICENSE)
