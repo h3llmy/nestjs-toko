@@ -26,7 +26,7 @@
 
 ## Documentation
 
-- [swagger](http://localhost:8000/api/docs)
+- [swagger](http://localhost:5000/api/docs)
 
 ## Tech Stack
 
