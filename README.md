@@ -26,7 +26,8 @@
 
 ## Documentation
 
-- [swagger](http://localhost:5000/api/docs)
+- [swagger](http://localhost:5000/api/docs) you can access the documentation locally when you running the app
+- [ERD (Entity Relationship Diagram)](https://dbdiagram.io/d/e-commerce-6688b9169939893dae2fc1bc) database schema on db diagram
 
 ## Tech Stack
 
