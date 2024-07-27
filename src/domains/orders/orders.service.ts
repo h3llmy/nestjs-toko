@@ -21,6 +21,7 @@ import {
   PaymentCheckDto,
   PaymentGatewayService,
   PaymentOrderResponseDto,
+  TransactionStatus,
 } from '@app/payment-gateway';
 import { Order, OrderStatus } from './entities/order.entity';
 import { Product } from '../products/entities/product.entity';
@@ -217,56 +218,55 @@ export class OrdersService {
    * @param {PaymentCheckDto} payload - The payment payload to process
    * @return {Promise<void>} A promise that resolves when the notification process is completed
    */
-  // TODO: add test
   async notification(payload: PaymentCheckDto): Promise<void> {
-    const paymentStatus =
+    const paymentStatus: PaymentCheckDto =
       await this.paymentGatewayService.paymentCheck(payload);
 
     const transaction = this.dataSource.createQueryRunner();
     await transaction.startTransaction();
 
-    const order = await this.orderRepository.findOne({
-      where: { id: paymentStatus.order_id },
-      relations: {
-        orderDetails: {
-          product: true,
-        },
-      },
-    });
-
-    if (!order) {
-      throw new NotFoundException('Order not found');
-    }
-
-    let orderStatus: OrderStatus;
-
     try {
+      const order = await this.orderRepository.findOne({
+        where: { id: paymentStatus.order_id },
+        relations: {
+          orderDetails: {
+            product: true,
+          },
+        },
+      });
+
+      if (!order) {
+        throw new NotFoundException('Order not found');
+      }
+
+      let orderStatus: OrderStatus;
+
       switch (paymentStatus.transaction_status) {
         // Success
-        case 'capture':
-        case 'settlement':
+        case TransactionStatus.CAPTURE:
+        case TransactionStatus.SETTLEMENT:
           orderStatus = OrderStatus.PAID;
           break;
 
         // Failure
-        case 'deny':
-        case 'cancel':
-        case 'expire':
-        case 'failure':
+        case TransactionStatus.DENY:
+        case TransactionStatus.CANCEL:
+        case TransactionStatus.EXPIRE:
+        case TransactionStatus.FAILURE:
           orderStatus = OrderStatus.FAILED;
           await this.increaseInventory(order, transaction);
           break;
 
         // Pending
-        case 'pending':
+        case TransactionStatus.PENDING:
           orderStatus = OrderStatus.PENDING;
           break;
 
         // Refund
-        case 'refund':
-        case 'partial_refund':
-        case 'chargeback':
-        case 'partial_chargeback':
+        case TransactionStatus.REFUND:
+        case TransactionStatus.PARTIAL_REFUND:
+        case TransactionStatus.CHARGEBACK:
+        case TransactionStatus.PARTIAL_CHARGEBACK:
           orderStatus = OrderStatus.REFUND;
           await this.increaseInventory(order, transaction);
           break;
@@ -274,11 +274,13 @@ export class OrdersService {
         default:
           throw new Error('Invalid transaction status');
       }
+
       await this.orderRepository.updateEntity(
         { id: paymentStatus.order_id },
         { status: orderStatus },
         { session: transaction },
       );
+
       await transaction.commitTransaction();
     } catch (error) {
       await transaction.rollbackTransaction();
