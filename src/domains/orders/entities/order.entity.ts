@@ -23,7 +23,7 @@ export class Order {
   id: string;
 
   @ManyToOne(() => User, (user) => user.order)
-  user: User;
+  user?: User;
 
   @Column({
     type: 'enum',

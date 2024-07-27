@@ -1,0 +1,31 @@
+{
+  "error": {
+    "orders": [
+      {
+        "productId": [
+          "productId must be a UUID",
+          "productId should not be empty",
+          "productId must be a string"
+        ],
+        "quantity": [
+          "quantity must not be less than 1",
+          "quantity must be a number conforming to the specified constraints",
+          "quantity should not be empty"
+        ]
+      },
+      {
+        "productId": [
+          "productId must be a UUID",
+          "productId should not be empty",
+          "productId must be a string"
+        ],
+        "quantity": [
+          "quantity must not be less than 1",
+          "quantity must be a number conforming to the specified constraints",
+          "quantity should not be empty"
+        ]
+      }
+    ]
+  },
+  "message": "Unprocessable Entity Exception"
+}

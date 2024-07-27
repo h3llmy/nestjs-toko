@@ -15,7 +15,9 @@ import { DataSource, DeepPartial, QueryRunner } from 'typeorm';
 import { ProductCategory } from '../product-category/entities/product-category.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { OrderDetails } from './entities/orderDetails.entity';
-import { OrderStatus } from './entities/order.entity';
+import { Order, OrderStatus } from './entities/order.entity';
+import { IPaginationResponse } from '@app/common';
+import { PaginationOrderDto } from './dto/pagination-order.dto';
 
 describe('OrdersService', () => {
   let orderService: OrdersService;
@@ -27,7 +29,7 @@ describe('OrdersService', () => {
   let queryRunner: jest.Mocked<QueryRunner>;
 
   const paymentOrderResponseDto: PaymentOrderResponseDto = {
-    redirect_url: 'https://example.com',
+    redirect_url: 'https://example.com/token',
     token: 'token',
   };
 
@@ -129,6 +131,23 @@ describe('OrdersService', () => {
       product: mockProduct[1],
     },
   ];
+
+  const mockOrder: Order = {
+    id: '0d8e1e88-6c15-4aa8-ab33-2091ce62a27a',
+    status: OrderStatus.PAID,
+    totalAmount: 1800000,
+    createdAt: new Date(),
+    deletedAt: null,
+    orderDetails: [mockSavedOrderItems[0]],
+  };
+
+  const mockOrderPagination: IPaginationResponse<Order> = {
+    limit: 10,
+    page: 1,
+    totalData: 1,
+    totalPages: 1,
+    data: [mockOrder],
+  };
 
   beforeEach(() => {
     const { unit, unitRef } = TestBed.create(OrdersService).compile();
@@ -433,6 +452,49 @@ describe('OrdersService', () => {
       expect(orderDetailsRepository.createEntity).not.toHaveBeenCalled();
       expect(orderRepository.createEntity).not.toHaveBeenCalled();
       expect(paymentGatewayService.createTransaction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('findPagination', () => {
+    it('should find pagination', async () => {
+      const findQuery: PaginationOrderDto = {
+        page: 1,
+        limit: 10,
+      };
+
+      orderRepository.findPagination.mockResolvedValue(mockOrderPagination);
+
+      expect(await orderService.findPagination(findQuery, user)).toEqual(
+        mockOrderPagination,
+      );
+      expect(orderRepository.findPagination).toHaveBeenCalledWith({
+        ...findQuery,
+        relations: { orderDetails: true },
+        where: [
+          {
+            user: {
+              id: user.id,
+            },
+          },
+        ],
+      });
+    });
+  });
+
+  describe('findOne', () => {
+    it('should find one', async () => {
+      orderRepository.findOne.mockResolvedValue(mockOrder);
+      expect(await orderService.findOne('1', user)).toEqual(mockOrder);
+
+      expect(orderRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          id: '1',
+          user: {
+            id: user.id,
+          },
+        },
+        relations: { orderDetails: true },
+      });
     });
   });
 });

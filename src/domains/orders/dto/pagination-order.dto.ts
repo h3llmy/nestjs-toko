@@ -64,6 +64,7 @@ export class PaginationOrderDto {
   @ApiPropertyOptional({
     description: 'status filter',
     required: false,
+    enum: OrderStatus,
   })
   @IsOptional()
   @IsString()

@@ -217,6 +217,7 @@ export class OrdersService {
    * @param {PaymentCheckDto} payload - The payment payload to process
    * @return {Promise<void>} A promise that resolves when the notification process is completed
    */
+  // TODO: add test
   async notification(payload: PaymentCheckDto): Promise<void> {
     const paymentStatus =
       await this.paymentGatewayService.paymentCheck(payload);
@@ -321,6 +322,9 @@ export class OrdersService {
         status,
       });
     }
+    query.relations = {
+      orderDetails: true,
+    };
     return this.orderRepository.findPagination(query);
   }
 
