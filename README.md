@@ -24,6 +24,10 @@
 - [bcrypt](https://github.com/kelektiv/node.bcrypt.js): Library to help hash passwords.
 - [ioredis](https://github.com/redis/ioredis): A robust, full-featured Redis client for Node.js.
 
+## Documentation
+
+- [swagger](http://localhost:5000/api/docs)
+
 ## Tech Stack
 
 - [PostgreSQL](https://www.postgresql.org/): A powerful, open-source object-relational database system.

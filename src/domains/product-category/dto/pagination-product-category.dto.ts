@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 
-class ProductCategoryOrder {
+export class ProductCategoryOrder {
   @ApiPropertyOptional({
     name: 'order[name]',
     enum: SortDirection,

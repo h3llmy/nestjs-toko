@@ -8,6 +8,7 @@ import {
   Repository,
   SaveOptions,
   UpdateResult,
+  getMetadataArgsStorage,
 } from 'typeorm';
 import {
   IPaginationPayload,
@@ -24,7 +25,10 @@ export class DefaultRepository<
    * @return {string} The name of the table.
    */
   getTableName(): string {
-    return (this.target as NewableFunction).name;
+    const metadata = getMetadataArgsStorage().tables.find(
+      (table) => table.target === this.target,
+    );
+    return metadata ? metadata.name : '';
   }
 
   /**
@@ -57,6 +61,21 @@ export class DefaultRepository<
     };
   }
 
+  createEntity(
+    entity: DeepPartial<Entity> | DeepPartial<Entity>[],
+    options?: SaveOptions & ITransactionManager,
+  ): Promise<DeepPartial<Entity>> {
+    const query: EntityManager = options?.session
+      ? options.session.manager
+      : this.manager;
+    delete options?.session;
+    const createTarget = query.create(
+      this.target,
+      entity as DeepPartial<Entity>,
+    );
+    return query.save(this.target, createTarget, options);
+  }
+
   /**
    * Saves an entity with optional save options.
    *
@@ -65,14 +84,14 @@ export class DefaultRepository<
    * @return {Promise<DeepPartial<Entity>>} A promise that resolves with the saved entity.
    */
   saveEntity(
-    entity: DeepPartial<Entity>,
+    entity: DeepPartial<Entity> | DeepPartial<Entity>[],
     options?: SaveOptions & ITransactionManager,
   ): Promise<DeepPartial<Entity>> {
     const query: EntityManager = options?.session
       ? options.session.manager
       : this.manager;
     delete options?.session;
-    return query.save(this.target, entity, options);
+    return query.save(this.target, entity as DeepPartial<Entity>, options);
   }
 
   /**

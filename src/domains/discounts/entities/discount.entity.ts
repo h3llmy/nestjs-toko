@@ -1,3 +1,4 @@
+import { OrderDetails } from '../../orders/entities/orderDetails.entity';
 import { Product } from '../../products/entities/product.entity';
 import {
   Column,
@@ -7,6 +8,7 @@ import {
   Index,
   JoinTable,
   ManyToMany,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -39,7 +41,10 @@ export class Discount {
   @JoinTable({
     name: 'ProductsDiscounts',
   })
-  products: Product[];
+  products?: Product[];
+
+  @OneToMany(() => OrderDetails, (orderDetails) => orderDetails.discount)
+  orderDetails?: OrderDetails;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;
@@ -47,6 +52,6 @@ export class Discount {
   @UpdateDateColumn({ type: 'timestamp' })
   updatedAt: Date;
 
-  @DeleteDateColumn()
-  deletedAt: Date;
+  @DeleteDateColumn({ type: 'timestamp' })
+  deletedAt?: Date;
 }

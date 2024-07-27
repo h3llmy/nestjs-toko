@@ -19,7 +19,7 @@ describe('InventoriesController', () => {
     createdAt: new Date(),
   };
 
-  const inventortorysMock: Inventory = {
+  const inventoriesMock: Inventory = {
     id: '1',
     product: productMock,
     quantity: 10,
@@ -45,9 +45,9 @@ describe('InventoriesController', () => {
       expect(controller.findOne).toBeDefined();
     });
     it('should get a inventory by id', async () => {
-      inventoriesService.findOne.mockResolvedValue(inventortorysMock);
+      inventoriesService.findOne.mockResolvedValue(inventoriesMock);
       const result = await controller.findOne('1');
-      expect(result).toEqual(inventortorysMock);
+      expect(result).toEqual(inventoriesMock);
       expect(inventoriesService.findOne).toHaveBeenCalledWith('1');
     });
     it('should throw NotFoundException when inventory not found', async () => {
@@ -62,9 +62,9 @@ describe('InventoriesController', () => {
       expect(controller.update).toBeDefined();
     });
     it('should update inventory', async () => {
-      inventoriesService.update.mockResolvedValue(inventortorysMock);
+      inventoriesService.update.mockResolvedValue(inventoriesMock);
       expect(await controller.update('1', { quantity: 100 })).toEqual(
-        inventortorysMock,
+        inventoriesMock,
       );
     });
     it('should throw NotFoundException when inventory not found', async () => {
@@ -80,9 +80,9 @@ describe('InventoriesController', () => {
       expect(controller.increaseStock).toBeDefined();
     });
     it('should increase inventory stock', async () => {
-      inventoriesService.addStock.mockResolvedValue(inventortorysMock);
+      inventoriesService.addStock.mockResolvedValue(inventoriesMock);
       expect(await controller.increaseStock('1', { quantity: 100 })).toEqual(
-        inventortorysMock,
+        inventoriesMock,
       );
     });
     it('should throw NotFoundException when inventory not found', async () => {

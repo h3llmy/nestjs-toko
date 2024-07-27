@@ -8,6 +8,7 @@ import {
   Delete,
   NotFoundException,
   Query,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ProductCategoryService } from './product-category.service';
 import { CreateProductCategoryDto } from './dto/create-product-category.dto';
@@ -104,7 +105,9 @@ export class ProductCategoryController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  async findOne(@Param('id') id: string): Promise<ProductCategory> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<ProductCategory> {
     const result = await this.productCategoryService.findOne(id);
     if (!result)
       throw new NotFoundException(`Product Category with id ${id} not found`);
@@ -138,7 +141,7 @@ export class ProductCategoryController {
     type: validationErrorSchemaFactory(ProductCategoryErrorValidationDto),
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateProductCategoryDto: UpdateProductCategoryDto,
   ): Promise<ProductCategory> {
     const result = await this.productCategoryService.update(
@@ -172,7 +175,9 @@ export class ProductCategoryController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  async remove(@Param('id') id: string): Promise<BasicSuccessSchema> {
+  async remove(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<BasicSuccessSchema> {
     const result = await this.productCategoryService.remove(id);
     if (!result) {
       throw new NotFoundException(`Product Category with id ${id} not found`);

@@ -3,13 +3,19 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import { ProductsRepository } from './products.repository';
 import { PaginationProductDto } from './dto/pagination-product.dto';
-import { IPaginationPayload, IPaginationResponse } from '@app/common';
+import {
+  IPaginationPayload,
+  IPaginationResponse,
+  ITransactionManager,
+} from '@app/common';
 import { Product } from './entities/product.entity';
 import {
   DataSource,
+  DeepPartial,
   FindManyOptions,
   FindOptionsRelations,
   ILike,
+  SaveOptions,
   UpdateResult,
 } from 'typeorm';
 import { InventoriesService } from '../inventories/inventories.service';
@@ -24,6 +30,15 @@ export class ProductsService {
     private readonly dataSource: DataSource,
   ) {}
 
+  getProductWithDiscounts(
+    productDiscounts: {
+      productId: string;
+      discountId?: string;
+    }[],
+  ) {
+    return this.productRepository.getProductsWithDiscount(productDiscounts);
+  }
+
   /**
    * Save a new product using the provided data.
    *
@@ -31,8 +46,8 @@ export class ProductsService {
    * @return {Promise<Product>} The saved product.
    */
   async create(createProductDto: CreateProductDto): Promise<Product> {
-    const queryRunner = this.dataSource.createQueryRunner();
-    await queryRunner.startTransaction();
+    const transaction = this.dataSource.createQueryRunner();
+    await transaction.startTransaction();
 
     try {
       const productCategoryCheck = await this.productsCategoryService.findOne(
@@ -44,7 +59,7 @@ export class ProductsService {
 
       const product = await this.productRepository.saveEntity(
         { ...createProductDto, category: productCategoryCheck },
-        { session: queryRunner },
+        { session: transaction },
       );
 
       await this.inventoryService.saveEntity(
@@ -52,20 +67,38 @@ export class ProductsService {
           quantity: createProductDto.quantity,
           product: product,
         },
-        { session: queryRunner },
+        { session: transaction },
       );
 
-      await queryRunner.commitTransaction();
+      await transaction.commitTransaction();
+
       return await this.productRepository.findOne({
         where: { id: product.id },
-        relations: ['inventory', 'category'],
+        relations: {
+          inventory: true,
+          category: true,
+        },
       });
     } catch (error) {
-      await queryRunner.rollbackTransaction();
+      await transaction.rollbackTransaction();
       throw error;
     } finally {
-      await queryRunner.release();
+      await transaction.release();
     }
+  }
+
+  /**
+   * Saves the given entity or array of entities to the database.
+   *
+   * @param {DeepPartial<Product> | DeepPartial<Product>[]} entity - The entity or array of entities to save.
+   * @param {SaveOptions & ITransactionManager} [options] - Optional save options and transaction manager.
+   * @return {Promise<DeepPartial<Product> | DeepPartial<Product>[]>} A promise that resolves to the saved entity or array of entities.
+   */
+  save(
+    entity: DeepPartial<Product> | DeepPartial<Product>[],
+    options?: SaveOptions & ITransactionManager,
+  ): Promise<DeepPartial<Product> | DeepPartial<Product>[]> {
+    return this.productRepository.saveEntity(entity, options);
   }
 
   /**
@@ -74,11 +107,8 @@ export class ProductsService {
    * @param {any} findQuery - The query to find multiple products.
    * @return {Promise<Product[]>} A promise that resolves to an array of products.
    */
-  findMany(
-    findQuery?: FindManyOptions<Product>,
-    relations?: FindOptionsRelations<Product>,
-  ): Promise<Product[]> {
-    return this.productRepository.find({ ...findQuery, relations });
+  findMany(findQuery?: FindManyOptions<Product>): Promise<Product[]> {
+    return this.productRepository.find(findQuery);
   }
 
   /**
@@ -96,7 +126,7 @@ export class ProductsService {
     };
     if (search) {
       query.where = {
-        name: ILike(search),
+        name: ILike(`%${search}%`),
       };
     }
 

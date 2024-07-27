@@ -7,11 +7,13 @@ import {
   Entity,
   ManyToMany,
   ManyToOne,
+  OneToMany,
   OneToOne,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Discount } from '../../discounts/entities/discount.entity';
+import { OrderDetails } from '../../orders/entities/orderDetails.entity';
 
 @Entity('Products')
 export class Product {
@@ -39,6 +41,9 @@ export class Product {
 
   @ManyToMany(() => Discount, (discount) => discount.products)
   discounts?: Discount[];
+
+  @OneToMany(() => OrderDetails, (orderDetails) => orderDetails.product)
+  orderDetails?: OrderDetails;
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

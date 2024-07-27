@@ -7,6 +7,8 @@ import {
   FindOptionsRelations,
   ILike,
   In,
+  LessThanOrEqual,
+  MoreThanOrEqual,
   UpdateResult,
 } from 'typeorm';
 import { IPaginationPayload, IPaginationResponse } from '@app/common';
@@ -51,24 +53,36 @@ export class DiscountsService {
    * @param {PaginationDiscountDto} findQuery - The search query for pagination.
    * @return {Promise<IPaginationResponse<Discount>>} A promise that resolves to the paginated response containing the discounts.
    */
-  findAllPaginate(
+  async findAllPaginate(
     findQuery: PaginationDiscountDto,
   ): Promise<IPaginationResponse<Discount>> {
-    const { search, ...paginationQuery } = findQuery;
+    const { search, isActive, ...paginationQuery } = findQuery;
+    const currentDate = Math.round(Date.now() / 1000);
+
     const query: IPaginationPayload<Discount> = {
       ...paginationQuery,
-    };
-    if (search) {
-      query.where = {
-        name: ILike(search),
-      };
-    }
-    query.relations = {
-      products: {
-        category: true,
-        inventory: true,
+      relations: {
+        products: {
+          category: true,
+          inventory: true,
+        },
       },
     };
+
+    if (isActive) {
+      query.where = {
+        startDate: LessThanOrEqual(currentDate),
+        endDate: MoreThanOrEqual(currentDate),
+      };
+    }
+
+    if (search) {
+      query.where = {
+        ...query.where,
+        name: ILike(`%${search}%`),
+      };
+    }
+
     return this.discountsRepository.findPagination(query);
   }
 

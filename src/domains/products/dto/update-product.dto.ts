@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsString, MaxLength } from 'class-validator';
+import {
+  IsNotEmpty,
+  IsNumber,
+  IsString,
+  IsUUID,
+  MaxLength,
+} from 'class-validator';
 
 export class UpdateProductDto {
   @ApiProperty({
@@ -33,5 +39,6 @@ export class UpdateProductDto {
   })
   @IsString()
   @IsNotEmpty()
+  @IsUUID('4')
   categoryId: string;
 }

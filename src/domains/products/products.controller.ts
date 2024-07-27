@@ -9,6 +9,7 @@ import {
   Query,
   UseInterceptors,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { ProductsService } from './products.service';
 import { CreateProductDto } from './dto/create-product.dto';
@@ -104,7 +105,9 @@ export class ProductsController {
     description: 'Product not found',
     type: BasicErrorSchema,
   })
-  async findOne(@Param('id') id: string): Promise<Product> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<Product> {
     const result = await this.productsService.findOne(id, {
       inventory: true,
     });
@@ -138,7 +141,7 @@ export class ProductsController {
     type: validationErrorSchemaFactory(ProductErrorValidationDto),
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateProductDto: UpdateProductDto,
   ): Promise<Product> {
     const result = await this.productsService.update(id, updateProductDto);
@@ -167,7 +170,9 @@ export class ProductsController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  async remove(@Param('id') id: string): Promise<BasicSuccessSchema> {
+  async remove(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<BasicSuccessSchema> {
     await this.productsService.remove(id);
     return { message: `user with id ${id} has been deleted` };
   }

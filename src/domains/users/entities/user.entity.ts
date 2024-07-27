@@ -1,9 +1,11 @@
+import { Order } from '../../orders/entities/order.entity';
 import {
   Column,
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
   Index,
+  OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
@@ -28,8 +30,11 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @Column({ enum: Role, default: Role.USER })
+  @Column({ type: 'enum', enum: Role, default: Role.USER })
   role: Role;
+
+  @OneToMany(() => Order, (order) => order.user)
+  order?: Order;
 
   @Column({ nullable: true, type: 'bigint' })
   emailVerifiedAt: number;

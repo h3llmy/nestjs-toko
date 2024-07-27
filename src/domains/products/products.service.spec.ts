@@ -128,6 +128,13 @@ describe('ProductsService', () => {
         },
       );
       expect(productCategoryService.findOne).toHaveBeenCalledWith('1');
+      expect(productsRepository.findOne).toHaveBeenCalledWith({
+        where: { id: '1' },
+        relations: {
+          inventory: true,
+          category: true,
+        },
+      });
       expect(inventoryServices.saveEntity).toHaveBeenCalledWith(
         {
           quantity: mockCreateProduct.quantity,
@@ -193,6 +200,14 @@ describe('ProductsService', () => {
       expect(productCategoryService.findOne).toHaveBeenCalledWith('1');
       expect(queryRunner.rollbackTransaction).toHaveBeenCalledTimes(1);
       expect(queryRunner.release).toHaveBeenCalledTimes(1);
+    });
+  });
+
+  describe('save', () => {
+    it('should save product', async () => {
+      productsRepository.saveEntity.mockResolvedValueOnce(mockProduct);
+      const result = await service.save(mockProduct);
+      expect(result).toEqual(mockProduct);
     });
   });
 

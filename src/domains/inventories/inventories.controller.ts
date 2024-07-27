@@ -5,6 +5,7 @@ import {
   Patch,
   Param,
   NotFoundException,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { InventoriesService } from './inventories.service';
 import { UpdateInventoryDto } from './dto/update-inventory.dto';
@@ -56,7 +57,9 @@ export class InventoriesController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  async findOne(@Param('id') id: string): Promise<Inventory> {
+  async findOne(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<Inventory> {
     const inventory = await this.inventoriesService.findOne(id);
     if (!inventory)
       throw new NotFoundException(`Inventory with id ${id} not found`);
@@ -89,7 +92,7 @@ export class InventoriesController {
     type: BasicErrorSchema,
   })
   async update(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateInventoryDto: UpdateInventoryDto,
   ): Promise<Inventory> {
     const result = await this.inventoriesService.update(id, updateInventoryDto);
@@ -124,7 +127,7 @@ export class InventoriesController {
     type: BasicErrorSchema,
   })
   async increaseStock(
-    @Param('id') id: string,
+    @Param('id', new ParseUUIDPipe()) id: string,
     @Body() increaseStockDto: IncreaseStockDto,
   ): Promise<Inventory> {
     const updatedStock = await this.inventoriesService.addStock(

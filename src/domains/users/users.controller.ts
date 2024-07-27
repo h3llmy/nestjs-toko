@@ -9,6 +9,7 @@ import {
   UseInterceptors,
   BadRequestException,
   Patch,
+  ParseUUIDPipe,
 } from '@nestjs/common';
 import { UsersService } from './users.service';
 import { UpdateUserDto } from './dto/update-user.dto';
@@ -114,7 +115,7 @@ export class UsersController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  async findOne(@Param('id') id: string): Promise<User> {
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<User> {
     const user = await this.usersService.findOne(id);
     if (!user) throw new NotFoundException(`User with id ${id} not found`);
     return user;
@@ -171,7 +172,9 @@ export class UsersController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  async delete(@Param('id') id: string): Promise<BasicSuccessSchema> {
+  async delete(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<BasicSuccessSchema> {
     await this.usersService.deleteById(id);
 
     return { message: `user with id ${id} has been deleted` };

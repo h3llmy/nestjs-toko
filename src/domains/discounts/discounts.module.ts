@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { Discount } from './entities/discount.entity';
 import { ProductsModule } from '../products/products.module';
 import { DiscountsRepository } from './discounts.repository';
+import { DiscountSubscribers } from './entities/discount.subscriber';
 
 @Module({
   imports: [
@@ -13,6 +14,7 @@ import { DiscountsRepository } from './discounts.repository';
     ProductsModule,
   ],
   controllers: [DiscountsController],
-  providers: [DiscountsService, DiscountsRepository],
+  providers: [DiscountsService, DiscountsRepository, DiscountSubscribers],
+  exports: [DiscountsService],
 })
 export class DiscountsModule {}

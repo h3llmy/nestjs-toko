@@ -1,9 +1,16 @@
-import { SortDirection } from '@app/common';
+import { SortDirection, ToBoolean } from '@app/common';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
-import { IsEnum, IsNumber, IsOptional, ValidateNested } from 'class-validator';
+import {
+  IsBoolean,
+  IsEnum,
+  IsNumber,
+  IsOptional,
+  IsString,
+  ValidateNested,
+} from 'class-validator';
 
-class DiscountCategoryOrder {
+export class DiscountCategoryOrder {
   @ApiPropertyOptional({
     name: 'order[name]',
     enum: SortDirection,
@@ -91,7 +98,19 @@ export class PaginationDiscountDto {
     required: false,
   })
   @IsOptional()
+  @IsString()
   search?: string;
+
+  @ApiPropertyOptional({
+    name: 'isActive',
+    type: Boolean,
+    description: 'Filter by active status',
+    required: false,
+  })
+  @IsOptional()
+  @IsBoolean()
+  @ToBoolean()
+  isActive?: boolean;
 
   @ApiPropertyOptional({
     name: 'order',
