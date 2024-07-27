@@ -1,9 +1,15 @@
 {
   "name": "nestjs_e-commerce_api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "simple e-commerce api with nestjs and postgresql",
-  "author": "H3llmy",
-  "private": true,
+  "author": {
+    "name": "H3llmy",
+    "url": "https://github.com/h3llmy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/h3llmy/nestjs-toko"
+  },
   "license": "MIT",
   "scripts": {
     "build": "nest build",
@@ -111,5 +117,20 @@
       "^@app/randomize(|/.*)$": "<rootDir>/libs/randomize/src/$1",
       "^@app/payment-gateway(|/.*)$": "<rootDir>/libs/payment-gateway/src/$1"
     }
-  }
+  },
+  "keywords": [
+    "nestjs",
+    "e-commerce",
+    "api",
+    "type-orm",
+    "nestjs-e-commerce",
+    "nestjs-e-commerce-api",
+    "nestjs-e-commerce-api-authentication",
+    "nestjs-e-commerce-api-product-management",
+    "nestjs-e-commerce-api-order-management",
+    "nestjs-e-commerce-api-payment-gateway",
+    "nestjs-e-commerce-api-discount-management",
+    "nestjs-e-commerce-api-inventory-management",
+    "nestjs-e-commerce-api-transaction-management"
+  ]
 }
