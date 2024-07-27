@@ -14,9 +14,9 @@ export class PaymentGatewayService {
   private client: midtrans.Snap;
 
   /**
-   * Initializes a new instance of the PaymentGatewayService class.
+   * Constructs a new instance of the class.
    *
-   * @param {ConfigService} configService - The configuration service used to retrieve environment variables.
+   * @param {midtrans.SnapOptions} options - The options for the Midtrans Snap client.
    */
   constructor(
     @Inject(PAYMENT_GATEWAY_OPTIONS)
@@ -53,8 +53,7 @@ export class PaymentGatewayService {
    * @param {PaymentCheckDto} payload - description of the payload parameter
    * @return {Promise<any>} A promise that resolves to the transaction status
    */
-  // TODO: add response type
-  async paymentCheck(payload: PaymentCheckDto): Promise<any> {
+  async paymentCheck(payload: PaymentCheckDto): Promise<PaymentCheckDto> {
     try {
       return await this.client.transaction.notification(payload);
     } catch (error) {

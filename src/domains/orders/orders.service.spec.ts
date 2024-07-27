@@ -6,8 +6,11 @@ import { Product } from '../products/entities/product.entity';
 import { Discount } from '../discounts/entities/discount.entity';
 import { ProductsService } from '../products/products.service';
 import {
+  FraudStatus,
+  PaymentCheckDto,
   PaymentGatewayService,
   PaymentOrderResponseDto,
+  TransactionStatus,
 } from '@app/payment-gateway';
 import { OrderRepository } from './order.repository';
 import { OrderDetailsRepository } from './order-details.repository';
@@ -452,6 +455,109 @@ describe('OrdersService', () => {
       expect(orderDetailsRepository.createEntity).not.toHaveBeenCalled();
       expect(orderRepository.createEntity).not.toHaveBeenCalled();
       expect(paymentGatewayService.createTransaction).not.toHaveBeenCalled();
+    });
+  });
+
+  describe('notification', () => {
+    it('should update order status from payment gateway notification', async () => {
+      const notificationDto: PaymentCheckDto = {
+        status_code: '200',
+        transaction_id: '74507653-d8eb-4ced-8975-3b77ec18db26',
+        gross_amount: '360000.00',
+        currency: 'IDR',
+        order_id: '492bb619-ddfd-4ca6-a9ef-4564e8b0b785',
+        payment_type: 'bank_transfer',
+        signature_key:
+          '0ad103e43ff6e84bd44c7c8d1ae6f9010d69f92c68b0e145afb6695e89fb3b683154312aefd5e665ef8b6b36789a69419831b13a23bc93ec80802a6c36fdea51',
+        transaction_status: TransactionStatus.SETTLEMENT,
+        fraud_status: FraudStatus.ACCEPT,
+        status_message: 'Success, transaction is found',
+        merchant_id: 'G444672650',
+        transaction_time: '2024-07-27 20:29:51',
+        settlement_time: '2024-07-27 20:29:56',
+      };
+
+      const mockNotificationOrder: Order = {
+        id: notificationDto.order_id,
+        status: OrderStatus.PAID,
+        totalAmount: 360000,
+        deletedAt: null,
+        createdAt: new Date(),
+      };
+
+      paymentGatewayService.paymentCheck.mockResolvedValue(notificationDto);
+
+      orderRepository.findOne.mockResolvedValue(mockNotificationOrder);
+
+      expect(await orderService.notification(notificationDto)).toBeUndefined();
+      expect(dataSource.createQueryRunner).toHaveBeenCalled();
+      expect(queryRunner.startTransaction).toHaveBeenCalled();
+      expect(paymentGatewayService.paymentCheck).toHaveBeenCalledWith(
+        notificationDto,
+      );
+      expect(orderRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          id: notificationDto.order_id,
+        },
+        relations: {
+          orderDetails: {
+            product: true,
+          },
+        },
+      });
+      expect(orderRepository.updateEntity).toHaveBeenCalledWith(
+        { id: notificationDto.order_id },
+        { status: OrderStatus.PAID },
+        { session: queryRunner },
+      );
+      expect(queryRunner.commitTransaction).toHaveBeenCalled();
+      expect(queryRunner.rollbackTransaction).not.toHaveBeenCalled();
+      expect(queryRunner.release).toHaveBeenCalled();
+    });
+    it('should throw error if order not found', async () => {
+      const notificationDto: PaymentCheckDto = {
+        status_code: '200',
+        transaction_id: '74507653-d8eb-4ced-8975-3b77ec18db26',
+        gross_amount: '360000.00',
+        currency: 'IDR',
+        order_id: '492bb619-ddfd-4ca6-a9ef-4564e8b0b785',
+        payment_type: 'bank_transfer',
+        signature_key:
+          '0ad103e43ff6e84bd44c7c8d1ae6f9010d69f92c68b0e145afb6695e89fb3b683154312aefd5e665ef8b6b36789a69419831b13a23bc93ec80802a6c36fdea51',
+        transaction_status: TransactionStatus.SETTLEMENT,
+        fraud_status: FraudStatus.ACCEPT,
+        status_message: 'Success, transaction is found',
+        merchant_id: 'G444672650',
+        transaction_time: '2024-07-27 20:29:51',
+        settlement_time: '2024-07-27 20:29:56',
+      };
+
+      paymentGatewayService.paymentCheck.mockResolvedValue(notificationDto);
+
+      orderRepository.findOne.mockResolvedValue(null);
+
+      await expect(orderService.notification(notificationDto)).rejects.toThrow(
+        NotFoundException,
+      );
+      expect(dataSource.createQueryRunner).toHaveBeenCalled();
+      expect(queryRunner.startTransaction).toHaveBeenCalled();
+      expect(paymentGatewayService.paymentCheck).toHaveBeenCalledWith(
+        notificationDto,
+      );
+      expect(orderRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          id: notificationDto.order_id,
+        },
+        relations: {
+          orderDetails: {
+            product: true,
+          },
+        },
+      });
+      expect(orderRepository.updateEntity).not.toHaveBeenCalled();
+      expect(queryRunner.commitTransaction).not.toHaveBeenCalled();
+      expect(queryRunner.rollbackTransaction).toHaveBeenCalled();
+      expect(queryRunner.release).toHaveBeenCalled();
     });
   });
 

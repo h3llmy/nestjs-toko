@@ -38,6 +38,7 @@ import { PaginationOrderDto } from './dto/pagination-order.dto';
 import { Order } from './entities/order.entity';
 import { CreateOrderValidationErrorDto } from './dto/create-order-validation-error.dto';
 import { OrderDto } from './dto/order.dto';
+import { OrderNotificationValidationErrorDto } from './dto/order-notification-validator-error.dto';
 
 @ApiTags('orders')
 @Controller('orders')
@@ -89,7 +90,26 @@ export class OrdersController {
     description:
       'this endpoint is for payment gateway to send order status update notification to our server',
   })
-  // TODO: add test
+  @ApiOkResponse({
+    description: 'The order has been successfully created',
+    type: BasicSuccessSchema,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: 'order validation error',
+    type: validationErrorSchemaFactory(OrderNotificationValidationErrorDto),
+  })
+  @ApiNotFoundResponse({
+    description: 'Not found',
+    type: BasicErrorSchema,
+  })
+  @ApiServiceUnavailableResponse({
+    description: 'Service Unavailable',
+    type: BasicErrorSchema,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many requests',
+    type: ErrorMessageSchema,
+  })
   async notification(
     @Body() notificationDto: PaymentCheckDto,
   ): Promise<BasicSuccessSchema> {

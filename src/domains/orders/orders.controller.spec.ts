@@ -3,7 +3,12 @@ import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
 import { Role, User } from '../users/entities/user.entity';
-import { PaymentOrderResponseDto } from '@app/payment-gateway';
+import {
+  FraudStatus,
+  PaymentCheckDto,
+  PaymentOrderResponseDto,
+  TransactionStatus,
+} from '@app/payment-gateway';
 import { Order, OrderStatus } from './entities/order.entity';
 import { OrderDetails } from './entities/orderDetails.entity';
 import { ProductCategory } from '../product-category/entities/product-category.entity';
@@ -135,6 +140,37 @@ describe('OrdersController', () => {
 
       expect(response).toEqual(paymentOrderResponseDto);
       expect(orderService.create).toHaveBeenCalledWith(createOrderDto, user);
+    });
+  });
+
+  describe('notification', () => {
+    it('should be defined', () => {
+      expect(orderController.notification).toBeDefined();
+    });
+
+    it('should get notification', async () => {
+      const notificationDto: PaymentCheckDto = {
+        status_code: '200',
+        transaction_id: '74507653-d8eb-4ced-8975-3b77ec18db26',
+        gross_amount: '360000.00',
+        currency: 'IDR',
+        order_id: '492bb619-ddfd-4ca6-a9ef-4564e8b0b785',
+        payment_type: 'bank_transfer',
+        signature_key:
+          '0ad103e43ff6e84bd44c7c8d1ae6f9010d69f92c68b0e145afb6695e89fb3b683154312aefd5e665ef8b6b36789a69419831b13a23bc93ec80802a6c36fdea51',
+        transaction_status: TransactionStatus.SETTLEMENT,
+        fraud_status: FraudStatus.ACCEPT,
+        status_message: 'Success, transaction is found',
+        merchant_id: 'G444672650',
+        transaction_time: '2024-07-27 20:29:51',
+        settlement_time: '2024-07-27 20:29:56',
+      };
+      orderService.notification.mockResolvedValue();
+      const response = await orderController.notification(notificationDto);
+      expect(orderService.notification).toHaveBeenCalledWith(notificationDto);
+      expect(response).toEqual({
+        message: 'success',
+      });
     });
   });
 
