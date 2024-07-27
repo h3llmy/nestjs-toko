@@ -10,7 +10,7 @@ export class OrderDetails {
   id: string;
 
   @ManyToOne(() => Order, (order) => order.orderDetails)
-  order: Order;
+  order?: Order;
 
   @ManyToOne(() => Product, (product) => product.orderDetails)
   product: Product;

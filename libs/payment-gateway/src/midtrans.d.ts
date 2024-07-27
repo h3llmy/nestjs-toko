@@ -1,3 +1,6 @@
+import { CreatePaymentTransaction } from './dto/create-payment-transaction.dto';
+import { PaymentOrderResponseDto } from './dto/payment-order-response.dto';
+
 declare module 'midtrans-client' {
   export declare class ApiConfig {
     static CORE_PRODUCTION_BASE_URL: string;
@@ -63,11 +66,17 @@ declare module 'midtrans-client' {
 
     constructor(options?: SnapOptions);
 
-    createTransaction(parameter?: any): Promise<any>;
+    createTransaction(
+      parameter?: CreatePaymentTransaction,
+    ): Promise<PaymentOrderResponseDto>;
 
-    createTransactionToken(parameter?: any): Promise<string>;
+    createTransactionToken(
+      parameter?: CreatePaymentTransaction,
+    ): Promise<string>;
 
-    createTransactionRedirectUrl(parameter?: any): Promise<string>;
+    createTransactionRedirectUrl(
+      parameter?: CreatePaymentTransaction,
+    ): Promise<string>;
   }
   export declare class CoreApi {
     apiConfig: ApiConfig;

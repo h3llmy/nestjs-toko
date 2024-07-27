@@ -30,6 +30,15 @@ export class ProductsService {
     private readonly dataSource: DataSource,
   ) {}
 
+  getProductWithDiscounts(
+    productDiscounts: {
+      productId: string;
+      discountId?: string;
+    }[],
+  ) {
+    return this.productRepository.getProductsWithDiscount(productDiscounts);
+  }
+
   /**
    * Save a new product using the provided data.
    *

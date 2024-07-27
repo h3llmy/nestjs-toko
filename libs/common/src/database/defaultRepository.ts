@@ -8,6 +8,7 @@ import {
   Repository,
   SaveOptions,
   UpdateResult,
+  getMetadataArgsStorage,
 } from 'typeorm';
 import {
   IPaginationPayload,
@@ -24,7 +25,10 @@ export class DefaultRepository<
    * @return {string} The name of the table.
    */
   getTableName(): string {
-    return (this.target as NewableFunction).name;
+    const metadata = getMetadataArgsStorage().tables.find(
+      (table) => table.target === this.target,
+    );
+    return metadata ? metadata.name : '';
   }
 
   /**

@@ -1,11 +1,14 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import {
   DataSource,
   DeepPartial,
   FindOneOptions,
   FindOptionsWhere,
   ILike,
-  In,
   QueryRunner,
 } from 'typeorm';
 import { ProductsService } from '../products/products.service';
@@ -17,7 +20,6 @@ import { CreateOrderDto } from './dto/create-order.dto';
 import {
   PaymentCheckDto,
   PaymentGatewayService,
-  PaymentItemDetails,
   PaymentOrderResponseDto,
 } from '@app/payment-gateway';
 import { Order, OrderStatus } from './entities/order.entity';
@@ -74,16 +76,11 @@ export class OrdersService {
   ): Promise<PaymentOrderResponseDto> {
     const transaction = this.dataSource.createQueryRunner();
     await transaction.startTransaction();
-    try {
-      const productIds = createOrderDto.orders.map((item) => item.productId);
-      const products = await this.productService.findMany({
-        where: { id: In(productIds) },
-        relations: { category: true, discounts: true, inventory: true },
-      });
 
-      if (products.length !== productIds.length) {
-        throw new NotFoundException('Some products were not found');
-      }
+    try {
+      const products = await this.productService.getProductWithDiscounts(
+        createOrderDto.orders,
+      );
 
       const productMap = new Map(
         products.map((product) => [product.id, product]),
@@ -92,25 +89,30 @@ export class OrdersService {
       const orderItems: DeepPartial<OrderDetails>[] = createOrderDto.orders.map(
         (order) => {
           const product = productMap.get(order.productId);
+
           if (!product) {
             throw new NotFoundException(
               `Product with id ${order.productId} not found`,
             );
           }
 
-          let totalPrice = product.price * order.quantity;
+          const { quantity } = order;
+          const { price, inventory, discounts } = product;
 
-          if (order.discountId) {
-            const discount = product.discounts.find(
-              (d) => d.id === order.discountId,
+          let totalPrice = price * quantity;
+          let discountDetail: Partial<OrderDetails> = {};
+
+          if (discounts.length === 0 && order.discountId) {
+            throw new NotFoundException(
+              `Discount with id ${order.discountId} not found`,
             );
-            if (!discount) {
-              throw new NotFoundException(
-                `Discount with id ${order.discountId} not found`,
-              );
-            }
+          }
+
+          if (discounts.length > 0) {
+            const discount = discounts[0];
 
             const currentDate = Math.round(Date.now() / 1000);
+
             if (
               discount.startDate > currentDate ||
               discount.endDate < currentDate
@@ -122,12 +124,24 @@ export class OrdersService {
 
             const discountPercentage = discount.percentage / 100;
             totalPrice *= 1 - discountPercentage;
+            discountDetail = {
+              discount,
+              discountName: discount.name,
+              discountDescription: discount.description,
+              discountCode: discount.code,
+              discountPercentage: discount.percentage,
+              discountStartDate: discount.startDate,
+              discountEndDate: discount.endDate,
+            };
           }
 
-          if (product.inventory.quantity < order.quantity) {
-            throw new NotFoundException('Not enough product in stock');
+          if (inventory.quantity < quantity) {
+            throw new BadRequestException(
+              `product ${product.name} out of stock`,
+            );
           }
-          product.inventory.quantity -= order.quantity;
+
+          inventory.quantity -= quantity;
 
           return {
             product,
@@ -136,8 +150,9 @@ export class OrdersService {
             productPrice: product.price,
             category: product.category,
             categoryName: product.category.name,
-            quantity: order.quantity,
+            quantity,
             totalPrice,
+            ...discountDetail,
           };
         },
       );
@@ -151,6 +166,7 @@ export class OrdersService {
         orderItems,
         { session: transaction },
       )) as OrderDetails[];
+
       const totalAmount = savedOrderItems.reduce(
         (prev, curr) => prev + curr.totalPrice,
         0,
@@ -165,7 +181,7 @@ export class OrdersService {
         { session: transaction },
       );
 
-      const itemsDetail: PaymentItemDetails[] = savedOrder.orderDetails.map(
+      const itemsDetail = savedOrder.orderDetails.map(
         (orderDetail: DeepPartial<OrderDetails>) => ({
           id: orderDetail.id,
           category: orderDetail.categoryName,
@@ -185,6 +201,7 @@ export class OrdersService {
         });
 
       await transaction.commitTransaction();
+
       return paymentResponse;
     } catch (error) {
       await transaction.rollbackTransaction();

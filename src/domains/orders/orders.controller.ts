@@ -9,12 +9,25 @@ import {
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { ApiBearerAuth, ApiCreatedResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBadRequestResponse,
+  ApiBearerAuth,
+  ApiCreatedResponse,
+  ApiNotFoundResponse,
+  ApiServiceUnavailableResponse,
+  ApiTags,
+  ApiTooManyRequestsResponse,
+  ApiUnauthorizedResponse,
+  ApiUnprocessableEntityResponse,
+} from '@nestjs/swagger';
 import {
   Auth,
+  BasicErrorSchema,
   BasicSuccessSchema,
+  ErrorMessageSchema,
   IPaginationResponse,
   Permission,
+  validationErrorSchemaFactory,
 } from '@app/common';
 import { Role, User } from '../users/entities/user.entity';
 import { PaymentCheckDto, PaymentOrderResponseDto } from '@app/payment-gateway';
@@ -32,6 +45,30 @@ export class OrdersController {
   @ApiCreatedResponse({
     description: 'The order has been successfully created',
     type: PaymentOrderResponseDto,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: 'order validation error',
+    type: validationErrorSchemaFactory(BasicErrorSchema),
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    type: BasicErrorSchema,
+  })
+  @ApiNotFoundResponse({
+    description: 'Not found',
+    type: BasicErrorSchema,
+  })
+  @ApiBadRequestResponse({
+    description: 'Bad Request',
+    type: BasicErrorSchema,
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many requests',
+    type: ErrorMessageSchema,
+  })
+  @ApiServiceUnavailableResponse({
+    description: 'Service Unavailable',
+    type: BasicErrorSchema,
   })
   create(
     @Body() createOrderDto: CreateOrderDto,
