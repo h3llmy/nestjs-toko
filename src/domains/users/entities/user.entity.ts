@@ -1,4 +1,4 @@
-import { Role as RoleModel } from '../../roles/entities/role.entity';
+import { Role } from '../../roles/entities/role.entity';
 import { Order } from '../../orders/entities/order.entity';
 import {
   Column,
@@ -27,8 +27,8 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @ManyToOne(() => RoleModel, (role) => role.users)
-  role: RoleModel;
+  @ManyToOne(() => Role, (role) => role.users)
+  role: Role;
 
   @OneToMany(() => Order, (order) => order.user)
   order?: Order;
