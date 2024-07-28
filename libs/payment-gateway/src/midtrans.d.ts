@@ -124,12 +124,12 @@ declare module 'midtrans-client' {
     getBeneficiaryBanks(): Promise<any>;
     validateBankAccount(parameter?: any): Promise<any>;
   }
-  export interface SnapOptions {
+  export interface ISnapOptions {
     isProduction?: boolean;
     serverKey: string;
     clientKey: string;
   }
-  export interface IrisOptions {
+  export interface IIrisOptions {
     isProduction?: boolean;
     serverKey: string;
   }
