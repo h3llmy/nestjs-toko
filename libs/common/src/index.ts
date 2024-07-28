@@ -19,3 +19,5 @@ export * from './dto/basicSuccess.schema';
 export * from './dto/validationError.schema';
 export * from './dto/errorMessage.schema';
 export * from './dto/pagination.schema';
+
+export * from './adapter/fastify.adapter';

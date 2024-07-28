@@ -9,7 +9,7 @@ import { User } from './user.entity';
 import { EncryptionService } from '@app/encryption';
 import { UserRepository } from '../users.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { RolesService } from 'src/domains/roles/roles.service';
+import { RolesService } from '../../roles/roles.service';
 
 @EventSubscriber()
 export class UserSubscribers implements EntitySubscriberInterface<User> {
