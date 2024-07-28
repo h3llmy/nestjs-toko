@@ -6,14 +6,11 @@ import {
   HttpExceptionsFilter,
   ValidationErrorHandler,
   JwtExceptionsFilter,
+  ApplicationAdapter,
 } from '@app/common';
 import helmet from '@fastify/helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-import {
-  FastifyAdapter,
-  NestFastifyApplication,
-} from '@nestjs/platform-fastify';
-import QueryString from 'qs';
+import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { version, name, description } from 'package.json';
 
 (async () => {
@@ -24,10 +21,7 @@ import { version, name, description } from 'package.json';
 
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter({
-      maxParamLength: 500,
-      querystringParser: (str) => QueryString.parse(str),
-    }),
+    new ApplicationAdapter(),
   );
 
   const configService: ConfigService = app.get(ConfigService);
