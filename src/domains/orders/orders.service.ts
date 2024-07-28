@@ -13,7 +13,7 @@ import {
 } from 'typeorm';
 import { ProductsService } from '../products/products.service';
 import { OrderRepository } from './order.repository';
-import { Role, User } from '../users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { OrderDetailsRepository } from './order-details.repository';
 import { OrderDetails } from './entities/orderDetails.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -272,7 +272,7 @@ export class OrdersService {
           break;
 
         default:
-          throw new Error('Invalid transaction status');
+          throw new BadRequestException('Invalid transaction status');
       }
 
       await this.orderRepository.updateEntity(
@@ -306,7 +306,7 @@ export class OrdersService {
       ...paginationQuery,
     };
     query.where = [];
-    if (user.role === Role.USER) {
+    if (user.role.name === 'user') {
       query.where.push({
         user: {
           id: user.id,
@@ -342,7 +342,7 @@ export class OrdersService {
       id,
     };
 
-    if (user.role === Role.USER) {
+    if (user.role.name === 'user') {
       whereCondition.user = { id: user.id };
     }
 

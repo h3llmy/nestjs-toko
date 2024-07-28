@@ -2,7 +2,8 @@ import { TestBed } from '@automock/jest';
 import { AuthTokenService } from './authToken.service';
 import { JwtService } from '@nestjs/jwt';
 import { ILoginTokenPayload, IRegisterTokenPayload } from './auth.interface';
-import { Role, User } from '../users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
+import { Role } from '../roles/entities/role.entity';
 
 describe('AuthTokenService', () => {
   let authTokenService: AuthTokenService;
@@ -104,6 +105,14 @@ describe('AuthTokenService', () => {
 
   describe('createLoginToken', () => {
     it('should create a login token', () => {
+      const mockRole: Role = {
+        id: '1',
+        name: 'Admin',
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        deletedAt: null,
+      };
+
       const payload: User = {
         id: '1',
         username: 'Test User',
@@ -112,7 +121,7 @@ describe('AuthTokenService', () => {
         updatedAt: new Date(),
         emailVerifiedAt: Date.now(),
         password: 'some hashed password',
-        role: Role.USER,
+        role: mockRole,
       };
 
       jwtService.sign.mockReturnValue('some jwt token');

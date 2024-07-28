@@ -6,6 +6,7 @@ import {
   Param,
   ParseUUIDPipe,
   Query,
+  NotFoundException,
 } from '@nestjs/common';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -32,7 +33,7 @@ import {
   Permission,
   validationErrorSchemaFactory,
 } from '@app/common';
-import { Role, User } from '../users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { PaymentCheckDto, PaymentOrderResponseDto } from '@app/payment-gateway';
 import { PaginationOrderDto } from './dto/pagination-order.dto';
 import { Order } from './entities/order.entity';
@@ -40,13 +41,13 @@ import { CreateOrderValidationErrorDto } from './dto/create-order-validation-err
 import { OrderDto } from './dto/order.dto';
 import { OrderNotificationValidationErrorDto } from './dto/order-notification-validator-error.dto';
 
-@ApiTags('orders')
+@ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @Permission(Role.USER)
+  @Permission('user')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create order' })
   @ApiCreatedResponse({
@@ -171,7 +172,7 @@ export class OrdersController {
   ): Promise<Order> {
     const order = await this.ordersService.findOne(id, user);
     if (!order) {
-      throw new Error('Order not found');
+      throw new NotFoundException('Order not found');
     }
     return order;
   }

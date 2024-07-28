@@ -25,7 +25,6 @@ import {
   Permission,
   validationErrorSchemaFactory,
 } from '@app/common';
-import { Role } from '../users/entities/user.entity';
 import { IncreaseStockDto } from './dto/increase-stock.dto';
 import { Inventory } from './entities/inventory.entity';
 import { InventoryDto } from './dto/inventory.dto';
@@ -37,7 +36,7 @@ export class InventoriesController {
   constructor(private readonly inventoriesService: InventoriesService) {}
 
   @Get(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiOperation({ summary: 'Get inventory by id' })
   @ApiParam({ name: 'id', description: 'Inventory id' })
   @ApiBearerAuth()
@@ -67,7 +66,7 @@ export class InventoriesController {
   }
 
   @Patch(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiOperation({ summary: 'Update inventory by id' })
   @ApiParam({ name: 'id', description: 'Inventory id' })
   @ApiBearerAuth()
@@ -102,7 +101,7 @@ export class InventoriesController {
   }
 
   @Patch('increase-stock/:id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiOperation({ summary: 'Increase inventory stock by id' })
   @ApiParam({ name: 'id', description: 'Inventory id' })
   @ApiBearerAuth()

@@ -1,6 +1,7 @@
 import { DataSource, EventSubscriber, InsertEvent, UpdateEvent } from 'typeorm';
 import { ProductCategory } from './product-category.entity';
 import { ProductCategoryRepository } from '../product-category.repository';
+import { BadRequestException } from '@nestjs/common';
 
 @EventSubscriber()
 export class ProductCategorySubscribers {
@@ -36,7 +37,7 @@ export class ProductCategorySubscribers {
     );
 
     if (productCategoryCheck)
-      throw new Error(`name ${entity.name} is already available`);
+      throw new BadRequestException(`name ${entity.name} is already available`);
   }
 
   /**
@@ -54,6 +55,6 @@ export class ProductCategorySubscribers {
     );
 
     if (productCategoryCheck && productCategoryCheck.id !== entity.id)
-      throw new Error(`name ${entity.name} is already available`);
+      throw new BadRequestException(`name ${entity.name} is already available`);
   }
 }

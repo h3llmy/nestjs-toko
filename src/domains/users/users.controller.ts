@@ -35,7 +35,7 @@ import {
   paginationSchemaFactory,
   validationErrorSchemaFactory,
 } from '@app/common';
-import { Role, User } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { UserDto } from './dto/user.dto';
 import { UpdateProfileErrorValidationDto } from './dto/update-profile-error-validation.dto';
@@ -49,7 +49,7 @@ export class UsersController {
   @UseInterceptors(CacheInterceptor)
   @CacheKey('get-all-users')
   @CacheTTL(30)
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users' })
   @ApiOkResponse({
@@ -95,7 +95,7 @@ export class UsersController {
   @Get(':id')
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user by id' })
   @ApiParam({ name: 'id', description: 'User ID' })
@@ -152,7 +152,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiParam({ name: 'id', description: 'User ID' })

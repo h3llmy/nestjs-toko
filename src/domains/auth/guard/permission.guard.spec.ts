@@ -1,12 +1,21 @@
 import { TestBed } from '@automock/jest';
 import { PermissionsGuard } from './permissions.guard';
 import { Reflector } from '@nestjs/core';
-import { Role, User } from '../../users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { Role } from '../../roles/entities/role.entity';
 
 describe('PermissionsGuard', () => {
   let guard: PermissionsGuard;
   let reflector: jest.Mocked<Reflector>;
+
+  const mockRole: Role = {
+    id: '1',
+    name: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
 
   const mockUser: User = {
     id: '1',
@@ -16,7 +25,7 @@ describe('PermissionsGuard', () => {
     updatedAt: new Date(),
     emailVerifiedAt: Date.now(),
     password: 'some hashed password',
-    role: Role.USER,
+    role: mockRole,
   };
 
   beforeEach(() => {
@@ -57,7 +66,7 @@ describe('PermissionsGuard', () => {
       expect(guard.canActivate(context)).toBe(true);
     });
     it('should return true if role permissions are match', () => {
-      const requiredPermission = [Role.USER];
+      const requiredPermission = ['admin'];
 
       const context: ExecutionContext = createMockExecutionContext({
         user: mockUser,
@@ -67,7 +76,7 @@ describe('PermissionsGuard', () => {
       expect(guard.canActivate(context)).toBe(true);
     });
     it('should return false if role permissions are not match', () => {
-      const requiredPermission = [Role.ADMIN];
+      const requiredPermission = ['user'];
 
       const context: ExecutionContext = createMockExecutionContext({
         user: mockUser,
@@ -77,7 +86,7 @@ describe('PermissionsGuard', () => {
       expect(guard.canActivate(context)).toBe(false);
     });
     it('should throw UnauthorizedException if user is undefined', async () => {
-      const requiredPermission = [Role.ADMIN];
+      const requiredPermission = ['admin'];
 
       const context: ExecutionContext = createMockExecutionContext({
         user: undefined,

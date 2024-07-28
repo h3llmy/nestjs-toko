@@ -2,13 +2,22 @@ import { JwtStrategies } from './auth.strategies';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
 import { ILoginTokenPayload } from '../auth.interface';
-import { Role, User } from '../../users/entities/user.entity';
+import { User } from '../../users/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { TestBed } from '@automock/jest';
+import { Role } from '../../roles/entities/role.entity';
 
 describe('JwtStrategies', () => {
   let jwtStrategies: JwtStrategies;
   let usersService: jest.Mocked<UsersService>;
+
+  const mockRole: Role = {
+    id: '1',
+    name: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
 
   const mockUser: User = {
     id: '1',
@@ -18,7 +27,7 @@ describe('JwtStrategies', () => {
     updatedAt: new Date(),
     emailVerifiedAt: Date.now(),
     password: 'some hashed password',
-    role: Role.USER,
+    role: mockRole,
   };
 
   beforeEach(async () => {

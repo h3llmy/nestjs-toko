@@ -1,13 +1,22 @@
 import { TestBed } from '@automock/jest';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
-import { Role, User } from './entities/user.entity';
+import { User } from './entities/user.entity';
 import { IPaginationResponse, SortDirection } from '@app/common';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { Role } from '../roles/entities/role.entity';
 
 describe('UsersController', () => {
   let usersController: UsersController;
   let usersService: jest.Mocked<UsersService>;
+
+  const mockRole: Role = {
+    id: '1',
+    name: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
 
   const mockUser: User = {
     id: '1',
@@ -17,7 +26,7 @@ describe('UsersController', () => {
     updatedAt: new Date(),
     emailVerifiedAt: Date.now(),
     password: 'some hashed password',
-    role: Role.USER,
+    role: mockRole,
   };
 
   const mockUsersPagination: IPaginationResponse<User> = {

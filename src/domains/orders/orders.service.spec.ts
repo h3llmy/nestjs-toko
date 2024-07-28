@@ -1,7 +1,7 @@
 import { TestBed } from '@automock/jest';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { Role, User } from '../users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { Product } from '../products/entities/product.entity';
 import { Discount } from '../discounts/entities/discount.entity';
 import { ProductsService } from '../products/products.service';
@@ -21,6 +21,7 @@ import { OrderDetails } from './entities/orderDetails.entity';
 import { Order, OrderStatus } from './entities/order.entity';
 import { IPaginationResponse } from '@app/common';
 import { PaginationOrderDto } from './dto/pagination-order.dto';
+import { Role } from '../roles/entities/role.entity';
 
 describe('OrdersService', () => {
   let orderService: OrdersService;
@@ -36,6 +37,14 @@ describe('OrdersService', () => {
     token: 'token',
   };
 
+  const mockRole: Role = {
+    id: '1',
+    name: 'user',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
+
   const user: User = {
     id: '1',
     username: 'test',
@@ -43,7 +52,7 @@ describe('OrdersService', () => {
     password: 'test',
     createdAt: new Date(),
     emailVerifiedAt: Date.now(),
-    role: Role.USER,
+    role: mockRole,
     updatedAt: new Date(),
     deletedAt: null,
   };
