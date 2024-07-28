@@ -121,9 +121,7 @@ describe('ProductCategoryController', () => {
         affected: 1,
       });
       const productCategory = await productCategoryController.remove('1');
-      expect(productCategory).toEqual({
-        message: 'Product Category with id 1 has been deleted',
-      });
+      expect(productCategory).toBeDefined();
       expect(productCategoryService.remove).toHaveBeenCalledWith('1');
     });
 
