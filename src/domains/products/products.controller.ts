@@ -35,7 +35,6 @@ import {
   paginationSchemaFactory,
   validationErrorSchemaFactory,
 } from '@app/common';
-import { Role } from '../users/entities/user.entity';
 import { ProductDto } from './dto/product.dto';
 import { ProductErrorValidationDto } from './dto/create-product-error-validation.dto';
 import { PaginationProductDto } from './dto/pagination-product.dto';
@@ -49,7 +48,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new product' })
   @ApiCreatedResponse({
@@ -116,7 +115,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update product by id' })
   @ApiParam({ name: 'id', description: 'Product id' })
@@ -150,7 +149,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete product by id' })
   @ApiParam({ name: 'id', description: 'Product id' })

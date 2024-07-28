@@ -34,7 +34,6 @@ import {
 } from '@app/common';
 import { ProductCategory } from './entities/product-category.entity';
 import { PaginationProductCategoryDto } from './dto/pagination-product-category.dto';
-import { Role } from '../users/entities/user.entity';
 import { DeepPartial } from 'typeorm';
 import { ProductCategoryErrorValidationDto } from './dto/create-product-category-error-validation.dto';
 import { ProductCategoryDto } from './dto/product-category.dto';
@@ -47,12 +46,12 @@ export class ProductCategoryController {
   ) {}
 
   @Post()
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new product category' })
   @ApiCreatedResponse({
     description: 'The record has been successfully created.',
-    type: paginationSchemaFactory(ProductCategoryDto),
+    type: ProductCategoryDto,
   })
   @ApiUnauthorizedResponse({
     description: 'Unauthorized',
@@ -77,10 +76,6 @@ export class ProductCategoryController {
   @ApiOkResponse({
     description: 'Get all product categories with pagination',
     type: paginationSchemaFactory(ProductCategoryDto),
-  })
-  @ApiUnauthorizedResponse({
-    description: 'Unauthorized',
-    type: BasicErrorSchema,
   })
   @ApiTooManyRequestsResponse({
     description: 'Too many requests',
@@ -116,7 +111,7 @@ export class ProductCategoryController {
   }
 
   @Patch(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update product category by id' })
   @ApiParam({ name: 'id', description: 'Product Category id' })
@@ -155,7 +150,7 @@ export class ProductCategoryController {
   }
 
   @Delete(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete product category by id' })
   @ApiParam({ name: 'id', description: 'Product Category id' })

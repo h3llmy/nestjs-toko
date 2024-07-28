@@ -47,6 +47,6 @@ export class PermissionsGuard implements CanActivate {
     if (!user) throw new UnauthorizedException('Unauthorized');
 
     // Check if user has any of the required roles
-    return requiredPermission.some((role) => user?.role?.includes(role));
+    return requiredPermission.some((role) => user?.role?.name?.includes(role));
   }
 }

@@ -1,3 +1,4 @@
+import { Role as RoleModel } from '../../roles/entities/role.entity';
 import { Order } from '../../orders/entities/order.entity';
 import {
   Column,
@@ -5,15 +6,11 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-
-export enum Role {
-  ADMIN = 'admin',
-  USER = 'user',
-}
 
 @Entity('Users')
 export class User {
@@ -30,8 +27,8 @@ export class User {
   @Column({ select: false })
   password: string;
 
-  @Column({ type: 'enum', enum: Role, default: Role.USER })
-  role: Role;
+  @ManyToOne(() => RoleModel, (role) => role.users)
+  role: RoleModel;
 
   @OneToMany(() => Order, (order) => order.user)
   order?: Order;

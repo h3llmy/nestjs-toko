@@ -2,7 +2,7 @@ import { TestBed } from '@automock/jest';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { Role, User } from '../users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import {
   FraudStatus,
   PaymentCheckDto,
@@ -14,10 +14,19 @@ import { OrderDetails } from './entities/orderDetails.entity';
 import { ProductCategory } from '../product-category/entities/product-category.entity';
 import { Discount } from '../discounts/entities/discount.entity';
 import { IPaginationResponse } from '@app/common';
+import { Role } from '../roles/entities/role.entity';
 
 describe('OrdersController', () => {
   let orderController: OrdersController;
   let orderService: jest.Mocked<OrdersService>;
+
+  const mockRole: Role = {
+    id: '1',
+    name: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
 
   const user: User = {
     id: '1',
@@ -26,7 +35,7 @@ describe('OrdersController', () => {
     password: 'test',
     createdAt: new Date(),
     emailVerifiedAt: Date.now(),
-    role: Role.USER,
+    role: mockRole,
     updatedAt: new Date(),
     deletedAt: null,
   };

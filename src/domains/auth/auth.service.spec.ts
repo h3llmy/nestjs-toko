@@ -4,7 +4,7 @@ import { EncryptionService } from '@app/encryption';
 import { MailerService } from '@nestjs-modules/mailer';
 import { RandomizeService } from '@app/randomize';
 import { UsersService } from '../users/users.service';
-import { Role, User } from '../users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -12,6 +12,7 @@ import { LoginDto } from './dto/login-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { AuthTokenService } from './authToken.service';
 import { ILoginTokenPayload } from './auth.interface';
+import { Role } from '../roles/entities/role.entity';
 
 describe('AuthService', () => {
   let authService: AuthService;
@@ -22,6 +23,14 @@ describe('AuthService', () => {
   let mailerService: jest.Mocked<MailerService>;
   let randomizeService: jest.Mocked<RandomizeService>;
 
+  const mockRole: Role = {
+    id: '1',
+    name: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
+
   const userMock: User = {
     id: '1',
     username: 'Test User',
@@ -30,7 +39,7 @@ describe('AuthService', () => {
     updatedAt: new Date(),
     emailVerifiedAt: Date.now(),
     password: 'some hashed password',
-    role: Role.USER,
+    role: mockRole,
   };
 
   beforeEach(() => {

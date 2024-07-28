@@ -8,7 +8,8 @@ import {
 import { User } from './user.entity';
 import { EncryptionService } from '@app/encryption';
 import { UserRepository } from '../users.repository';
-import { BadRequestException } from '@nestjs/common';
+import { BadRequestException, NotFoundException } from '@nestjs/common';
+import { RolesService } from 'src/domains/roles/roles.service';
 
 @EventSubscriber()
 export class UserSubscribers implements EntitySubscriberInterface<User> {
@@ -22,6 +23,7 @@ export class UserSubscribers implements EntitySubscriberInterface<User> {
   constructor(
     private readonly dataSource: DataSource,
     private readonly encryptionService: EncryptionService,
+    private readonly roleService: RolesService,
     private readonly userRepository: UserRepository,
   ) {
     dataSource.subscribers.push(this);
@@ -53,6 +55,11 @@ export class UserSubscribers implements EntitySubscriberInterface<User> {
       throw new BadRequestException(`email ${entity.email} is already in used`);
 
     entity.password = this.encryptionService.hash(entity.password);
+    if (!entity?.role) {
+      const roleFind = await this.roleService.findOneByName('user');
+      if (!roleFind) throw new NotFoundException('role not found');
+      entity.role = roleFind;
+    }
   }
 
   /**

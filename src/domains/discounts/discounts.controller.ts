@@ -34,20 +34,19 @@ import {
   Permission,
   validationErrorSchemaFactory,
 } from '@app/common';
-import { Role } from '../users/entities/user.entity';
 import { CreateDiscountErrorValidationDto } from './dto/create-discount-error-validation.dto';
 import { DiscountDto } from './dto/discount.dto';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 import { Discount } from './entities/discount.entity';
 import { DeepPartial } from 'typeorm';
 
-@ApiTags('discounts')
+@ApiTags('Discounts')
 @Controller('discounts')
 export class DiscountsController {
   constructor(private readonly discountsService: DiscountsService) {}
 
   @Post()
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new discount' })
   @ApiCreatedResponse({
@@ -113,7 +112,7 @@ export class DiscountsController {
   }
 
   @Patch(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiOperation({ summary: 'Update discount by id' })
   @ApiBearerAuth()
   @ApiOkResponse({
@@ -140,7 +139,7 @@ export class DiscountsController {
   }
 
   @Delete(':id')
-  @Permission(Role.ADMIN)
+  @Permission('admin')
   @ApiOperation({ summary: 'Delete discount by id' })
   @ApiBearerAuth()
   @ApiOkResponse({

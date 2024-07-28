@@ -1,13 +1,22 @@
 import { TestBed } from '@automock/jest';
-import { Role, User } from '../users/entities/user.entity';
+import { User } from '../users/entities/user.entity';
 import { AuthController } from './auth.controller';
 import { AuthService } from './auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { BadRequestException } from '@nestjs/common';
+import { Role } from '../roles/entities/role.entity';
 
 describe('UsersController', () => {
   let authController: AuthController;
   let authService: jest.Mocked<AuthService>;
+
+  const mockRole: Role = {
+    id: '1',
+    name: 'admin',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+    deletedAt: null,
+  };
 
   const mockUser: User = {
     id: '1',
@@ -17,7 +26,7 @@ describe('UsersController', () => {
     updatedAt: new Date(),
     emailVerifiedAt: Date.now(),
     password: 'some hashed password',
-    role: Role.USER,
+    role: mockRole,
   };
 
   const mockRegisterUserDto: RegisterUserDto = {
