@@ -13,12 +13,7 @@ import { RandomizeModule } from '@app/randomize';
 import { AuthTokenService } from './authToken.service';
 
 @Module({
-  imports: [
-    PassportModule.register({ defaultStrategy: 'jwt' }),
-    UsersModule,
-    EncryptionModule,
-    RandomizeModule,
-  ],
+  imports: [PassportModule, UsersModule, EncryptionModule, RandomizeModule],
   controllers: [AuthController],
   providers: [
     AuthService,
