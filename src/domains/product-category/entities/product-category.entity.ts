@@ -5,7 +5,6 @@ import {
   CreateDateColumn,
   DeleteDateColumn,
   Entity,
-  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -22,7 +21,7 @@ export class ProductCategory {
   @OneToMany(() => Product, (product) => product.category)
   product?: Product;
 
-  @ManyToOne(() => OrderDetails, (orderDetails) => orderDetails.category)
+  @OneToMany(() => OrderDetails, (orderDetails) => orderDetails.category)
   orderDetails?: OrderDetails;
 
   @CreateDateColumn({ type: 'timestamp' })
