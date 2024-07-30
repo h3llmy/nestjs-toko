@@ -8,6 +8,7 @@ import { ProductCategoryModule } from './domains/product-category/product-catego
 import { DiscountsModule } from './domains/discounts/discounts.module';
 import { OrdersModule } from './domains/orders/orders.module';
 import { RolesModule } from './domains/roles/roles.module';
+import { PermissionsModule } from './domains/permissions/permissions.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RolesModule } from './domains/roles/roles.module';
     DiscountsModule,
     OrdersModule,
     RolesModule,
+    PermissionsModule,
   ],
 })
 export class AppModule {}

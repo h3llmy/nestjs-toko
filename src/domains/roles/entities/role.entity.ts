@@ -1,3 +1,4 @@
+import { Permissions } from '../../permissions/entities/permission.entity';
 import { User } from '../../users/entities/user.entity';
 import {
   Column,
@@ -5,6 +6,7 @@ import {
   DeleteDateColumn,
   Entity,
   Index,
+  ManyToMany,
   OneToMany,
   PrimaryGeneratedColumn,
   UpdateDateColumn,
@@ -21,6 +23,9 @@ export class Role {
 
   @OneToMany(() => User, (user) => user.role)
   users?: User;
+
+  @ManyToMany(() => Permissions, (permission) => permission.roles)
+  permissions?: Permissions[];
 
   @CreateDateColumn({ type: 'timestamp' })
   createdAt: Date;

@@ -7,6 +7,7 @@ import {
 import { Reflector } from '@nestjs/core';
 import { Observable } from 'rxjs';
 import { User } from '../../users/entities/user.entity';
+import { permission } from 'process';
 
 /**
  * Guard to check permissions for accessing routes.
@@ -46,7 +47,11 @@ export class PermissionsGuard implements CanActivate {
 
     if (!user) throw new UnauthorizedException('Unauthorized');
 
+    const userPermissions = new Set(
+      user?.role?.permissions?.map((permission) => permission.name) || [],
+    );
+
     // Check if user has any of the required roles
-    return requiredPermission.some((role) => user?.role?.name?.includes(role));
+    return requiredPermission.some((role) => userPermissions.has(role));
   }
 }

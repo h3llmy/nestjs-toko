@@ -4,14 +4,21 @@ import { Reflector } from '@nestjs/core';
 import { User } from '../../users/entities/user.entity';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Role } from '../../roles/entities/role.entity';
+import { Permissions } from '../../permissions/entities/permission.entity';
 
 describe('PermissionsGuard', () => {
   let guard: PermissionsGuard;
   let reflector: jest.Mocked<Reflector>;
 
+  const mockPermission: Permissions = {
+    id: '1',
+    name: 'success',
+  };
+
   const mockRole: Role = {
     id: '1',
     name: 'admin',
+    permissions: [mockPermission],
     createdAt: new Date(),
     updatedAt: new Date(),
     deletedAt: null,
@@ -66,7 +73,7 @@ describe('PermissionsGuard', () => {
       expect(guard.canActivate(context)).toBe(true);
     });
     it('should return true if role permissions are match', () => {
-      const requiredPermission = ['admin'];
+      const requiredPermission = ['success'];
 
       const context: ExecutionContext = createMockExecutionContext({
         user: mockUser,
@@ -76,7 +83,7 @@ describe('PermissionsGuard', () => {
       expect(guard.canActivate(context)).toBe(true);
     });
     it('should return false if role permissions are not match', () => {
-      const requiredPermission = ['user'];
+      const requiredPermission = ['failed'];
 
       const context: ExecutionContext = createMockExecutionContext({
         user: mockUser,
@@ -86,7 +93,7 @@ describe('PermissionsGuard', () => {
       expect(guard.canActivate(context)).toBe(false);
     });
     it('should throw UnauthorizedException if user is undefined', async () => {
-      const requiredPermission = ['admin'];
+      const requiredPermission = ['success'];
 
       const context: ExecutionContext = createMockExecutionContext({
         user: undefined,
