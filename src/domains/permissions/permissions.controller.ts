@@ -1,6 +1,7 @@
-import { Body, Controller, Get, Param, Put, Query } from '@nestjs/common';
+import { Controller, Get, Param, Query } from '@nestjs/common';
 import { PermissionsService } from './permissions.service';
 import { ApiTags } from '@nestjs/swagger';
+import { PaginationPermissionDto } from './dto/pagination-permisson.dto';
 
 @ApiTags('Permissions')
 @Controller('permissions')
@@ -8,17 +9,12 @@ export class PermissionsController {
   constructor(private readonly permissionsService: PermissionsService) {}
 
   @Get()
-  findAll(@Query() findQuery: any) {
+  findAll(@Query() findQuery: PaginationPermissionDto) {
     return this.permissionsService.findAll(findQuery);
   }
 
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.permissionsService.findOne(id);
-  }
-
-  @Put('roles/:id')
-  updateRoles(@Param('id') id: string, @Body() updatePermissionsRolesDto: any) {
-    return this.permissionsService.updateRoles(id, updatePermissionsRolesDto);
   }
 }

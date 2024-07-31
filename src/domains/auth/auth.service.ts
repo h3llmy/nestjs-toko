@@ -57,7 +57,7 @@ export class AuthService {
     const confirmationLink = `${webUrl}/${webVerifyRoute}/${token}`;
 
     this.mailerService.sendMail({
-      template: 'email/auth/register',
+      template: 'auth/views/email/register',
       to: registerDto.email,
       subject: 'Registration Email',
       context: {
@@ -103,7 +103,7 @@ export class AuthService {
     const confirmationLink = `${webUrl}/${webVerifyRoute}/${token}`;
 
     this.mailerService.sendMail({
-      template: 'email/auth/register',
+      template: 'auth/views/email/register',
       to: resendEmailDto.email,
       subject: 'Registration Email',
       context: {
@@ -197,7 +197,7 @@ export class AuthService {
         redirectLink,
         user,
       },
-      template: 'email/auth/forget-password',
+      template: 'auth/views/email/forget-password',
     });
 
     return { message: 'Email Sended' };

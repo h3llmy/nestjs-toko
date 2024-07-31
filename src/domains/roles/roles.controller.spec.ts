@@ -5,6 +5,7 @@ import { Role } from './entities/role.entity';
 import { IPaginationResponse } from '@app/common';
 import { PaginationRoleDto } from './dto/pagination-role.dto';
 import { NotFoundException } from '@nestjs/common';
+import { Permissions } from '../permissions/entities/permission.entity';
 
 describe('RolesController', () => {
   let roleController: RolesController;
@@ -16,6 +17,11 @@ describe('RolesController', () => {
     createdAt: new Date(),
     updatedAt: new Date(),
     deletedAt: null,
+  };
+
+  const mockPermissions: Permissions = {
+    id: '0d8e1e88-6c15-4aa8-ab33-2091ce62a27a',
+    name: 'admin',
   };
 
   const mockRolePagination: IPaginationResponse<Role> = {
@@ -77,18 +83,36 @@ describe('RolesController', () => {
 
   describe('update', () => {
     it('should update a role', async () => {
-      roleService.update.mockResolvedValue(mockRole);
-      const productCategory = await roleController.update('1', mockRole);
-      expect(productCategory).toEqual(mockRole);
-      expect(roleService.update).toHaveBeenCalledWith('1', mockRole);
+      roleService.update.mockResolvedValue({
+        ...mockRole,
+        permissions: [mockPermissions],
+      });
+      const productCategory = await roleController.update('1', {
+        ...mockRole,
+        permissionId: ['0d8e1e88-6c15-4aa8-ab33-2091ce62a27a'],
+      });
+      expect(productCategory).toEqual({
+        ...mockRole,
+        permissions: [mockPermissions],
+      });
+      expect(roleService.update).toHaveBeenCalledWith('1', {
+        ...mockRole,
+        permissionId: ['0d8e1e88-6c15-4aa8-ab33-2091ce62a27a'],
+      });
     });
 
     it('should throw error if role not found', async () => {
       roleService.update.mockResolvedValue(null);
-      expect(roleController.update('1', mockRole)).rejects.toThrow(
-        NotFoundException,
-      );
-      expect(roleService.update).toHaveBeenCalledWith('1', mockRole);
+      expect(
+        roleController.update('1', {
+          ...mockRole,
+          permissionId: ['0d8e1e88-6c15-4aa8-ab33-2091ce62a27a'],
+        }),
+      ).rejects.toThrow(NotFoundException);
+      expect(roleService.update).toHaveBeenCalledWith('1', {
+        ...mockRole,
+        permissionId: ['0d8e1e88-6c15-4aa8-ab33-2091ce62a27a'],
+      });
     });
   });
 
