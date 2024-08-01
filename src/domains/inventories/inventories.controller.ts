@@ -36,7 +36,7 @@ export class InventoriesController {
   constructor(private readonly inventoriesService: InventoriesService) {}
 
   @Get(':id')
-  @Permission('admin')
+  @Permission('get inventories by id')
   @ApiOperation({ summary: 'Get inventory by id' })
   @ApiParam({ name: 'id', description: 'Inventory id' })
   @ApiBearerAuth()
@@ -66,7 +66,7 @@ export class InventoriesController {
   }
 
   @Patch(':id')
-  @Permission('admin')
+  @Permission('update inventories')
   @ApiOperation({ summary: 'Update inventory by id' })
   @ApiParam({ name: 'id', description: 'Inventory id' })
   @ApiBearerAuth()
@@ -101,7 +101,7 @@ export class InventoriesController {
   }
 
   @Patch('increase-stock/:id')
-  @Permission('admin')
+  @Permission('increase inventory stock by id')
   @ApiOperation({ summary: 'Increase inventory stock by id' })
   @ApiParam({ name: 'id', description: 'Inventory id' })
   @ApiBearerAuth()

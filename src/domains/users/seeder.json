@@ -1,0 +1,9 @@
+{
+  "name": [
+    "get all users",
+    "get user profile",
+    "get user by id",
+    "update profile",
+    "delete user"
+  ]
+}

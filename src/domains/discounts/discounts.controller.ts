@@ -46,7 +46,7 @@ export class DiscountsController {
   constructor(private readonly discountsService: DiscountsService) {}
 
   @Post()
-  @Permission('admin')
+  @Permission('create discount')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new discount' })
   @ApiCreatedResponse({
@@ -72,6 +72,8 @@ export class DiscountsController {
   }
 
   @Get()
+  @Permission('get all discount')
+  @ApiBearerAuth()
   @UseInterceptors(CacheInterceptor)
   @CacheKey('get-all-discounts')
   @ApiOperation({ summary: 'Get all discount' })
@@ -90,6 +92,8 @@ export class DiscountsController {
   }
 
   @Get(':id')
+  @Permission('get discount by id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get discount by id' })
   @ApiOkResponse({
     description: 'get discount by id',
@@ -112,7 +116,7 @@ export class DiscountsController {
   }
 
   @Patch(':id')
-  @Permission('admin')
+  @Permission('update discount')
   @ApiOperation({ summary: 'Update discount by id' })
   @ApiBearerAuth()
   @ApiOkResponse({
@@ -139,7 +143,7 @@ export class DiscountsController {
   }
 
   @Delete(':id')
-  @Permission('admin')
+  @Permission('delete discount')
   @ApiOperation({ summary: 'Delete discount by id' })
   @ApiBearerAuth()
   @ApiOkResponse({

@@ -26,7 +26,7 @@ export class RolesService {
     createRoleDto: CreateRoleDto,
     options?: SaveOptions & ITransactionManager,
   ): Promise<DeepPartial<Role>> {
-    let createData: Partial<Role> = { ...createRoleDto };
+    const createData: Partial<Role> = { ...createRoleDto };
 
     if (createRoleDto.permissionId) {
       const permissions = await this.permissionService.findManyById(
@@ -80,7 +80,7 @@ export class RolesService {
    * @return {Promise<Role | null>} A promise that resolves to the updated role, or null if not found.
    */
   async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role | null> {
-    let updateData: Partial<Role> = { ...updateRoleDto };
+    const updateData: Partial<Role> = { ...updateRoleDto };
 
     if (updateRoleDto.permissionId) {
       const permissions = await this.permissionService.findManyById(

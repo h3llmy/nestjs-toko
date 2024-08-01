@@ -1,0 +1,9 @@
+{
+  "name": [
+    "create role",
+    "get all roles",
+    "get role by id",
+    "update role",
+    "delete role"
+  ]
+}

@@ -45,7 +45,7 @@ export class RolesController {
   constructor(private readonly rolesService: RolesService) {}
 
   @Post()
-  @Permission('admin')
+  @Permission('create role')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new role' })
   @ApiCreatedResponse({
@@ -69,7 +69,7 @@ export class RolesController {
   }
 
   @Get()
-  @Permission('admin')
+  @Permission('get all roles')
   @ApiOperation({ summary: 'Get all roles' })
   @ApiBearerAuth()
   @ApiOkResponse({
@@ -89,7 +89,7 @@ export class RolesController {
   }
 
   @Get(':id')
-  @Permission('admin')
+  @Permission('get role by id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get role by id' })
   @ApiParam({ name: 'id', description: 'Role id' })
@@ -118,7 +118,7 @@ export class RolesController {
   }
 
   @Patch(':id')
-  @Permission('admin')
+  @Permission('update role')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update role by id' })
   @ApiParam({ name: 'id', description: 'Role id' })
@@ -153,7 +153,7 @@ export class RolesController {
   }
 
   @Delete(':id')
-  @Permission('admin')
+  @Permission('delete role')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete role by id' })
   @ApiParam({ name: 'id', description: 'Role id' })

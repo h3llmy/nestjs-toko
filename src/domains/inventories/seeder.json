@@ -1,0 +1,7 @@
+{
+  "name": [
+    "get inventories by id",
+    "update inventories",
+    "increase inventory stock by id"
+  ]
+}

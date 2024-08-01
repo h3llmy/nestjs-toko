@@ -47,7 +47,7 @@ export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
   @Post()
-  @Permission('user')
+  @Permission('create order')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create order' })
   @ApiCreatedResponse({
@@ -120,7 +120,7 @@ export class OrdersController {
   }
 
   @Get()
-  @Permission('Authorize')
+  @Permission('get all orders')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Find all orders' })
   @ApiOkResponse({
@@ -147,7 +147,7 @@ export class OrdersController {
   }
 
   @Get(':id')
-  @Permission('Authorize')
+  @Permission('get order by id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Find order by id' })
   @ApiOkResponse({

@@ -3,7 +3,7 @@ import { PermissionRepository } from './permission.repository';
 import { IPaginationPayload, IPaginationResponse } from '@app/common';
 import { Permissions } from './entities/permission.entity';
 import { FindOptionsRelations, ILike, In } from 'typeorm';
-import { PaginationPermissionDto } from './dto/pagination-permisson.dto';
+import { PaginationPermissionDto } from './dto/pagination-permission.dto';
 
 @Injectable()
 export class PermissionsService {
@@ -15,7 +15,7 @@ export class PermissionsService {
    * @param {PaginationPermissionDto} findQuery - The search criteria for permissions.
    * @return {Promise<IPaginationResponse<Permissions>>} A promise that resolves to the paginated response containing permissions.
    */
-  findAll(
+  findAllPagination(
     findQuery: PaginationPermissionDto,
   ): Promise<IPaginationResponse<Permissions>> {
     const { search, ...paginationQuery } = findQuery;
