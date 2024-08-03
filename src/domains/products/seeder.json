@@ -1,9 +1,0 @@
-{
-  "name": [
-    "create product",
-    "get all product",
-    "get product by id",
-    "update product",
-    "delete product"
-  ]
-}

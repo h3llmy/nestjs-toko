@@ -1,9 +1,0 @@
-{
-  "name": [
-    "create discount",
-    "get all discount",
-    "get discount by id",
-    "update discount",
-    "delete discount"
-  ]
-}
