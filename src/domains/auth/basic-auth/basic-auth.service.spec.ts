@@ -15,7 +15,7 @@ import { Role } from '../../roles/entities/role.entity';
 import { SocialAuthType } from '../social-auth.enum';
 import { SocialAuthResponse } from '../social-auth.abstract';
 
-describe('AuthService', () => {
+describe('BasicAuthService', () => {
   let authService: BasicAuthService;
   let usersServices: jest.Mocked<UsersService>;
   let configService: jest.Mocked<ConfigService>;
