@@ -1,14 +1,14 @@
 import { TestBed } from '@automock/jest';
-import { User } from '../users/entities/user.entity';
-import { AuthController } from './auth.controller';
-import { AuthService } from './auth.service';
+import { User } from '../../users/entities/user.entity';
+import { BasicAuthController } from './basic-auth.controller';
+import { BasicAuthService } from './basic-auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { BadRequestException } from '@nestjs/common';
-import { Role } from '../roles/entities/role.entity';
+import { Role } from '../../roles/entities/role.entity';
 
-describe('UsersController', () => {
-  let authController: AuthController;
-  let authService: jest.Mocked<AuthService>;
+describe('BasicAuthController', () => {
+  let authController: BasicAuthController;
+  let authService: jest.Mocked<BasicAuthService>;
 
   const mockRole: Role = {
     id: '1',
@@ -37,10 +37,10 @@ describe('UsersController', () => {
   };
 
   beforeEach(() => {
-    const { unit, unitRef } = TestBed.create(AuthController).compile();
+    const { unit, unitRef } = TestBed.create(BasicAuthController).compile();
 
     authController = unit;
-    authService = unitRef.get(AuthService);
+    authService = unitRef.get(BasicAuthService);
   });
 
   it('should be defined', () => {

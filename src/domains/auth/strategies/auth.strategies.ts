@@ -3,7 +3,7 @@ import { Strategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
-import { ILoginTokenPayload } from '../auth.interface';
+import { ILoginTokenPayload } from '@app/auth-token';
 import { User } from '../../users/entities/user.entity';
 
 /**
@@ -33,7 +33,9 @@ export class JwtStrategies extends PassportStrategy(Strategy, 'jwt') {
   async validate(payload: ILoginTokenPayload): Promise<User> {
     // Validate the user based on the payload data
     const user = await this.userService.findOne(payload.id, {
-      role: true,
+      role: {
+        permissions: true,
+      },
     });
 
     if (!user?.emailVerifiedAt) throw new UnauthorizedException('Unauthorized');

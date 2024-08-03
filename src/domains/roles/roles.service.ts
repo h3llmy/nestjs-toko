@@ -6,10 +6,14 @@ import { DeepPartial, ILike, SaveOptions, UpdateResult } from 'typeorm';
 import { IPaginationPayload, ITransactionManager } from '@app/common';
 import { Role } from './entities/role.entity';
 import { PaginationRoleDto } from './dto/pagination-role.dto';
+import { PermissionsService } from '../permissions/permissions.service';
 
 @Injectable()
 export class RolesService {
-  constructor(private readonly roleRepository: RoleRepository) {}
+  constructor(
+    private readonly roleRepository: RoleRepository,
+    private readonly permissionService: PermissionsService,
+  ) {}
 
   /**
    * Creates a new role using the provided data.
@@ -18,11 +22,20 @@ export class RolesService {
    * @param {SaveOptions & ITransactionManager} [options] - Optional options for saving the role.
    * @return {Promise<DeepPartial<Role>>} A promise that resolves to the created role.
    */
-  create(
+  async create(
     createRoleDto: CreateRoleDto,
     options?: SaveOptions & ITransactionManager,
   ): Promise<DeepPartial<Role>> {
-    return this.roleRepository.saveEntity(createRoleDto, options);
+    const createData: Partial<Role> = { ...createRoleDto };
+
+    if (createRoleDto.permissionId) {
+      const permissions = await this.permissionService.findManyById(
+        createRoleDto.permissionId,
+      );
+      createData.permissions = permissions;
+    }
+    delete (createData as CreateRoleDto).permissionId;
+    return this.roleRepository.saveEntity(createData, options);
   }
 
   findAll(findQuery: PaginationRoleDto) {
@@ -66,8 +79,18 @@ export class RolesService {
    * @param {UpdateRoleDto} updateRoleDto - The data to update the role with.
    * @return {Promise<Role | null>} A promise that resolves to the updated role, or null if not found.
    */
-  update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role | null> {
-    return this.roleRepository.updateAndFind({ id }, updateRoleDto);
+  async update(id: string, updateRoleDto: UpdateRoleDto): Promise<Role | null> {
+    const updateData: Partial<Role> = { ...updateRoleDto };
+
+    if (updateRoleDto.permissionId) {
+      const permissions = await this.permissionService.findManyById(
+        updateRoleDto.permissionId,
+      );
+      updateData.permissions = permissions;
+    }
+    delete (updateData as UpdateRoleDto).permissionId;
+
+    return this.roleRepository.updateAndFind({ id }, updateData);
   }
 
   /**

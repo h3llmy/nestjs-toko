@@ -48,7 +48,7 @@ export class ProductsController {
   constructor(private readonly productsService: ProductsService) {}
 
   @Post()
-  @Permission('admin')
+  @Permission('create product')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new product' })
   @ApiCreatedResponse({
@@ -72,6 +72,8 @@ export class ProductsController {
   }
 
   @Get()
+  @Permission('get all product')
+  @ApiBearerAuth()
   @UseInterceptors(CacheInterceptor)
   @CacheKey('get-all-products')
   @ApiOperation({ summary: 'Get all products' })
@@ -90,6 +92,8 @@ export class ProductsController {
   }
 
   @Get(':id')
+  @Permission('get product by id')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get product by id' })
   @ApiParam({ name: 'id', description: 'Product id' })
   @ApiOkResponse({
@@ -115,7 +119,7 @@ export class ProductsController {
   }
 
   @Patch(':id')
-  @Permission('admin')
+  @Permission('update product')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update product by id' })
   @ApiParam({ name: 'id', description: 'Product id' })
@@ -149,7 +153,7 @@ export class ProductsController {
   }
 
   @Delete(':id')
-  @Permission('admin')
+  @Permission('delete product')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete product by id' })
   @ApiParam({ name: 'id', description: 'Product id' })

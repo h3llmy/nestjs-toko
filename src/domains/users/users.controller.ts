@@ -49,7 +49,7 @@ export class UsersController {
   @UseInterceptors(CacheInterceptor)
   @CacheKey('get-all-users')
   @CacheTTL(30)
-  @Permission('admin')
+  @Permission('get all users')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all users' })
   @ApiOkResponse({
@@ -73,7 +73,7 @@ export class UsersController {
   @Get('profile')
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
-  @Permission('Authorize')
+  @Permission('get user profile')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user profile' })
   @ApiOkResponse({
@@ -95,7 +95,7 @@ export class UsersController {
   @Get(':id')
   @UseInterceptors(CacheInterceptor)
   @CacheTTL(30)
-  @Permission('admin')
+  @Permission('get user by id')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Get user by id' })
   @ApiParam({ name: 'id', description: 'User ID' })
@@ -122,7 +122,7 @@ export class UsersController {
   }
 
   @Patch('update-profile')
-  @Permission('Authorize')
+  @Permission('update profile')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update user profile' })
   @ApiOkResponse({
@@ -152,7 +152,7 @@ export class UsersController {
   }
 
   @Delete(':id')
-  @Permission('admin')
+  @Permission('delete user')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete user by id' })
   @ApiParam({ name: 'id', description: 'User ID' })

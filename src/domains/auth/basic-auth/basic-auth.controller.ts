@@ -1,5 +1,5 @@
 import { Controller, Post, Body, Param, Put } from '@nestjs/common';
-import { AuthService } from './auth.service';
+import { BasicAuthService } from './basic-auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { LoginDto } from './dto/login-user.dto';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
@@ -30,12 +30,12 @@ import { ResetPasswordErrorValidationDto } from './dto/reset-password-error-vali
 import { RefreshTokenErrorValidationDto } from './dto/refresh-token-error-validation';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { ResendRegisterEmailErrorValidationDto } from './dto/resend-register-email-error-validation.dto';
-import { AuthTokenSchema } from './dto/authToken.schema';
+import { AuthTokenSchema } from '@app/auth-token';
 
 @ApiTags('Auth')
 @Controller('auth')
-export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+export class BasicAuthController {
+  constructor(private readonly basicAuthService: BasicAuthService) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -58,7 +58,7 @@ export class AuthController {
   register(
     @Body() createAuthDto: RegisterUserDto,
   ): Promise<BasicSuccessSchema> {
-    return this.authService.register(createAuthDto);
+    return this.basicAuthService.register(createAuthDto);
   }
 
   @Post('resend-email')
@@ -82,7 +82,7 @@ export class AuthController {
   resendEmail(
     @Body() createAuthDto: ResendRegisterEmailDto,
   ): Promise<BasicSuccessSchema> {
-    return this.authService.resendEmail(createAuthDto);
+    return this.basicAuthService.resendEmail(createAuthDto);
   }
 
   @Post('verify-email/:token')
@@ -105,14 +105,14 @@ export class AuthController {
     type: ErrorMessageSchema,
   })
   verifyEmail(@Param('token') token: string): Promise<AuthTokenSchema> {
-    return this.authService.verifyEmail(token);
+    return this.basicAuthService.verifyEmail(token);
   }
 
   @Post('login')
   @Throttle({ default: { limit: 3, ttl: 1000 * 60 * 5 } })
   @ApiOperation({ summary: 'Login a user' })
   @ApiCreatedResponse({
-    description: 'Email verified successfully',
+    description: 'Login successfully',
     type: AuthTokenSchema,
   })
   @ApiNotFoundResponse({
@@ -132,7 +132,7 @@ export class AuthController {
     type: ErrorMessageSchema,
   })
   login(@Body() loginDto: LoginDto): Promise<AuthTokenSchema> {
-    return this.authService.login(loginDto);
+    return this.basicAuthService.login(loginDto);
   }
 
   @Post('forget-password')
@@ -157,7 +157,7 @@ export class AuthController {
   forgetPassword(
     @Body() forgetPasswordDto: ForgetPasswordDto,
   ): Promise<BasicSuccessSchema> {
-    return this.authService.forgetPassword(forgetPasswordDto);
+    return this.basicAuthService.forgetPassword(forgetPasswordDto);
   }
 
   @Put('reset-password/:token')
@@ -183,7 +183,7 @@ export class AuthController {
     @Param('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<BasicSuccessSchema> {
-    return this.authService.resetPassword(token, resetPasswordDto);
+    return this.basicAuthService.resetPassword(token, resetPasswordDto);
   }
 
   @Post('refresh-token')
@@ -211,6 +211,6 @@ export class AuthController {
   refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<AuthTokenSchema> {
-    return this.authService.refreshToken(refreshTokenDto);
+    return this.basicAuthService.refreshToken(refreshTokenDto);
   }
 }

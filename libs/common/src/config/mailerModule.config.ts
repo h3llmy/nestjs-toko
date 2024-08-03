@@ -21,7 +21,7 @@ export const mailerModuleConfig: MailerAsyncOptions = {
     },
     template: {
       adapter: new EjsAdapter(),
-      dir: './views',
+      dir: './src/domains',
       options: {
         strict: false,
       },

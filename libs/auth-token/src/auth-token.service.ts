@@ -4,8 +4,8 @@ import {
   IForgetPasswordPayload,
   ILoginTokenPayload,
   IRegisterTokenPayload,
-} from './auth.interface';
-import { User } from '../users/entities/user.entity';
+} from '@app/auth-token';
+
 import { Injectable } from '@nestjs/common';
 import { AuthTokenSchema } from './dto/authToken.schema';
 
@@ -127,10 +127,10 @@ export class AuthTokenService {
   /**
    * Create login token for a given user payload.
    *
-   * @param {User} payload - The user object for which to create the token.
+   * @param {ILoginTokenPayload} payload - The user object for which to create the token.
    * @return {AuthTokenSchema} The access and refresh tokens.
    */
-  createLoginToken(payload: User): AuthTokenSchema {
+  createLoginToken(payload: ILoginTokenPayload): AuthTokenSchema {
     const tokenPayload: ILoginTokenPayload = {
       id: payload.id,
       email: payload.email,

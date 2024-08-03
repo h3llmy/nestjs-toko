@@ -6,4 +6,10 @@ export class CreateRoleErrorValidationDto {
     type: 'string',
   })
   name: string[];
+
+  @ApiProperty({
+    isArray: true,
+    type: 'string',
+  })
+  permissionId: string[];
 }

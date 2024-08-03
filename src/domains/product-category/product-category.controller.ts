@@ -46,7 +46,7 @@ export class ProductCategoryController {
   ) {}
 
   @Post()
-  @Permission('admin')
+  @Permission('create product category')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new product category' })
   @ApiCreatedResponse({
@@ -72,7 +72,9 @@ export class ProductCategoryController {
   }
 
   @Get()
+  @Permission('get all product category')
   @ApiOperation({ summary: 'Get all product categories' })
+  @ApiBearerAuth()
   @ApiOkResponse({
     description: 'Get all product categories with pagination',
     type: paginationSchemaFactory(ProductCategoryDto),
@@ -86,7 +88,9 @@ export class ProductCategoryController {
   }
 
   @Get(':id')
+  @Permission('get product category by id')
   @ApiOperation({ summary: 'Get product category by id' })
+  @ApiBearerAuth()
   @ApiParam({ name: 'id', description: 'Product Category id' })
   @ApiOkResponse({
     description: 'Get product category by id',
@@ -111,7 +115,7 @@ export class ProductCategoryController {
   }
 
   @Patch(':id')
-  @Permission('admin')
+  @Permission('update product category')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Update product category by id' })
   @ApiParam({ name: 'id', description: 'Product Category id' })
@@ -150,7 +154,7 @@ export class ProductCategoryController {
   }
 
   @Delete(':id')
-  @Permission('admin')
+  @Permission('delete product category')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Delete product category by id' })
   @ApiParam({ name: 'id', description: 'Product Category id' })

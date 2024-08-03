@@ -3,12 +3,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RegisterUserDto } from '../auth/dto/register-user.dto';
+import { RegisterUserDto } from '../auth/basic-auth/dto/register-user.dto';
 import { UserRepository } from './users.repository';
 import { User } from './entities/user.entity';
 import { PaginationUserDto } from './dto/pagination-user.dto';
 import { IPaginationPayload, IPaginationResponse } from '@app/common';
-import { DeleteResult, FindOptionsRelations, ILike } from 'typeorm';
+import {
+  DeepPartial,
+  DeleteResult,
+  FindOptionsRelations,
+  ILike,
+} from 'typeorm';
+import { SocialAuthType } from '../auth/social-auth.enum';
 
 /**
  * UsersService provides operations for managing user data.
@@ -25,6 +31,16 @@ export class UsersService {
    */
   async register(createUserDto: RegisterUserDto): Promise<User> {
     return this.userRepository.save(createUserDto);
+  }
+
+  /**
+   * Registers a user using social authentication.
+   *
+   * @param {DeepPartial<User>} user - The user data to be registered.
+   * @return {Promise<User>} The registered user.
+   */
+  async registerSocial(user: DeepPartial<User>): Promise<User> {
+    return this.userRepository.save(user);
   }
 
   /**
@@ -89,6 +105,22 @@ export class UsersService {
     if (!user)
       throw new NotFoundException(`User with email ${email} not found`);
     return user;
+  }
+
+  /**
+   * Finds a user by their social ID and social type.
+   *
+   * @param {SocialAuthType} socialType - The social authentication type.
+   * @param {string} socialId - The social ID.
+   * @return {Promise<User | null>} A promise that resolves to the user object or null if not found.
+   */
+  findOneBySocialId(
+    socialType: SocialAuthType,
+    socialId: string,
+  ): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { socialId, socialType },
+    });
   }
 
   /**

@@ -17,7 +17,6 @@ export class DiscountSubscribers
    * Constructs a new instance of the DiscountSubscribers class.
    *
    * @param {DataSource} dataSource - The data source used by the subscriber.
-   * @param {EncryptionService} encryptionService - The encryption service used by the subscriber.
    * @param {DiscountsRepository} discountService - The discount repository used by the subscriber.
    */
   constructor(
