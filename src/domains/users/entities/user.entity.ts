@@ -28,8 +28,8 @@ export class User {
   @Column({ select: false, nullable: true })
   password?: string;
 
-  @Column({ type: 'bigint' })
-  emailVerifiedAt: number;
+  @Column({ nullable: true, type: 'bigint' })
+  emailVerifiedAt?: number;
 
   @Column({ nullable: true })
   socialId?: string;
