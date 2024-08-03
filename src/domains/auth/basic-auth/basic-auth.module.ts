@@ -10,6 +10,7 @@ import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { PassportModule } from '@nestjs/passport';
 import { RandomizeModule } from '@app/randomize';
 import { AuthTokenModule } from '@app/auth-token';
+import { RolesModule } from '../../roles/roles.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthTokenModule } from '@app/auth-token';
     EncryptionModule,
     RandomizeModule,
     AuthTokenModule,
+    RolesModule,
   ],
   controllers: [BasicAuthController],
   providers: [

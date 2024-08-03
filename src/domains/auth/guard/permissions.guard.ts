@@ -1,12 +1,8 @@
-import {
-  CanActivate,
-  ExecutionContext,
-  Injectable,
-  UnauthorizedException,
-} from '@nestjs/common';
+import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { Observable } from 'rxjs';
 import { User } from '../../users/entities/user.entity';
+import { RolesService } from '../../roles/roles.service';
+import { DeepPartial } from 'typeorm';
 
 /**
  * Guard to check permissions for accessing routes.
@@ -14,17 +10,18 @@ import { User } from '../../users/entities/user.entity';
  */
 @Injectable()
 export class PermissionsGuard implements CanActivate {
-  constructor(private reflector: Reflector) {}
+  constructor(
+    private reflector: Reflector,
+    private readonly roleService: RolesService,
+  ) {}
 
   /**
    * Retrieve required permissions from route handler or controller class metadata
    *
    * @param {ExecutionContext} context - object containing request context
-   * @return {boolean | Promise<boolean> | Observable<boolean>} boolean indicating whether the user has permission to access the route
+   * @return {Promise<boolean>} boolean indicating whether the user has permission to access the route
    */
-  canActivate(
-    context: ExecutionContext,
-  ): boolean | Promise<boolean> | Observable<boolean> {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     // Retrieve required permissions from route handler or controller class metadata
     const requiredPermission = this.reflector.getAllAndOverride<string[]>(
       'permission',
@@ -37,14 +34,15 @@ export class PermissionsGuard implements CanActivate {
     }
 
     // // Extract user information from the request
-    const { user } = context.switchToHttp().getRequest<{ user: User }>();
+    let { user } = context
+      .switchToHttp()
+      .getRequest<{ user: DeepPartial<User> }>();
 
-    // If 'authorize' permission is required, check if user exists
-    if (requiredPermission.includes('Authorize')) {
-      return !!user;
+    if (!user) {
+      user = {
+        role: await this.roleService.findOneByName('public'),
+      };
     }
-
-    if (!user) throw new UnauthorizedException('Unauthorized');
 
     const userPermissions = new Set(
       user?.role?.permissions?.map((permission) => permission.name) || [],
