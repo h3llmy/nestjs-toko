@@ -23,12 +23,15 @@ export class SeederService {
 
       if (isSeeder) {
         const moduleConstructor: SeederRunner = new importedModule.default();
-        this.logger.log(`Seeding ${module}`);
+        this.logger.log(`Seeding ${importedModule.default.name}...`);
         try {
           await moduleConstructor.run(this.dataSource);
-          this.logger.log(`Seeding ${module} Success`);
+          this.logger.log(`Seeding ${importedModule.default.name} Success`);
         } catch (error) {
-          this.logger.error(`Seeding ${module} Failed`, error);
+          this.logger.error(
+            `Seeding ${importedModule.default.name} Failed`,
+            error,
+          );
         }
       }
     }
