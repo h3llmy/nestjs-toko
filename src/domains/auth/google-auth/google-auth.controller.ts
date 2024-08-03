@@ -20,8 +20,8 @@ import {
 } from '@app/common';
 import { GoogleAuthLoginErrorValidationDto } from './dto/google-auth-login-error-validation.dto';
 
-@ApiTags('Google Auth')
-@Controller('google-auth')
+@ApiTags('Auth')
+@Controller('auth/google')
 export class GoogleAuthController {
   constructor(
     private readonly googleAuthService: GoogleAuthService,
