@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Google Auth Login</title>
+    <script src="https://accounts.google.com/gsi/client" async defer></script>
+  </head>
+  <body>
+    <h2>Google Authentication Login</h2>
+    <div
+      id="g_id_onload"
+      data-client_id="516243855300-ajgnmk64lo4sp73mlrubpef808lpglvc.apps.googleusercontent.com"
+      data-login_uri="http://localhost:3000/auth/google"
+      data-auto_prompt="false"
+    ></div>
+    <div id="g_id_signin" data-type="standard"></div>
+
+    <script>
+      function handleCredentialResponse(response) {
+        fetch('http://localhost:8000/api/v1/auth/google/login', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ token: response.credential }),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            // Handle the response from your API here
+            console.log('Success:', data);
+          })
+          .catch((error) => {
+            console.error('Error:', error);
+          });
+      }
+
+      window.onload = function () {
+        google.accounts.id.initialize({
+          client_id:
+            '516243855300-ajgnmk64lo4sp73mlrubpef808lpglvc.apps.googleusercontent.com',
+          callback: handleCredentialResponse,
+        });
+        google.accounts.id.prompt(); // Optional: Display the Google Sign-In prompt automatically
+      };
+    </script>
+  </body>
+</html>
