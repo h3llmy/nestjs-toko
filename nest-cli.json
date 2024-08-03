@@ -42,6 +42,15 @@
       "compilerOptions": {
         "tsConfigPath": "libs/payment-gateway/tsconfig.lib.json"
       }
+    },
+    "auth-token": {
+      "type": "library",
+      "root": "libs/auth-token",
+      "entryFile": "index",
+      "sourceRoot": "libs/auth-token/src",
+      "compilerOptions": {
+        "tsConfigPath": "libs/auth-token/tsconfig.lib.json"
+      }
     }
   }
 }

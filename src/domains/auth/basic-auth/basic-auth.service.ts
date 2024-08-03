@@ -4,7 +4,7 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { UsersService } from '../users/users.service';
+import { UsersService } from '../../users/users.service';
 import { EncryptionService } from '@app/encryption';
 import { ConfigService } from '@nestjs/config';
 import { RandomizeService } from '@app/randomize';
@@ -14,20 +14,22 @@ import {
   IForgetPasswordPayload,
   ILoginTokenPayload,
   IRegisterTokenPayload,
-} from './auth.interface';
+  AuthTokenService,
+} from '@app/auth-token';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { BasicSuccessSchema } from '@app/common';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
-import { AuthTokenService } from './authToken.service';
 import { AuthTokenSchema } from './dto/authToken.schema';
+import { SocialAuthResponse } from '../social-auth.abstract';
+import { SocialAuthType } from '../social-auth.enum';
 
 /**
  * AuthService handles the authentication and authorization logic.
  */
 @Injectable()
-export class AuthService {
+export class BasicAuthService {
   constructor(
     private readonly usersServices: UsersService,
     private readonly encryptionService: EncryptionService,
@@ -57,7 +59,7 @@ export class AuthService {
     const confirmationLink = `${webUrl}/${webVerifyRoute}/${token}`;
 
     this.mailerService.sendMail({
-      template: 'auth/views/email/register',
+      template: 'auth/basic-auth/views/email/register',
       to: registerDto.email,
       subject: 'Registration Email',
       context: {
@@ -103,7 +105,7 @@ export class AuthService {
     const confirmationLink = `${webUrl}/${webVerifyRoute}/${token}`;
 
     this.mailerService.sendMail({
-      template: 'auth/views/email/register',
+      template: 'auth/basic-auth/views/email/register',
       to: resendEmailDto.email,
       subject: 'Registration Email',
       context: {
@@ -149,6 +151,12 @@ export class AuthService {
    */
   async login(loginDto: LoginDto): Promise<AuthTokenSchema> {
     const userCheck = await this.usersServices.findOneByEmail(loginDto.email);
+
+    if (userCheck.socialType) {
+      throw new BadRequestException(
+        `user is already logged in with ${userCheck.socialType}`,
+      );
+    }
 
     if (
       !userCheck ||
@@ -197,7 +205,7 @@ export class AuthService {
         redirectLink,
         user,
       },
-      template: 'auth/views/email/forget-password',
+      template: 'auth/basic-auth/views/email/forget-password',
     });
 
     return { message: 'Email Sended' };
@@ -244,5 +252,29 @@ export class AuthService {
     if (!userCheck) throw new BadRequestException('invalid token');
 
     return this.authTokenService.createLoginToken(userCheck);
+  }
+
+  /**
+   * Validates a social login by finding a user by social ID and social type, or registering a new user if not found.
+   *
+   * @param {SocialAuthType} socialType - The social authentication type.
+   * @param {SocialAuthResponse} socialData - The social authentication response containing the user's ID, username, email, and social ID.
+   * @return {Promise<AuthTokenSchema>} A promise that resolves to an authentication token schema containing the access and refresh tokens.
+   */
+  async validateSocialLogin(
+    socialType: SocialAuthType,
+    socialData: SocialAuthResponse,
+  ): Promise<AuthTokenSchema> {
+    const user =
+      (await this.usersServices.findOneBySocialId(socialType, socialData.id)) ??
+      (await this.usersServices.registerSocial({
+        username: socialData.username,
+        email: socialData.email,
+        socialId: socialData.id,
+        socialType,
+        emailVerifiedAt: Date.now(),
+      }));
+
+    return this.authTokenService.createLoginToken(user);
   }
 }

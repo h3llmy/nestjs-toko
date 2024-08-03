@@ -4,10 +4,11 @@ import {
   IForgetPasswordPayload,
   ILoginTokenPayload,
   IRegisterTokenPayload,
-} from './auth.interface';
-import { User } from '../users/entities/user.entity';
+} from '@app/auth-token';
+
 import { Injectable } from '@nestjs/common';
-import { AuthTokenSchema } from './dto/authToken.schema';
+import { AuthTokenSchema } from '../../../src/domains/auth/basic-auth/dto/authToken.schema';
+import { User } from '../../../src/domains/users/entities/user.entity';
 
 @Injectable()
 export class AuthTokenService {

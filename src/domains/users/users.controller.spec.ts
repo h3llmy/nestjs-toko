@@ -5,6 +5,7 @@ import { User } from './entities/user.entity';
 import { IPaginationResponse, SortDirection } from '@app/common';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { Role } from '../roles/entities/role.entity';
+import { UpdateUserDto } from './dto/update-user.dto';
 
 describe('UsersController', () => {
   let usersController: UsersController;
@@ -98,16 +99,24 @@ describe('UsersController', () => {
       expect(usersController.update).toBeDefined();
     });
     it('should update a user', async () => {
+      const mockUpdateUser: UpdateUserDto = {
+        password: 'new password',
+        username: 'new username',
+      };
       usersService.update.mockResolvedValue(mockUser);
-      const user = await usersController.update(mockUser, mockUser);
+      const user = await usersController.update(mockUser, mockUpdateUser);
       expect(user.message).toBeDefined();
     });
 
     it('should throw NotFoundException when user not found', async () => {
+      const mockUpdateUser: UpdateUserDto = {
+        password: 'new password',
+        username: 'new username',
+      };
       usersService.update.mockResolvedValue(null);
-      await expect(usersController.update(mockUser, mockUser)).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        usersController.update(mockUser, mockUpdateUser),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

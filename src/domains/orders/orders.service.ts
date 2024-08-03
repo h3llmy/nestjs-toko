@@ -28,6 +28,7 @@ import { Product } from '../products/entities/product.entity';
 import { PaginationOrderDto } from './dto/pagination-order.dto';
 import { IPaginationPayload, IPaginationResponse } from '@app/common';
 
+// TODO: add send email to customer when order created / updated
 @Injectable()
 export class OrdersService {
   constructor(

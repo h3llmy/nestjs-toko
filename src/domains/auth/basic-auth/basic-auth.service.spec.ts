@@ -1,21 +1,22 @@
 import { TestBed } from '@automock/jest';
-import { AuthService } from './auth.service';
+import { BasicAuthService } from './basic-auth.service';
 import { EncryptionService } from '@app/encryption';
 import { MailerService } from '@nestjs-modules/mailer';
 import { RandomizeService } from '@app/randomize';
-import { UsersService } from '../users/users.service';
-import { User } from '../users/entities/user.entity';
+import { UsersService } from '../../users/users.service';
+import { User } from '../../users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoginDto } from './dto/login-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { AuthTokenService } from './authToken.service';
-import { ILoginTokenPayload } from './auth.interface';
-import { Role } from '../roles/entities/role.entity';
+import { AuthTokenService, ILoginTokenPayload } from '@app/auth-token';
+import { Role } from '../../roles/entities/role.entity';
+import { SocialAuthType } from '../social-auth.enum';
+import { SocialAuthResponse } from '../social-auth.abstract';
 
 describe('AuthService', () => {
-  let authService: AuthService;
+  let authService: BasicAuthService;
   let usersServices: jest.Mocked<UsersService>;
   let configService: jest.Mocked<ConfigService>;
   let authTokenService: jest.Mocked<AuthTokenService>;
@@ -43,7 +44,7 @@ describe('AuthService', () => {
   };
 
   beforeEach(() => {
-    const { unit, unitRef } = TestBed.create(AuthService).compile();
+    const { unit, unitRef } = TestBed.create(BasicAuthService).compile();
 
     authService = unit;
     usersServices = unitRef.get(UsersService);
@@ -86,7 +87,7 @@ describe('AuthService', () => {
       expect(user).toEqual({ message: 'Registration Success' });
       expect(usersServices.register).toHaveBeenCalled();
       expect(mailerService.sendMail).toHaveBeenCalledWith({
-        template: 'auth/views/email/register',
+        template: 'auth/basic-auth/views/email/register',
         to: 'testing@example.com',
         subject: 'Registration Email',
         context: {
@@ -134,7 +135,7 @@ describe('AuthService', () => {
       await authService.resendEmail({ email: mockEmail });
 
       expect(mailerService.sendMail).toHaveBeenCalledWith({
-        template: 'auth/views/email/register',
+        template: 'auth/basic-auth/views/email/register',
         to: mockEmail,
         subject: 'Registration Email',
         context: {
@@ -235,6 +236,27 @@ describe('AuthService', () => {
       );
       expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
+
+    it('should throw an error if the user is login with social', async () => {
+      const unverifiedUser: User = {
+        ...userMock,
+        socialType: SocialAuthType.GOOGLE,
+      };
+      const loginDto: LoginDto = {
+        email: 'test@example.com',
+        password: 'test',
+      };
+
+      usersServices.findOneByEmail.mockResolvedValue(unverifiedUser);
+      encryptionService.match.mockReturnValue(true);
+
+      await expect(authService.login(loginDto)).rejects.toThrow(
+        BadRequestException,
+      );
+      expect(usersServices.findOneByEmail).toHaveBeenCalledWith(loginDto.email);
+      expect(encryptionService.match).not.toHaveBeenCalled();
+      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
+    });
   });
 
   describe('forgetPassword', () => {
@@ -263,7 +285,7 @@ describe('AuthService', () => {
           redirectLink,
           user: userMock,
         },
-        template: 'auth/views/email/forget-password',
+        template: 'auth/basic-auth/views/email/forget-password',
       });
     });
   });
@@ -315,6 +337,67 @@ describe('AuthService', () => {
       expect(tokens.refreshToken).toBeDefined();
       expect(authTokenService.verifyRefreshToken).toHaveBeenCalled();
       expect(usersServices.findOne).toHaveBeenCalledWith('1');
+    });
+  });
+
+  describe('validateSocialLogin', () => {
+    it('should validate a social login', async () => {
+      const socialType = SocialAuthType.GOOGLE;
+      const socialData: SocialAuthResponse = {
+        id: '1',
+        email: userMock.email,
+        username: userMock.username,
+      };
+      usersServices.findOneBySocialId.mockResolvedValue(userMock);
+      authTokenService.createLoginToken.mockReturnValue({
+        accessToken: 'some access token',
+        refreshToken: 'some refresh token',
+      });
+      const tokens = await authService.validateSocialLogin(
+        socialType,
+        socialData,
+      );
+      expect(tokens.accessToken).toBeDefined();
+      expect(tokens.refreshToken).toBeDefined();
+      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(userMock);
+      expect(usersServices.findOneBySocialId).toHaveBeenCalledWith(
+        socialType,
+        socialData.id,
+      );
+      expect(usersServices.registerSocial).not.toHaveBeenCalled();
+    });
+
+    it('should create and validate a social login when user does not exist', async () => {
+      const socialType = SocialAuthType.GOOGLE;
+      const socialData: SocialAuthResponse = {
+        id: '1',
+        email: userMock.email,
+        username: userMock.username,
+      };
+      usersServices.findOneBySocialId.mockResolvedValue(null);
+      usersServices.registerSocial.mockResolvedValue(userMock);
+      authTokenService.createLoginToken.mockReturnValue({
+        accessToken: 'some access token',
+        refreshToken: 'some refresh token',
+      });
+      const tokens = await authService.validateSocialLogin(
+        socialType,
+        socialData,
+      );
+      expect(tokens.accessToken).toBeDefined();
+      expect(tokens.refreshToken).toBeDefined();
+      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(userMock);
+      expect(usersServices.findOneBySocialId).toHaveBeenCalledWith(
+        socialType,
+        socialData.id,
+      );
+      expect(usersServices.registerSocial).toHaveBeenCalledWith({
+        username: userMock.username,
+        email: userMock.email,
+        socialId: socialData.id,
+        socialType,
+        emailVerifiedAt: expect.any(Number),
+      });
     });
   });
 });

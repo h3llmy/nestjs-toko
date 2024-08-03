@@ -19,6 +19,7 @@
     "noFallthroughCasesInSwitch": false,
     "esModuleInterop": true,
     "resolveJsonModule": true,
+    "strict": true,
     "paths": {
       "@app/common": [
         "libs/common/src"
@@ -43,6 +44,12 @@
       ],
       "@app/payment-gateway/*": [
         "libs/payment-gateway/src/*"
+      ],
+      "@app/auth-token": [
+        "libs/auth-token/src"
+      ],
+      "@app/auth-token/*": [
+        "libs/auth-token/src/*"
       ]
     }
   }

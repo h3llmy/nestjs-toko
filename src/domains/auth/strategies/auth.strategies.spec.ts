@@ -1,7 +1,7 @@
 import { JwtStrategies } from './auth.strategies';
 import { ConfigService } from '@nestjs/config';
 import { UsersService } from '../../users/users.service';
-import { ILoginTokenPayload } from '../auth.interface';
+import { ILoginTokenPayload } from '@app/auth-token';
 import { User } from '../../users/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { TestBed } from '@automock/jest';

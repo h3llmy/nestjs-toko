@@ -18,6 +18,8 @@
     "@app/randomize/(.*)": "<rootDir>/../libs/randomize/src/$1",
     "@app/randomize": "<rootDir>/../libs/randomize/src",
     "@app/payment-gateway/(.*)": "<rootDir>/../libs/payment-gateway/src/$1",
-    "@app/payment-gateway": "<rootDir>/../libs/payment-gateway/src"
+    "@app/payment-gateway": "<rootDir>/../libs/payment-gateway/src",
+    "@app/auth-token/(.*)": "<rootDir>/../libs/auth-token/src/$1",
+    "@app/auth-token": "<rootDir>/../libs/auth-token/src"
   }
 }

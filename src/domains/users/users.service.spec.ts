@@ -5,6 +5,7 @@ import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
 import { IPaginationResponse } from '@app/common';
 import { Role } from '../roles/entities/role.entity';
+import { SocialAuthType } from '../auth/social-auth.enum';
 
 describe('UsersService', () => {
   let userService: UsersService;
@@ -77,6 +78,71 @@ describe('UsersService', () => {
     });
   });
 
+  describe('findOneByEmail', () => {
+    it('should get a user by email', async () => {
+      userRepository.findOne.mockResolvedValue(mockUser);
+
+      const user = await userService.findOneByEmail(mockUser.email);
+
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: mockUser.email },
+        select: [
+          'id',
+          'email',
+          'username',
+          'emailVerifiedAt',
+          'password',
+          'role',
+        ],
+      });
+      expect(user).toEqual(mockUser);
+    });
+
+    it('should throw an error if no user not found', async () => {
+      userRepository.findOne.mockResolvedValue(null);
+
+      await expect(userService.findOneByEmail(mockUser.email)).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: { email: mockUser.email },
+        select: [
+          'id',
+          'email',
+          'username',
+          'emailVerifiedAt',
+          'password',
+          'role',
+        ],
+      });
+    });
+  });
+
+  describe('findOneBySocialId', () => {
+    it('should get a user by social id', async () => {
+      const mockUserSocial: User = {
+        ...mockUser,
+        socialId: '1',
+        socialType: SocialAuthType.GOOGLE,
+      };
+      userRepository.findOne.mockResolvedValue(mockUserSocial);
+
+      const user = await userService.findOneBySocialId(
+        SocialAuthType.GOOGLE,
+        '1',
+      );
+
+      expect(userRepository.findOne).toHaveBeenCalledWith({
+        where: {
+          socialId: mockUserSocial.socialId,
+          socialType: mockUserSocial.socialType,
+        },
+      });
+      expect(user).toEqual(mockUserSocial);
+    });
+  });
+
   describe('register', () => {
     it('should create a new user', async () => {
       userRepository.save.mockResolvedValue(mockUser);
@@ -109,7 +175,43 @@ describe('UsersService', () => {
           password: 'some hashed password',
           confirmPassword: 'some hashed password',
         }),
-      ).rejects.toThrow('email test@example.com is already in used');
+      ).rejects.toThrow(BadRequestException);
+    });
+  });
+
+  describe('registerSocial', () => {
+    it('should create a new user', async () => {
+      userRepository.save.mockResolvedValue(mockUser);
+
+      const user = await userService.registerSocial({
+        username: 'Test User',
+        email: 'test@example.com',
+        socialId: '1',
+        socialType: SocialAuthType.GOOGLE,
+      });
+
+      expect(userRepository.save).toHaveBeenCalledWith({
+        username: 'Test User',
+        email: 'test@example.com',
+        socialId: '1',
+        socialType: SocialAuthType.GOOGLE,
+      });
+      expect(user).toEqual(mockUser);
+    });
+
+    it('should throw BadRequestException if user already exist', async () => {
+      userRepository.save.mockRejectedValue(
+        new BadRequestException('email test@example.com is already in used'),
+      );
+
+      await expect(
+        userService.registerSocial({
+          username: 'Test User',
+          email: 'test@example.com',
+          socialId: '1',
+          socialType: SocialAuthType.GOOGLE,
+        }),
+      ).rejects.toThrow(BadRequestException);
     });
   });
 

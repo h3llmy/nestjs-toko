@@ -1,9 +1,9 @@
 import { TestBed } from '@automock/jest';
-import { AuthTokenService } from './authToken.service';
+import { AuthTokenService } from './auth-token.service';
 import { JwtService } from '@nestjs/jwt';
-import { ILoginTokenPayload, IRegisterTokenPayload } from './auth.interface';
-import { User } from '../users/entities/user.entity';
-import { Role } from '../roles/entities/role.entity';
+import { ILoginTokenPayload, IRegisterTokenPayload } from '@app/auth-token';
+import { Role } from '../../../src/domains/roles/entities/role.entity';
+import { User } from '../../../src/domains/users/entities/user.entity';
 
 describe('AuthTokenService', () => {
   let authTokenService: AuthTokenService;

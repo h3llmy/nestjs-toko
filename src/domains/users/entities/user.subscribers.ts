@@ -54,7 +54,9 @@ export class UserSubscribers implements EntitySubscriberInterface<User> {
     if (userCheck)
       throw new BadRequestException(`email ${entity.email} is already in used`);
 
-    entity.password = this.encryptionService.hash(entity.password);
+    if (entity.password) {
+      entity.password = this.encryptionService.hash(entity.password);
+    }
     if (!entity?.role) {
       const roleFind = await this.roleService.findOneByName('user');
       if (!roleFind) throw new NotFoundException('role not found');
