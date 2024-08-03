@@ -185,6 +185,12 @@ export class BasicAuthService {
       forgetPasswordDto.email,
     );
 
+    if (user.socialType) {
+      throw new BadRequestException(
+        `user is logged in with ${user.socialType}`,
+      );
+    }
+
     const tokenPayload: IForgetPasswordPayload = {
       id: user.id,
     };

@@ -4,6 +4,7 @@
 
 - **Basic Authentication**: Secure authentication mechanism for users.
 - **Google Authentication**: Secure authentication mechanism integrated with [Google](https://console.cloud.google.com/).
+- **Database Seeder**: insert default database data.
 - **Product Management**: Add, update, and delete products.
 - **Discount Management**: Create and manage discounts for products.
 - **Inventory Management**: Track and manage product inventory.

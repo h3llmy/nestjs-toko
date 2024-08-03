@@ -1,4 +1,9 @@
-import { CanActivate, ExecutionContext, Injectable } from '@nestjs/common';
+import {
+  CanActivate,
+  ExecutionContext,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
 import { User } from '../../users/entities/user.entity';
 import { RolesService } from '../../roles/roles.service';
@@ -38,10 +43,15 @@ export class PermissionsGuard implements CanActivate {
       .switchToHttp()
       .getRequest<{ user: DeepPartial<User> }>();
 
+    let isPublicRole: boolean = false;
+
     if (!user) {
+      const publicRole = await this.roleService.findOneByName('public');
+      if (!publicRole) throw new UnauthorizedException('Unauthorized user');
       user = {
-        role: await this.roleService.findOneByName('public'),
+        role: publicRole,
       };
+      isPublicRole = true;
     }
 
     const userPermissions = new Set(
@@ -49,6 +59,14 @@ export class PermissionsGuard implements CanActivate {
     );
 
     // Check if user has any of the required roles
-    return requiredPermission.some((role) => userPermissions.has(role));
+    const hasPermission = requiredPermission.some((role) =>
+      userPermissions.has(role),
+    );
+
+    if (isPublicRole && !hasPermission) {
+      throw new UnauthorizedException('Unauthorized user');
+    }
+
+    return hasPermission;
   }
 }

@@ -150,6 +150,10 @@ export class BasicAuthController {
     description: 'User not found',
     type: BasicErrorSchema,
   })
+  @ApiBadRequestResponse({
+    description: 'User already login with social account',
+    type: BasicErrorSchema,
+  })
   @ApiTooManyRequestsResponse({
     description: 'Too many requests',
     type: ErrorMessageSchema,
