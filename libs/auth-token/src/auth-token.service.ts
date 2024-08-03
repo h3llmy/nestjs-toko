@@ -7,8 +7,7 @@ import {
 } from '@app/auth-token';
 
 import { Injectable } from '@nestjs/common';
-import { AuthTokenSchema } from '../../../src/domains/auth/basic-auth/dto/authToken.schema';
-import { User } from '../../../src/domains/users/entities/user.entity';
+import { AuthTokenSchema } from './dto/authToken.schema';
 
 @Injectable()
 export class AuthTokenService {
@@ -128,10 +127,10 @@ export class AuthTokenService {
   /**
    * Create login token for a given user payload.
    *
-   * @param {User} payload - The user object for which to create the token.
+   * @param {ILoginTokenPayload} payload - The user object for which to create the token.
    * @return {AuthTokenSchema} The access and refresh tokens.
    */
-  createLoginToken(payload: User): AuthTokenSchema {
+  createLoginToken(payload: ILoginTokenPayload): AuthTokenSchema {
     const tokenPayload: ILoginTokenPayload = {
       id: payload.id,
       email: payload.email,

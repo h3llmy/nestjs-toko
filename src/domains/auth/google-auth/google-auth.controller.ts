@@ -12,7 +12,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { SocialAuthType } from '../social-auth.enum';
-import { AuthTokenSchema } from '../basic-auth/dto/authToken.schema';
+import { AuthTokenSchema } from '@app/auth-token';
 import {
   BasicErrorSchema,
   ErrorMessageSchema,

@@ -15,13 +15,13 @@ import {
   ILoginTokenPayload,
   IRegisterTokenPayload,
   AuthTokenService,
+  AuthTokenSchema,
 } from '@app/auth-token';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { BasicSuccessSchema } from '@app/common';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
-import { AuthTokenSchema } from './dto/authToken.schema';
 import { SocialAuthResponse } from '../social-auth.abstract';
 import { SocialAuthType } from '../social-auth.enum';
 

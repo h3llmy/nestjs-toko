@@ -30,7 +30,7 @@ import { ResetPasswordErrorValidationDto } from './dto/reset-password-error-vali
 import { RefreshTokenErrorValidationDto } from './dto/refresh-token-error-validation';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { ResendRegisterEmailErrorValidationDto } from './dto/resend-register-email-error-validation.dto';
-import { AuthTokenSchema } from './dto/authToken.schema';
+import { AuthTokenSchema } from '@app/auth-token';
 
 @ApiTags('Auth')
 @Controller('auth')
