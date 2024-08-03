@@ -261,6 +261,24 @@ describe('BasicAuthService', () => {
 
   describe('forgetPassword', () => {
     it('should initiate the password reset process and send an email', async () => {
+      usersServices.findOneByEmail.mockResolvedValue({
+        ...userMock,
+        socialType: SocialAuthType.GOOGLE,
+      });
+      await expect(
+        authService.forgetPassword({
+          email: 'test@example.com',
+        }),
+      ).rejects.toThrow(BadRequestException);
+      expect(usersServices.findOneByEmail).toHaveBeenCalledWith(
+        'test@example.com',
+      );
+      expect(
+        authTokenService.generateForgetPasswordToken,
+      ).not.toHaveBeenCalled();
+      expect(mailerService.sendMail).not.toHaveBeenCalledWith();
+    });
+    it('should throw error if the user is logged in with social', async () => {
       const jwtMock = 'some jwt token';
       const webUrl = configService.getOrThrow<string>('WEB_URL');
       const forgetPasswordRoute = configService.getOrThrow<string>(

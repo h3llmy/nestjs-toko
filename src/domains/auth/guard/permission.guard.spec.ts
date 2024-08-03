@@ -2,7 +2,7 @@ import { TestBed } from '@automock/jest';
 import { PermissionsGuard } from './permissions.guard';
 import { Reflector } from '@nestjs/core';
 import { User } from '../../users/entities/user.entity';
-import { ExecutionContext } from '@nestjs/common';
+import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
 import { Role } from '../../roles/entities/role.entity';
 import { Permissions } from '../../permissions/entities/permission.entity';
 import { RolesService } from '../../roles/roles.service';
@@ -102,6 +102,38 @@ describe('PermissionsGuard', () => {
       rolesService.findOneByName.mockResolvedValue(mockRole);
       reflector.getAllAndOverride.mockReturnValue(requiredPermission);
       expect(await guard.canActivate(context)).toBe(true);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('permission', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      expect(rolesService.findOneByName).toHaveBeenCalledWith('public');
+    });
+    it('should throw error if public role is not found', async () => {
+      const requiredPermission = ['success'];
+      const context: ExecutionContext = createMockExecutionContext({
+        user: undefined,
+      });
+      rolesService.findOneByName.mockResolvedValue(null);
+      reflector.getAllAndOverride.mockReturnValue(requiredPermission);
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('permission', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      expect(rolesService.findOneByName).toHaveBeenCalledWith('public');
+    });
+    it('should throw error if public role permission not match', async () => {
+      const requiredPermission = ['failed'];
+      const context: ExecutionContext = createMockExecutionContext({
+        user: undefined,
+      });
+      rolesService.findOneByName.mockResolvedValue(mockRole);
+      reflector.getAllAndOverride.mockReturnValue(requiredPermission);
+      await expect(guard.canActivate(context)).rejects.toThrow(
+        UnauthorizedException,
+      );
       expect(reflector.getAllAndOverride).toHaveBeenCalledWith('permission', [
         context.getHandler(),
         context.getClass(),
