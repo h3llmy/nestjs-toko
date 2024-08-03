@@ -44,6 +44,14 @@ To install the necessary dependencies, run:
 $ npm install
 ```
 
+## Seeding
+
+To run database seeding, run:
+
+```bash
+$ npm run db:seed
+```
+
 ## Running the App
 
 To start the application in different modes:

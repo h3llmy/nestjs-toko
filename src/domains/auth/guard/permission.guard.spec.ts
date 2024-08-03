@@ -2,13 +2,15 @@ import { TestBed } from '@automock/jest';
 import { PermissionsGuard } from './permissions.guard';
 import { Reflector } from '@nestjs/core';
 import { User } from '../../users/entities/user.entity';
-import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
+import { ExecutionContext } from '@nestjs/common';
 import { Role } from '../../roles/entities/role.entity';
 import { Permissions } from '../../permissions/entities/permission.entity';
+import { RolesService } from '../../roles/roles.service';
 
 describe('PermissionsGuard', () => {
   let guard: PermissionsGuard;
   let reflector: jest.Mocked<Reflector>;
+  let rolesService: jest.Mocked<RolesService>;
 
   const mockPermission: Permissions = {
     id: '1',
@@ -40,69 +42,71 @@ describe('PermissionsGuard', () => {
 
     guard = unit;
     reflector = unitRef.get(Reflector);
+    rolesService = unitRef.get(RolesService);
   });
 
   it('should be defined', () => {
     expect(guard).toBeDefined();
     expect(reflector).toBeDefined();
+    expect(rolesService).toBeDefined();
   });
 
   describe('canActivate', () => {
     it('should be defined', () => {
       expect(guard.canActivate).toBeDefined();
     });
-
-    it('should return true if permissions are Authorize', () => {
-      const requiredPermission = 'Authorize';
-
-      const context: ExecutionContext = createMockExecutionContext({
-        user: mockUser,
-      });
-      reflector.getAllAndOverride.mockReturnValue(requiredPermission);
-
-      expect(guard.canActivate(context)).toBe(true);
-    });
-    it('should return true if no permissions are set', () => {
+    it('should return true if no permissions are set', async () => {
       const requiredPermission = undefined;
-
       const context: ExecutionContext = createMockExecutionContext({
         user: mockUser,
       });
       reflector.getAllAndOverride.mockReturnValue(requiredPermission);
-
-      expect(guard.canActivate(context)).toBe(true);
+      expect(await guard.canActivate(context)).toBe(true);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('permission', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      expect(rolesService.findOneByName).not.toHaveBeenCalled();
     });
-    it('should return true if role permissions are match', () => {
+    it('should return true if role permissions are match', async () => {
       const requiredPermission = ['success'];
-
       const context: ExecutionContext = createMockExecutionContext({
         user: mockUser,
       });
       reflector.getAllAndOverride.mockReturnValue(requiredPermission);
-
-      expect(guard.canActivate(context)).toBe(true);
+      expect(await guard.canActivate(context)).toBe(true);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('permission', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      expect(rolesService.findOneByName).not.toHaveBeenCalled();
     });
-    it('should return false if role permissions are not match', () => {
+    it('should return false if role permissions are not match', async () => {
       const requiredPermission = ['failed'];
-
       const context: ExecutionContext = createMockExecutionContext({
         user: mockUser,
       });
       reflector.getAllAndOverride.mockReturnValue(requiredPermission);
-
-      expect(guard.canActivate(context)).toBe(false);
+      expect(await guard.canActivate(context)).toBe(false);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('permission', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      expect(rolesService.findOneByName).not.toHaveBeenCalled();
     });
-    it('should throw UnauthorizedException if user is undefined', async () => {
+    it('should get public role', async () => {
       const requiredPermission = ['success'];
-
       const context: ExecutionContext = createMockExecutionContext({
         user: undefined,
       });
+      rolesService.findOneByName.mockResolvedValue(mockRole);
       reflector.getAllAndOverride.mockReturnValue(requiredPermission);
-
-      await expect(async () => {
-        await guard.canActivate(context);
-      }).rejects.toThrow(UnauthorizedException);
+      expect(await guard.canActivate(context)).toBe(true);
+      expect(reflector.getAllAndOverride).toHaveBeenCalledWith('permission', [
+        context.getHandler(),
+        context.getClass(),
+      ]);
+      expect(rolesService.findOneByName).toHaveBeenCalledWith('public');
     });
   });
 });

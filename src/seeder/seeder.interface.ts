@@ -1,5 +1,8 @@
 import { DataSource } from 'typeorm';
 
-export interface SeederRunner {
+export interface ISeederRunner {
   run(dataSource: DataSource): Promise<void>;
+}
+export interface ISeederData {
+  [roleName: string]: string[];
 }

@@ -1,8 +1,9 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { glob } from 'glob';
 import { SEEDER_FILES_PATH } from './config/seeder.config';
-import { SeederRunner } from './seeder.interface';
+import { ISeederRunner } from './seeder.interface';
 import { DataSource } from 'typeorm';
+import 'reflect-metadata';
 
 @Injectable()
 export class SeederService {
@@ -16,22 +17,24 @@ export class SeederService {
 
     for (const module of modules) {
       const importedModule = await import(module);
-      const isSeeder = Reflect.getMetadata(
-        'isSeederClass',
-        importedModule.default,
-      );
 
-      if (isSeeder) {
-        const moduleConstructor: SeederRunner = new importedModule.default();
-        this.logger.log(`Seeding ${importedModule.default.name}...`);
-        try {
-          await moduleConstructor.run(this.dataSource);
-          this.logger.log(`Seeding ${importedModule.default.name} Success`);
-        } catch (error) {
-          this.logger.error(
-            `Seeding ${importedModule.default.name} Failed`,
-            error,
-          );
+      // Iterate through all properties in importedModule
+      for (const key of Object.keys(importedModule)) {
+        const seederClass = importedModule[key];
+
+        if (typeof seederClass === 'function') {
+          const isSeeder = Reflect.getMetadata('isSeederClass', seederClass);
+
+          if (isSeeder) {
+            const moduleConstructor: ISeederRunner = new seederClass();
+            this.logger.log(`Seeding ${seederClass.name}...`);
+            try {
+              await moduleConstructor.run(this.dataSource);
+              this.logger.log(`Seeding ${seederClass.name} Success`);
+            } catch (error) {
+              this.logger.error(`Seeding ${seederClass.name} Failed`, error);
+            }
+          }
         }
       }
     }
