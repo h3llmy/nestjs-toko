@@ -4,7 +4,7 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": false,
-    "webpack": true
+    "webpack": false
   },
   "projects": {
     "common": {
