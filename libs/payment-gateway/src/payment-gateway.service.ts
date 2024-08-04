@@ -42,7 +42,7 @@ export class PaymentGatewayService {
         throw new ServiceUnavailableException('Failed to create transaction');
       }
       return transaction;
-    } catch (error) {
+    } catch {
       throw new ServiceUnavailableException('payment error');
     }
   }
@@ -56,7 +56,7 @@ export class PaymentGatewayService {
   async paymentCheck(payload: PaymentCheckDto): Promise<PaymentCheckDto> {
     try {
       return await this.client.transaction.notification(payload);
-    } catch (error) {
+    } catch {
       throw new ServiceUnavailableException('payment error');
     }
   }
