@@ -1,10 +1,13 @@
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { TypeOrmModuleAsyncOptions } from '@nestjs/typeorm';
+import {
+  TypeOrmModuleAsyncOptions,
+  TypeOrmModuleOptions,
+} from '@nestjs/typeorm';
 
-export const typeOrmModuleConfig: TypeOrmModuleAsyncOptions = {
-  imports: [ConfigModule],
-  inject: [ConfigService],
-  useFactory: (configService: ConfigService) => ({
+function createTypeOrmConfig(
+  configService: ConfigService,
+): TypeOrmModuleOptions {
+  return {
     type: 'postgres',
     host: configService.get<string>('POSTGRES_HOST', 'localhost'),
     port: configService.get<number>('POSTGRES_PORT', 5432),
@@ -17,5 +20,21 @@ export const typeOrmModuleConfig: TypeOrmModuleAsyncOptions = {
       configService.get<string>('RUN_MIGRATIONS', 'false') === 'true',
     ssl: { rejectUnauthorized: false },
     logging: configService.get<string>('POSTGRES_LOGGING', 'false') === 'true',
+  };
+}
+
+export const typeOrmModuleConfig: TypeOrmModuleAsyncOptions = {
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) =>
+    createTypeOrmConfig(configService),
+};
+
+export const typeOrmModuleSeederConfig: TypeOrmModuleAsyncOptions = {
+  imports: [ConfigModule],
+  inject: [ConfigService],
+  useFactory: (configService: ConfigService) => ({
+    ...createTypeOrmConfig(configService),
+    entities: ['**/*.entity{.ts,.js}'],
   }),
 };
