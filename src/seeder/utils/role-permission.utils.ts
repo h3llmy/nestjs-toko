@@ -6,11 +6,8 @@ import { Permissions } from '../../domains/permissions/entities/permission.entit
 export class RolePermissionSeeder implements ISeederRunner {
   private permissionRepository: Repository<Permissions>;
   private roleRepository: Repository<Role>;
-  private seederData: ISeederData;
 
-  constructor(seederData: ISeederData) {
-    this.seederData = seederData;
-  }
+  constructor(private readonly seederData: ISeederData) {}
 
   /**
    * Runs the seeder to populate the database with default permissions and roles.

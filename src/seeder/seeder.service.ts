@@ -11,7 +11,12 @@ export class SeederService {
 
   constructor(private readonly dataSource: DataSource) {}
 
-  async seed() {
+  /**
+   * Asynchronously seeds the database by importing and running all seeder classes found in the specified SEEDER_FILES_PATH.
+   *
+   * @return {Promise<void>} A promise that resolves when the seeding process is complete.
+   */
+  async seed(): Promise<void> {
     this.logger.log('Seeding...');
     const modules = await glob(SEEDER_FILES_PATH);
 
