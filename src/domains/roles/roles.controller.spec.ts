@@ -71,13 +71,17 @@ describe('RolesController', () => {
       roleService.findOne.mockResolvedValue(mockRole);
       const productCategory = await roleController.findOne('1');
       expect(productCategory).toEqual(mockRole);
-      expect(roleService.findOne).toHaveBeenCalledWith('1');
+      expect(roleService.findOne).toHaveBeenCalledWith('1', {
+        permissions: true,
+      });
     });
 
     it('should throw error if role not found', async () => {
       roleService.findOne.mockResolvedValue(null);
       expect(roleController.findOne('1')).rejects.toThrow(NotFoundException);
-      expect(roleService.findOne).toHaveBeenCalledWith('1');
+      expect(roleService.findOne).toHaveBeenCalledWith('1', {
+        permissions: true,
+      });
     });
   });
 

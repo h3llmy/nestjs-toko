@@ -2,7 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { CreateRoleDto } from './dto/create-role.dto';
 import { UpdateRoleDto } from './dto/update-role.dto';
 import { RoleRepository } from './role.repository';
-import { DeepPartial, ILike, SaveOptions, UpdateResult } from 'typeorm';
+import {
+  DeepPartial,
+  FindOptionsRelations,
+  ILike,
+  SaveOptions,
+  UpdateResult,
+} from 'typeorm';
 import { IPaginationPayload, ITransactionManager } from '@app/common';
 import { Role } from './entities/role.entity';
 import { PaginationRoleDto } from './dto/pagination-role.dto';
@@ -58,8 +64,11 @@ export class RolesService {
    * @param {string} id - The ID of the role to find.
    * @return {Promise<Role | null>} A promise that resolves to the found role, or null if not found.
    */
-  findOne(id: string): Promise<Role | null> {
-    return this.roleRepository.findOne({ where: { id } });
+  findOne(
+    id: string,
+    relations?: FindOptionsRelations<Role>,
+  ): Promise<Role | null> {
+    return this.roleRepository.findOne({ where: { id }, relations });
   }
 
   /**
