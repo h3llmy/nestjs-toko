@@ -110,7 +110,7 @@ export class RolesController {
     type: BasicErrorSchema,
   })
   async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
-    const result = await this.rolesService.findOne(id);
+    const result = await this.rolesService.findOne(id, { permissions: true });
 
     if (!result) throw new NotFoundException('Role not found');
 
