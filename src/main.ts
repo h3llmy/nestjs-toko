@@ -7,7 +7,7 @@ import {
   ValidationErrorHandler,
   JwtExceptionsFilter,
   ApplicationAdapter,
-} from '@app/common';
+} from '@libs/common';
 import helmet from '@fastify/helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';

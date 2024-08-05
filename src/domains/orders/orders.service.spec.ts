@@ -1,27 +1,27 @@
 import { TestBed } from '@automock/jest';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { User } from '../users/entities/user.entity';
-import { Product } from '../products/entities/product.entity';
-import { Discount } from '../discounts/entities/discount.entity';
-import { ProductsService } from '../products/products.service';
+import { User } from '@domains/users/entities/user.entity';
+import { Product } from '@domains/products/entities/product.entity';
+import { Discount } from '@domains/discounts/entities/discount.entity';
+import { ProductsService } from '@domains/products/products.service';
 import {
   FraudStatus,
   PaymentCheckDto,
   PaymentGatewayService,
   PaymentOrderResponseDto,
   TransactionStatus,
-} from '@app/payment-gateway';
+} from '@libs/payment-gateway';
 import { OrderRepository } from './order.repository';
 import { OrderDetailsRepository } from './order-details.repository';
 import { DataSource, DeepPartial, QueryRunner } from 'typeorm';
-import { ProductCategory } from '../product-category/entities/product-category.entity';
+import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { OrderDetails } from './entities/orderDetails.entity';
 import { Order, OrderStatus } from './entities/order.entity';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { PaginationOrderDto } from './dto/pagination-order.dto';
-import { Role } from '../roles/entities/role.entity';
+import { Role } from '@domains/roles/entities/role.entity';
 
 describe('OrdersService', () => {
   let orderService: OrdersService;

@@ -2,10 +2,10 @@ import { TestBed } from '@automock/jest';
 import { RolesController } from './roles.controller';
 import { RolesService } from './roles.service';
 import { Role } from './entities/role.entity';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { PaginationRoleDto } from './dto/pagination-role.dto';
 import { NotFoundException } from '@nestjs/common';
-import { Permissions } from '../permissions/entities/permission.entity';
+import { Permissions } from '@domains/permissions/entities/permission.entity';
 
 describe('RolesController', () => {
   let roleController: RolesController;

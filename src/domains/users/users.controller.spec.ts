@@ -2,9 +2,9 @@ import { TestBed } from '@automock/jest';
 import { UsersController } from './users.controller';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
-import { IPaginationResponse, SortDirection } from '@app/common';
+import { IPaginationResponse, SortDirection } from '@libs/database';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { Role } from '../roles/entities/role.entity';
+import { Role } from '@domains/roles/entities/role.entity';
 import { UpdateUserDto } from './dto/update-user.dto';
 
 describe('UsersController', () => {

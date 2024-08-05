@@ -30,15 +30,15 @@ import {
   BasicErrorSchema,
   BasicSuccessSchema,
   ErrorMessageSchema,
-  IPaginationResponse,
   Permission,
   paginationSchemaFactory,
   validationErrorSchemaFactory,
-} from '@app/common';
+} from '@libs/common';
 import { User } from './entities/user.entity';
 import { CacheInterceptor, CacheKey, CacheTTL } from '@nestjs/cache-manager';
 import { UserDto } from './dto/user.dto';
 import { UpdateProfileErrorValidationDto } from './dto/update-profile-error-validation.dto';
+import { IPaginationResponse } from '@libs/database';
 
 @ApiTags('Users')
 @Controller('users')

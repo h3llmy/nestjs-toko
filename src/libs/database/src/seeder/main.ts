@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { SeederModule } from './seeder.module';
 import { SeederService } from './seeder.service';
-import { ApplicationAdapter } from '@app/common';
+import { ApplicationAdapter } from '@libs/common';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 
 (async () => {

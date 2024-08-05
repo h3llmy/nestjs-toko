@@ -2,7 +2,7 @@ import { TestBed } from '@automock/jest';
 import { ProductCategoryController } from './product-category.controller';
 import { ProductCategoryService } from './product-category.service';
 import { ProductCategory } from './entities/product-category.entity';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { PaginationProductCategoryDto } from './dto/pagination-product-category.dto';
 import { NotFoundException } from '@nestjs/common';
 

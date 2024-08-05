@@ -18,7 +18,7 @@
     "start:dev": "nest start --watch",
     "start:debug": "nest start --debug --watch",
     "start:prod": "node dist/main",
-    "db:seed": "ts-node -r tsconfig-paths/register src/seeder/main.ts",
+    "db:seed": "ts-node -r tsconfig-paths/register src/libs/database/src/seeder/main.ts",
     "lint": "eslint \"{src,apps,libs,test}/**/*.ts\" --fix",
     "test": "jest",
     "test:watch": "jest --watch  --detectOpenHandles",
@@ -111,15 +111,24 @@
     "coverageDirectory": "./coverage",
     "testEnvironment": "node",
     "roots": [
-      "<rootDir>/src/",
-      "<rootDir>/libs/"
+      "<rootDir>/src/"
     ],
     "moduleNameMapper": {
-      "^@app/common(|/.*)$": "<rootDir>/libs/common/src/$1",
-      "^@app/encryption(|/.*)$": "<rootDir>/libs/encryption/src/$1",
-      "^@app/randomize(|/.*)$": "<rootDir>/libs/randomize/src/$1",
-      "^@app/payment-gateway(|/.*)$": "<rootDir>/libs/payment-gateway/src/$1",
-      "^@app/auth-token(|/.*)$": "<rootDir>/libs/auth-token/src/$1"
+      "^@libs/common(|/.*)$": "<rootDir>/src/libs/common/src/$1",
+      "^@libs/encryption(|/.*)$": "<rootDir>/src/libs/encryption/src/$1",
+      "^@libs/randomize(|/.*)$": "<rootDir>/src/libs/randomize/src/$1",
+      "^@libs/payment-gateway(|/.*)$": "<rootDir>/src/libs/payment-gateway/src/$1",
+      "^@libs/auth-token(|/.*)$": "<rootDir>/src/libs/auth-token/src/$1",
+      "^@libs/database(|/.*)$": "<rootDir>/src/libs/database/src/$1",
+      "^@domains/auth(|/.*)$": "<rootDir>/src/domains/auth/$1",
+      "^@domains/discounts(|/.*)$": "<rootDir>/src/domains/discounts/$1",
+      "^@domains/inventories(|/.*)$": "<rootDir>/src/domains/inventories/$1",
+      "^@domains/orders(|/.*)$": "<rootDir>/src/domains/orders/$1",
+      "^@domains/permissions(|/.*)$": "<rootDir>/src/domains/permissions/$1",
+      "^@domains/product-category(|/.*)$": "<rootDir>/src/domains/product-category/$1",
+      "^@domains/products(|/.*)$": "<rootDir>/src/domains/products/$1",
+      "^@domains/roles(|/.*)$": "<rootDir>/src/domains/roles/$1",
+      "^@domains/users(|/.*)$": "<rootDir>/src/domains/users/$1"
     }
   },
   "keywords": [

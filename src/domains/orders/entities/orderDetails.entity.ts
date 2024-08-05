@@ -1,8 +1,8 @@
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
 import { Order } from './order.entity';
-import { Product } from '../..//products/entities/product.entity';
-import { Discount } from '../../discounts/entities/discount.entity';
-import { ProductCategory } from '../../product-category/entities/product-category.entity';
+import { Product } from '@domains/products/entities/product.entity';
+import { Discount } from '@domains/discounts/entities/discount.entity';
+import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
 
 @Entity('orderDetails')
 export class OrderDetails {

@@ -20,7 +20,7 @@ import {
   BasicErrorSchema,
   paginationSchemaFactory,
   Permission,
-} from '@app/common';
+} from '@libs/common';
 import { PermissionDto } from './dto/permission.dto';
 
 @ApiTags('Permissions')

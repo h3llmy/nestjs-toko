@@ -9,7 +9,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
-import { SortDirection } from '@app/common';
+import { SortDirection } from '@libs/database';
 
 export class UserOrder {
   @ApiPropertyOptional({

@@ -1,5 +1,4 @@
-import { Seeder } from '../../../seeder/seeder.decorator';
-import { RolePermissionSeeder } from '../../../seeder/utils/role-permission.utils';
+import { RolePermissionSeeder, Seeder } from '@libs/database';
 
 @Seeder()
 export class OrderAccessSeeder extends RolePermissionSeeder {

@@ -31,12 +31,13 @@ import {
   Permission,
   paginationSchemaFactory,
   validationErrorSchemaFactory,
-} from '@app/common';
+} from '@libs/common';
 import { ProductCategory } from './entities/product-category.entity';
 import { PaginationProductCategoryDto } from './dto/pagination-product-category.dto';
 import { DeepPartial } from 'typeorm';
 import { ProductCategoryErrorValidationDto } from './dto/create-product-category-error-validation.dto';
 import { ProductCategoryDto } from './dto/product-category.dto';
+import { IPaginationResponse } from '@libs/database';
 
 @ApiTags('Product Category')
 @Controller('product-category')
@@ -83,7 +84,9 @@ export class ProductCategoryController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  findAllAndPaginate(@Query() findQuery: PaginationProductCategoryDto) {
+  findAllAndPaginate(
+    @Query() findQuery: PaginationProductCategoryDto,
+  ): Promise<IPaginationResponse<ProductCategory>> {
     return this.productCategoryService.findAllAndPaginate(findQuery);
   }
 

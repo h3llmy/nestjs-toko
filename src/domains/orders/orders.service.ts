@@ -11,9 +11,9 @@ import {
   ILike,
   QueryRunner,
 } from 'typeorm';
-import { ProductsService } from '../products/products.service';
+import { ProductsService } from '@domains/products/products.service';
 import { OrderRepository } from './order.repository';
-import { User } from '../users/entities/user.entity';
+import { User } from '@domains/users/entities/user.entity';
 import { OrderDetailsRepository } from './order-details.repository';
 import { OrderDetails } from './entities/orderDetails.entity';
 import { CreateOrderDto } from './dto/create-order.dto';
@@ -22,11 +22,11 @@ import {
   PaymentGatewayService,
   PaymentOrderResponseDto,
   TransactionStatus,
-} from '@app/payment-gateway';
+} from '@libs/payment-gateway';
 import { Order, OrderStatus } from './entities/order.entity';
-import { Product } from '../products/entities/product.entity';
+import { Product } from '@domains/products/entities/product.entity';
 import { PaginationOrderDto } from './dto/pagination-order.dto';
-import { IPaginationPayload, IPaginationResponse } from '@app/common';
+import { IPaginationPayload, IPaginationResponse } from '@libs/database';
 
 // TODO: add send email to customer when order created / updated
 @Injectable()

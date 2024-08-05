@@ -2,7 +2,7 @@ import { TestBed } from '@automock/jest';
 import { ProductsController } from './products.controller';
 import { ProductsService } from './products.service';
 import { Product } from './entities/product.entity';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';

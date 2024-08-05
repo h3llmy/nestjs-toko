@@ -1,6 +1,6 @@
 import { IsEmail, IsNotEmpty, IsString } from 'class-validator';
 import { ApiProperty } from '@nestjs/swagger';
-import { IsMatchWith } from '@app/common';
+import { IsMatchWith } from '@libs/common';
 
 export class RegisterUserDto {
   @ApiProperty({

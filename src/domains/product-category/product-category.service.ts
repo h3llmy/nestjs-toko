@@ -4,7 +4,7 @@ import { UpdateProductCategoryDto } from './dto/update-product-category.dto';
 import { ProductCategoryRepository } from './product-category.repository';
 import { DeepPartial, ILike, UpdateResult } from 'typeorm';
 import { ProductCategory } from './entities/product-category.entity';
-import { IPaginationPayload, IPaginationResponse } from '@app/common';
+import { IPaginationPayload, IPaginationResponse } from '@libs/database';
 import { PaginationProductCategoryDto } from './dto/pagination-product-category.dto';
 
 @Injectable()

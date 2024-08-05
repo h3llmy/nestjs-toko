@@ -31,13 +31,14 @@ import {
   paginationSchemaFactory,
   Permission,
   validationErrorSchemaFactory,
-} from '@app/common';
+} from '@libs/common';
 import { DeepPartial } from 'typeorm';
 import { Role } from './entities/role.entity';
 import { RoleDto } from './dto/role.dto';
 import { CreateRoleErrorValidationDto } from './dto/create-role-error-validation.dto';
 import { UpdateRoleErrorValidationDto } from './dto/update-role-error-validation.dto';
 import { PaginationRoleDto } from './dto/pagination-role.dto';
+import { IPaginationResponse } from '@libs/database';
 
 @ApiTags('Roles')
 @Controller('roles')
@@ -84,7 +85,9 @@ export class RolesController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  findAll(@Query() findQuery: PaginationRoleDto) {
+  findAll(
+    @Query() findQuery: PaginationRoleDto,
+  ): Promise<IPaginationResponse<Role>> {
     return this.rolesService.findAll(findQuery);
   }
 
@@ -109,7 +112,7 @@ export class RolesController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  async findOne(@Param('id', new ParseUUIDPipe()) id: string) {
+  async findOne(@Param('id', new ParseUUIDPipe()) id: string): Promise<Role> {
     const result = await this.rolesService.findOne(id, { permissions: true });
 
     if (!result) throw new NotFoundException('Role not found');
@@ -145,7 +148,7 @@ export class RolesController {
   async update(
     @Param('id', new ParseUUIDPipe()) id: string,
     @Body() updateRoleDto: UpdateRoleDto,
-  ) {
+  ): Promise<Role> {
     const result = await this.rolesService.update(id, updateRoleDto);
     if (!result) throw new NotFoundException('Role not found');
 
@@ -173,7 +176,9 @@ export class RolesController {
     description: 'Too many requests',
     type: BasicErrorSchema,
   })
-  async remove(@Param('id', new ParseUUIDPipe()) id: string) {
+  async remove(
+    @Param('id', new ParseUUIDPipe()) id: string,
+  ): Promise<BasicSuccessSchema> {
     const result = await this.rolesService.remove(id);
     if (!result) throw new NotFoundException('Role not found');
 

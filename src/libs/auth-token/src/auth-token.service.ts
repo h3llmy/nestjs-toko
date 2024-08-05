@@ -4,7 +4,7 @@ import {
   IForgetPasswordPayload,
   ILoginTokenPayload,
   IRegisterTokenPayload,
-} from '@app/auth-token';
+} from '@libs/auth-token';
 
 import { Injectable } from '@nestjs/common';
 import { AuthTokenSchema } from './dto/authToken.schema';

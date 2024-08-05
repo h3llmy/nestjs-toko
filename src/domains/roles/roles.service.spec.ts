@@ -2,10 +2,10 @@ import { TestBed } from '@automock/jest';
 import { RolesService } from './roles.service';
 import { RoleRepository } from './role.repository';
 import { Role } from './entities/role.entity';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { PaginationRoleDto } from './dto/pagination-role.dto';
-import { PermissionsService } from '../permissions/permissions.service';
-import { Permissions } from '../permissions/entities/permission.entity';
+import { PermissionsService } from '@domains/permissions/permissions.service';
+import { Permissions } from '@domains/permissions/entities/permission.entity';
 
 describe('RolesService', () => {
   let roleService: RolesService;

@@ -6,11 +6,11 @@ import { Order } from './entities/order.entity';
 import { OrderDetails } from './entities/orderDetails.entity';
 import { OrderRepository } from './order.repository';
 import { OrderDetailsRepository } from './order-details.repository';
-import { ProductsModule } from '../products/products.module';
+import { ProductsModule } from '@domains/products/products.module';
 import {
   PaymentGatewayModule,
   paymentGatewayConfig,
-} from '@app/payment-gateway';
+} from '@libs/payment-gateway';
 
 @Module({
   imports: [

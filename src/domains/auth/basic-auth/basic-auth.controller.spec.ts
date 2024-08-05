@@ -4,7 +4,7 @@ import { BasicAuthController } from './basic-auth.controller';
 import { BasicAuthService } from './basic-auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { BadRequestException } from '@nestjs/common';
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '@domains/roles/entities/role.entity';
 
 describe('BasicAuthController', () => {
   let authController: BasicAuthController;

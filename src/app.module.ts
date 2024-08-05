@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CommonModule } from '@app/common';
+import { CommonModule } from '@libs/common';
 import { UsersModule } from './domains/users/users.module';
 import { AuthModule } from './domains/auth/auth.module';
 import { ProductsModule } from './domains/products/products.module';
@@ -9,10 +9,12 @@ import { DiscountsModule } from './domains/discounts/discounts.module';
 import { OrdersModule } from './domains/orders/orders.module';
 import { RolesModule } from './domains/roles/roles.module';
 import { PermissionsModule } from './domains/permissions/permissions.module';
+import { DatabaseModule } from '@libs/database';
 
 @Module({
   imports: [
     CommonModule,
+    DatabaseModule,
     AuthModule,
     UsersModule,
     ProductsModule,

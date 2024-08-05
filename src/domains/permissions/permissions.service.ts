@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PermissionRepository } from './permission.repository';
-import { IPaginationPayload, IPaginationResponse } from '@app/common';
+import { IPaginationPayload, IPaginationResponse } from '@libs/database';
 import { Permissions } from './entities/permission.entity';
 import { FindOptionsRelations, ILike, In } from 'typeorm';
 import { PaginationPermissionDto } from './dto/pagination-permission.dto';

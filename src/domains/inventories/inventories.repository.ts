@@ -1,6 +1,6 @@
 import { InjectRepository } from '@nestjs/typeorm';
 import { Inventory } from './entities/inventory.entity';
-import { DefaultRepository } from '@app/common';
+import { DefaultRepository } from '@libs/database';
 import { Repository } from 'typeorm';
 
 export class InventoriesRepository extends DefaultRepository<Inventory> {

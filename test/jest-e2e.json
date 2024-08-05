@@ -1,9 +1,5 @@
 {
-  "moduleFileExtensions": [
-    "js",
-    "json",
-    "ts"
-  ],
+  "moduleFileExtensions": ["js", "json", "ts"],
   "rootDir": ".",
   "testEnvironment": "node",
   "testRegex": ".e2e-spec.ts$",
@@ -11,15 +7,17 @@
     "^.+\\.(t|j)s$": "ts-jest"
   },
   "moduleNameMapper": {
-    "@app/common/(.*)": "<rootDir>/../libs/common/src/$1",
-    "@app/common": "<rootDir>/../libs/common/src",
-    "@app/encryption/(.*)": "<rootDir>/../libs/encryption/src/$1",
-    "@app/encryption": "<rootDir>/../libs/encryption/src",
-    "@app/randomize/(.*)": "<rootDir>/../libs/randomize/src/$1",
-    "@app/randomize": "<rootDir>/../libs/randomize/src",
-    "@app/payment-gateway/(.*)": "<rootDir>/../libs/payment-gateway/src/$1",
-    "@app/payment-gateway": "<rootDir>/../libs/payment-gateway/src",
-    "@app/auth-token/(.*)": "<rootDir>/../libs/auth-token/src/$1",
-    "@app/auth-token": "<rootDir>/../libs/auth-token/src"
+    "@libs/common/(.*)": "<rootDir>/../libs/common/src/$1",
+    "@libs/common": "<rootDir>/../libs/common/src",
+    "@libs/encryption/(.*)": "<rootDir>/../libs/encryption/src/$1",
+    "@libs/encryption": "<rootDir>/../libs/encryption/src",
+    "@libs/randomize/(.*)": "<rootDir>/../libs/randomize/src/$1",
+    "@libs/randomize": "<rootDir>/../libs/randomize/src",
+    "@libs/payment-gateway/(.*)": "<rootDir>/../libs/payment-gateway/src/$1",
+    "@libs/payment-gateway": "<rootDir>/../libs/payment-gateway/src",
+    "@libs/auth-token/(.*)": "<rootDir>/../libs/auth-token/src/$1",
+    "@libs/auth-token": "<rootDir>/../libs/auth-token/src",
+    "@libs/database/(.*)": "<rootDir>/../libs/database/src/$1",
+    "@libs/database": "<rootDir>/../libs/database/src"
   }
 }

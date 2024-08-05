@@ -2,7 +2,7 @@ import { TestBed } from '@automock/jest';
 import { ProductCategoryService } from './product-category.service';
 import { ProductCategoryRepository } from './product-category.repository';
 import { ProductCategory } from './entities/product-category.entity';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { PaginationProductCategoryDto } from './dto/pagination-product-category.dto';
 
 describe('ProductCategoryService', () => {

@@ -2,9 +2,9 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, ExtractJwt, StrategyOptions } from 'passport-jwt';
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../../users/users.service';
-import { ILoginTokenPayload } from '@app/auth-token';
-import { User } from '../../users/entities/user.entity';
+import { UsersService } from '@domains/users/users.service';
+import { ILoginTokenPayload } from '@libs/auth-token';
+import { User } from '@domains/users/entities/user.entity';
 
 /**
  * JWT (JSON Web Token) authentication strategy.

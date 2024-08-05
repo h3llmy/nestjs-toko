@@ -3,9 +3,9 @@ import { UsersService } from './users.service';
 import { UserRepository } from './users.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { User } from './entities/user.entity';
-import { IPaginationResponse } from '@app/common';
-import { Role } from '../roles/entities/role.entity';
-import { SocialAuthType } from '../auth/social-auth.enum';
+import { IPaginationResponse } from '@libs/database';
+import { Role } from '@domains/roles/entities/role.entity';
+import { SocialAuthType } from '@domains/auth/social-auth.enum';
 
 describe('UsersService', () => {
   let userService: UsersService;

@@ -28,18 +28,21 @@ import {
   BasicErrorSchema,
   BasicSuccessSchema,
   ErrorMessageSchema,
-  IPaginationResponse,
   paginationSchemaFactory,
   Permission,
   validationErrorSchemaFactory,
-} from '@app/common';
-import { User } from '../users/entities/user.entity';
-import { PaymentCheckDto, PaymentOrderResponseDto } from '@app/payment-gateway';
+} from '@libs/common';
+import { User } from '@domains/users/entities/user.entity';
+import {
+  PaymentCheckDto,
+  PaymentOrderResponseDto,
+} from '@libs/payment-gateway';
 import { PaginationOrderDto } from './dto/pagination-order.dto';
 import { Order } from './entities/order.entity';
 import { CreateOrderValidationErrorDto } from './dto/create-order-validation-error.dto';
 import { OrderDto } from './dto/order.dto';
 import { OrderNotificationValidationErrorDto } from './dto/order-notification-validator-error.dto';
+import { IPaginationResponse } from '@libs/database';
 
 @ApiTags('Orders')
 @Controller('orders')

@@ -1,5 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { ProductDto } from '../../products/dto/product.dto';
+import { ProductDto } from '@domains/products/dto/product.dto';
 
 export class DiscountDto {
   @ApiProperty({

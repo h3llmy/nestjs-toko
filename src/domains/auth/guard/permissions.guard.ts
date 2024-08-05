@@ -5,8 +5,8 @@ import {
   UnauthorizedException,
 } from '@nestjs/common';
 import { Reflector } from '@nestjs/core';
-import { User } from '../../users/entities/user.entity';
-import { RolesService } from '../../roles/roles.service';
+import { User } from '@domains/users/entities/user.entity';
+import { RolesService } from '@domains/roles/roles.service';
 import { DeepPartial } from 'typeorm';
 
 /**

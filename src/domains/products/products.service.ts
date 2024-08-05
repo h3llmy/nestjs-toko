@@ -7,7 +7,7 @@ import {
   IPaginationPayload,
   IPaginationResponse,
   ITransactionManager,
-} from '@app/common';
+} from '@libs/database';
 import { Product } from './entities/product.entity';
 import {
   DataSource,
@@ -18,8 +18,8 @@ import {
   SaveOptions,
   UpdateResult,
 } from 'typeorm';
-import { InventoriesService } from '../inventories/inventories.service';
-import { ProductCategoryService } from '../product-category/product-category.service';
+import { InventoriesService } from '@domains/inventories/inventories.service';
+import { ProductCategoryService } from '@domains/product-category/product-category.service';
 
 @Injectable()
 export class ProductsService {

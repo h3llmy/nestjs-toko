@@ -1,4 +1,5 @@
-import { SortDirection, ToBoolean } from '@app/common';
+import { ToBoolean } from '@libs/common';
+import { SortDirection } from '@libs/database';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {

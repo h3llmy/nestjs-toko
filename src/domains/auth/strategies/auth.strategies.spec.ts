@@ -1,11 +1,11 @@
 import { JwtStrategies } from './auth.strategies';
 import { ConfigService } from '@nestjs/config';
-import { UsersService } from '../../users/users.service';
-import { ILoginTokenPayload } from '@app/auth-token';
-import { User } from '../../users/entities/user.entity';
+import { UsersService } from '@domains/users/users.service';
+import { ILoginTokenPayload } from '@libs/auth-token';
+import { User } from '@domains/users/entities/user.entity';
 import { UnauthorizedException } from '@nestjs/common';
 import { TestBed } from '@automock/jest';
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '@domains/roles/entities/role.entity';
 
 describe('JwtStrategies', () => {
   let jwtStrategies: JwtStrategies;
