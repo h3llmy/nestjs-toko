@@ -1,4 +1,4 @@
-import { Product } from '../../products/entities/product.entity';
+import { Product } from '@domains/products/entities/product.entity';
 import {
   Column,
   DeleteDateColumn,

@@ -3,7 +3,7 @@ import { Permissions } from './entities/permission.entity';
 import { PermissionRepository } from './permission.repository';
 import { PermissionsService } from './permissions.service';
 import { TestBed } from '@automock/jest';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 
 describe('PermissionsService', () => {
   let permissionService: PermissionsService;

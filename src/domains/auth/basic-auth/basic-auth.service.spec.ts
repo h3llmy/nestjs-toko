@@ -1,17 +1,17 @@
 import { TestBed } from '@automock/jest';
 import { BasicAuthService } from './basic-auth.service';
-import { EncryptionService } from '@app/encryption';
+import { EncryptionService } from '@libs/encryption';
 import { MailerService } from '@nestjs-modules/mailer';
-import { RandomizeService } from '@app/randomize';
-import { UsersService } from '../../users/users.service';
-import { User } from '../../users/entities/user.entity';
+import { RandomizeService } from '@libs/randomize';
+import { UsersService } from '@domains/users/users.service';
+import { User } from '@domains/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoginDto } from './dto/login-user.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
-import { AuthTokenService, ILoginTokenPayload } from '@app/auth-token';
-import { Role } from '../../roles/entities/role.entity';
+import { AuthTokenService, ILoginTokenPayload } from '@libs/auth-token';
+import { Role } from '@domains/roles/entities/role.entity';
 import { SocialAuthType } from '../social-auth.enum';
 import { SocialAuthResponse } from '../social-auth.abstract';
 

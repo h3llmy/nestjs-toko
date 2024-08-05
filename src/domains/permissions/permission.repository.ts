@@ -1,4 +1,4 @@
-import { DefaultRepository } from '@app/common';
+import { DefaultRepository } from '@libs/database';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Permissions } from './entities/permission.entity';
 import { Repository } from 'typeorm';

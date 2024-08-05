@@ -11,7 +11,7 @@ import {
   MoreThanOrEqual,
   UpdateResult,
 } from 'typeorm';
-import { IPaginationPayload, IPaginationResponse } from '@app/common';
+import { IPaginationPayload, IPaginationResponse } from '@libs/database';
 import { Discount } from './entities/discount.entity';
 import { ProductsService } from '../products/products.service';
 import { PaginationDiscountDto } from './dto/pagination-discount.dto';

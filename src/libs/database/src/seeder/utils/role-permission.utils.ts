@@ -1,7 +1,7 @@
 import { DataSource, Repository } from 'typeorm';
 import { ISeederData, ISeederRunner } from '../seeder.interface';
-import { Role } from '../../domains/roles/entities/role.entity';
-import { Permissions } from '../../domains/permissions/entities/permission.entity';
+import { Role } from '@domains/roles/entities/role.entity';
+import { Permissions } from '@domains/permissions/entities/permission.entity';
 
 export class RolePermissionSeeder implements ISeederRunner {
   private permissionRepository: Repository<Permissions>;

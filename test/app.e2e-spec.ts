@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import request from 'supertest';
 import { AppModule } from './../src/app.module';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { ApplicationAdapter } from '@app/common';
+import { ApplicationAdapter } from '@libs/common';
 
 describe('AppController (e2e)', () => {
   let app: INestApplication;

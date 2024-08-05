@@ -5,12 +5,12 @@ import { UsersModule } from '../../users/users.module';
 import { JwtStrategies } from '../strategies/auth.strategies';
 import { APP_GUARD } from '@nestjs/core';
 import { PermissionsGuard } from '../guard/permissions.guard';
-import { EncryptionModule } from '@app/encryption';
+import { EncryptionModule } from '@libs/encryption';
 import { JwtAuthGuard } from '../guard/jwt-auth.guard';
 import { PassportModule } from '@nestjs/passport';
-import { RandomizeModule } from '@app/randomize';
-import { AuthTokenModule } from '@app/auth-token';
-import { RolesModule } from '../../roles/roles.module';
+import { RandomizeModule } from '@libs/randomize';
+import { AuthTokenModule } from '@libs/auth-token';
+import { RolesModule } from '@domains/roles/roles.module';
 
 @Module({
   imports: [

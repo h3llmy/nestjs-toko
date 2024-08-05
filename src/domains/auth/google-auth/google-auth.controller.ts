@@ -12,12 +12,12 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { SocialAuthType } from '../social-auth.enum';
-import { AuthTokenSchema } from '@app/auth-token';
+import { AuthTokenSchema } from '@libs/auth-token';
 import {
   BasicErrorSchema,
   ErrorMessageSchema,
   validationErrorSchemaFactory,
-} from '@app/common';
+} from '@libs/common';
 import { GoogleAuthLoginErrorValidationDto } from './dto/google-auth-login-error-validation.dto';
 
 @ApiTags('Auth')

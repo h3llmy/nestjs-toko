@@ -30,17 +30,17 @@ import {
   BasicErrorSchema,
   BasicSuccessSchema,
   ErrorMessageSchema,
-  IPaginationResponse,
   Permission,
   paginationSchemaFactory,
   validationErrorSchemaFactory,
-} from '@app/common';
+} from '@libs/common';
 import { ProductDto } from './dto/product.dto';
 import { ProductErrorValidationDto } from './dto/create-product-error-validation.dto';
 import { PaginationProductDto } from './dto/pagination-product.dto';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 import { Product } from './entities/product.entity';
 import { ProductInventoryDto } from './dto/product-inventory.dto';
+import { IPaginationResponse } from '@libs/database';
 
 @Controller('products')
 @ApiTags('Products')

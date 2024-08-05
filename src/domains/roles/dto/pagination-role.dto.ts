@@ -1,4 +1,4 @@
-import { SortDirection } from '@app/common';
+import { SortDirection } from '@libs/database';
 import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {

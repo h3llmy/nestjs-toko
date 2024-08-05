@@ -1,11 +1,11 @@
 import { TestBed } from '@automock/jest';
 import { PermissionsGuard } from './permissions.guard';
 import { Reflector } from '@nestjs/core';
-import { User } from '../../users/entities/user.entity';
+import { User } from '@domains/users/entities/user.entity';
 import { ExecutionContext, UnauthorizedException } from '@nestjs/common';
-import { Role } from '../../roles/entities/role.entity';
-import { Permissions } from '../../permissions/entities/permission.entity';
-import { RolesService } from '../../roles/roles.service';
+import { Role } from '@domains/roles/entities/role.entity';
+import { Permissions } from '@domains/permissions/entities/permission.entity';
+import { RolesService } from '@domains/roles/roles.service';
 
 describe('PermissionsGuard', () => {
   let guard: PermissionsGuard;

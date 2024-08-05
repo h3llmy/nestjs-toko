@@ -2,14 +2,14 @@ import { TestBed } from '@automock/jest';
 import { ProductsService } from './products.service';
 import { ProductsRepository } from './products.repository';
 import { Product } from './entities/product.entity';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { DataSource, QueryRunner } from 'typeorm';
-import { Inventory } from '../inventories/entities/inventory.entity';
-import { InventoriesService } from '../inventories/inventories.service';
-import { ProductCategory } from '../product-category/entities/product-category.entity';
-import { ProductCategoryService } from '../product-category/product-category.service';
+import { Inventory } from '@domains/inventories/entities/inventory.entity';
+import { InventoriesService } from '@domains/inventories/inventories.service';
+import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
+import { ProductCategoryService } from '@domains/product-category/product-category.service';
 import { UpdateProductDto } from './dto/update-product.dto';
 
 describe('ProductsService', () => {

@@ -1,4 +1,4 @@
-import { Role } from '../../roles/entities/role.entity';
+import { Role } from '@domains/roles/entities/role.entity';
 import {
   Column,
   Entity,

@@ -4,9 +4,9 @@ import { UsersController } from './users.controller';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './users.repository';
-import { EncryptionModule } from '@app/encryption';
+import { EncryptionModule } from '@libs/encryption';
 import { UserSubscribers } from './entities/user.subscribers';
-import { RolesModule } from '../roles/roles.module';
+import { RolesModule } from '@domains/roles/roles.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([User]), EncryptionModule, RolesModule],

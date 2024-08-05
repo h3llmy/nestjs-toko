@@ -1,14 +1,14 @@
-import { ProductsService } from '../products/products.service';
+import { ProductsService } from '@domains/products/products.service';
 import { DiscountsRepository } from './discounts.repository';
 import { DiscountsService } from './discounts.service';
 import { TestBed } from '@automock/jest';
 import { Discount } from './entities/discount.entity';
-import { Product } from '../products/entities/product.entity';
-import { Inventory } from '../inventories/entities/inventory.entity';
+import { Product } from '@domains/products/entities/product.entity';
+import { Inventory } from '@domains/inventories/entities/inventory.entity';
 import { CreateDiscountDto } from './dto/create-discount.dto';
 import { In } from 'typeorm';
 import { NotFoundException } from '@nestjs/common';
-import { IPaginationResponse } from '@app/common';
+import { IPaginationResponse } from '@libs/database';
 import { PaginationDiscountDto } from './dto/pagination-discount.dto';
 import { UpdateDiscountDto } from './dto/update-discount.dto';
 

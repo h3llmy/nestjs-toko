@@ -4,10 +4,10 @@ import {
   NotFoundException,
 } from '@nestjs/common';
 import { RegisterUserDto } from './dto/register-user.dto';
-import { UsersService } from '../../users/users.service';
-import { EncryptionService } from '@app/encryption';
+import { UsersService } from '@domains/users/users.service';
+import { EncryptionService } from '@libs/encryption';
 import { ConfigService } from '@nestjs/config';
-import { RandomizeService } from '@app/randomize';
+import { RandomizeService } from '@libs/randomize';
 import { LoginDto } from './dto/login-user.dto';
 import { MailerService } from '@nestjs-modules/mailer';
 import {
@@ -16,11 +16,11 @@ import {
   IRegisterTokenPayload,
   AuthTokenService,
   AuthTokenSchema,
-} from '@app/auth-token';
+} from '@libs/auth-token';
 import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { ResetPasswordDto } from './dto/reset-password.dto';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
-import { BasicSuccessSchema } from '@app/common';
+import { BasicSuccessSchema } from '@libs/common';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { SocialAuthResponse } from '../social-auth.abstract';
 import { SocialAuthType } from '../social-auth.enum';

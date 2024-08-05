@@ -2,19 +2,19 @@ import { TestBed } from '@automock/jest';
 import { OrdersController } from './orders.controller';
 import { OrdersService } from './orders.service';
 import { CreateOrderDto } from './dto/create-order.dto';
-import { User } from '../users/entities/user.entity';
+import { User } from '@domains/users/entities/user.entity';
 import {
   FraudStatus,
   PaymentCheckDto,
   PaymentOrderResponseDto,
   TransactionStatus,
-} from '@app/payment-gateway';
+} from '@libs/payment-gateway';
 import { Order, OrderStatus } from './entities/order.entity';
 import { OrderDetails } from './entities/orderDetails.entity';
-import { ProductCategory } from '../product-category/entities/product-category.entity';
-import { Discount } from '../discounts/entities/discount.entity';
-import { IPaginationResponse } from '@app/common';
-import { Role } from '../roles/entities/role.entity';
+import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
+import { Discount } from '@domains/discounts/entities/discount.entity';
+import { IPaginationResponse } from '@libs/database';
+import { Role } from '@domains/roles/entities/role.entity';
 
 describe('OrdersController', () => {
   let orderController: OrdersController;

@@ -24,7 +24,7 @@ import {
   BasicErrorSchema,
   Permission,
   validationErrorSchemaFactory,
-} from '@app/common';
+} from '@libs/common';
 import { IncreaseStockDto } from './dto/increase-stock.dto';
 import { Inventory } from './entities/inventory.entity';
 import { InventoryDto } from './dto/inventory.dto';

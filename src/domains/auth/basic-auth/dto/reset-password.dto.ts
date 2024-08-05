@@ -1,4 +1,4 @@
-import { IsMatchWith } from '@app/common';
+import { IsMatchWith } from '@libs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { IsNotEmpty, IsString } from 'class-validator';
 

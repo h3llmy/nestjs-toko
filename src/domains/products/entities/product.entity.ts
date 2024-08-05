@@ -1,5 +1,5 @@
-import { ProductCategory } from '../../product-category/entities/product-category.entity';
-import { Inventory } from '../../inventories/entities/inventory.entity';
+import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
+import { Inventory } from '@domains/inventories/entities/inventory.entity';
 import {
   Column,
   CreateDateColumn,
@@ -12,8 +12,8 @@ import {
   PrimaryGeneratedColumn,
   UpdateDateColumn,
 } from 'typeorm';
-import { Discount } from '../../discounts/entities/discount.entity';
-import { OrderDetails } from '../../orders/entities/orderDetails.entity';
+import { Discount } from '@domains/discounts/entities/discount.entity';
+import { OrderDetails } from '@domains/orders/entities/orderDetails.entity';
 
 @Entity('Products')
 export class Product {

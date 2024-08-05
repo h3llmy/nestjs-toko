@@ -6,10 +6,10 @@ import {
   UpdateEvent,
 } from 'typeorm';
 import { User } from './user.entity';
-import { EncryptionService } from '@app/encryption';
+import { EncryptionService } from '@libs/encryption';
 import { UserRepository } from '../users.repository';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { RolesService } from '../../roles/roles.service';
+import { RolesService } from '@domains/roles/roles.service';
 
 @EventSubscriber()
 export class UserSubscribers implements EntitySubscriberInterface<User> {

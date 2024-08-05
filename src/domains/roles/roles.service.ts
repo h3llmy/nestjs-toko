@@ -9,10 +9,10 @@ import {
   SaveOptions,
   UpdateResult,
 } from 'typeorm';
-import { IPaginationPayload, ITransactionManager } from '@app/common';
+import { IPaginationPayload, ITransactionManager } from '@libs/database';
 import { Role } from './entities/role.entity';
 import { PaginationRoleDto } from './dto/pagination-role.dto';
-import { PermissionsService } from '../permissions/permissions.service';
+import { PermissionsService } from '@domains/permissions/permissions.service';
 
 @Injectable()
 export class RolesService {

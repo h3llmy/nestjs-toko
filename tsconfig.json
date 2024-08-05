@@ -21,36 +21,36 @@
     "resolveJsonModule": true,
     "strict": true,
     "paths": {
-      "@app/common": [
-        "libs/common/src"
-      ],
-      "@app/common/*": [
-        "libs/common/src/*"
-      ],
-      "@app/encryption": [
-        "libs/encryption/src"
-      ],
-      "@app/encryption/*": [
-        "libs/encryption/src/*"
-      ],
-      "@app/randomize": [
-        "libs/randomize/src"
-      ],
-      "@app/randomize/*": [
-        "libs/randomize/src/*"
-      ],
-      "@app/payment-gateway": [
-        "libs/payment-gateway/src"
-      ],
-      "@app/payment-gateway/*": [
-        "libs/payment-gateway/src/*"
-      ],
-      "@app/auth-token": [
-        "libs/auth-token/src"
-      ],
-      "@app/auth-token/*": [
-        "libs/auth-token/src/*"
-      ]
+      "@libs/common": ["src/libs/common/src"],
+      "@libs/common/*": ["src/libs/common/src/*"],
+      "@libs/encryption": ["src/libs/encryption/src"],
+      "@libs/encryption/*": ["src/libs/encryption/src/*"],
+      "@libs/randomize": ["src/libs/randomize/src"],
+      "@libs/randomize/*": ["src/libs/randomize/src/*"],
+      "@libs/payment-gateway": ["src/libs/payment-gateway/src"],
+      "@libs/payment-gateway/*": ["src/libs/payment-gateway/src/*"],
+      "@libs/auth-token": ["src/libs/auth-token/src"],
+      "@libs/auth-token/*": ["src/libs/auth-token/src/*"],
+      "@libs/database": ["src/libs/database/src"],
+      "@libs/database/*": ["src/libs/database/src/*"],
+      "@domains/auth": ["src/domains/auth"],
+      "@domains/auth/*": ["src/domains/auth/*"],
+      "@domains/discounts": ["src/domains/discounts"],
+      "@domains/discounts/*": ["src/domains/discounts/*"],
+      "@domains/inventories": ["src/domains/inventories"],
+      "@domains/inventories/*": ["src/domains/inventories/*"],
+      "@domains/orders": ["src/domains/orders"],
+      "@domains/orders/*": ["src/domains/orders/*"],
+      "@domains/permissions": ["src/domains/permissions"],
+      "@domains/permissions/*": ["src/domains/permissions/*"],
+      "@domains/product-category": ["src/domains/product-category"],
+      "@domains/product-category/*": ["src/domains/product-category/*"],
+      "@domains/products": ["src/domains/products"],
+      "@domains/products/*": ["src/domains/products/*"],
+      "@domains/roles": ["src/domains/roles"],
+      "@domains/roles/*": ["src/domains/roles/*"],
+      "@domains/users": ["src/domains/users"],
+      "@domains/users/*": ["src/domains/users/*"]
     }
   }
 }

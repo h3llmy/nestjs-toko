@@ -3,18 +3,18 @@ import {
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
-import { RegisterUserDto } from '../auth/basic-auth/dto/register-user.dto';
+import { RegisterUserDto } from '@domains/auth/basic-auth/dto/register-user.dto';
 import { UserRepository } from './users.repository';
 import { User } from './entities/user.entity';
 import { PaginationUserDto } from './dto/pagination-user.dto';
-import { IPaginationPayload, IPaginationResponse } from '@app/common';
+import { IPaginationPayload, IPaginationResponse } from '@libs/database';
 import {
   DeepPartial,
   DeleteResult,
   FindOptionsRelations,
   ILike,
 } from 'typeorm';
-import { SocialAuthType } from '../auth/social-auth.enum';
+import { SocialAuthType } from '@domains/auth/social-auth.enum';
 
 /**
  * UsersService provides operations for managing user data.

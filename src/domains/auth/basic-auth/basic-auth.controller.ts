@@ -21,7 +21,7 @@ import {
   BasicSuccessSchema,
   validationErrorSchemaFactory,
   ErrorMessageSchema,
-} from '@app/common';
+} from '@libs/common';
 import { LoginErrorValidationDto } from './dto/login-error-validation.dto';
 import { RegisterErrorValidationDto } from './dto/register-error-validation.dto';
 import { ForgetPasswordErrorValidationDto } from './dto/forget-password-error-validation.dto';
@@ -30,7 +30,7 @@ import { ResetPasswordErrorValidationDto } from './dto/reset-password-error-vali
 import { RefreshTokenErrorValidationDto } from './dto/refresh-token-error-validation';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { ResendRegisterEmailErrorValidationDto } from './dto/resend-register-email-error-validation.dto';
-import { AuthTokenSchema } from '@app/auth-token';
+import { AuthTokenSchema } from '@libs/auth-token';
 
 @ApiTags('Auth')
 @Controller('auth')

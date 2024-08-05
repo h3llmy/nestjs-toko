@@ -1,5 +1,5 @@
-import { OrderDetails } from '../../orders/entities/orderDetails.entity';
-import { Product } from '../../products/entities/product.entity';
+import { OrderDetails } from '@domains/orders/entities/orderDetails.entity';
+import { Product } from '@domains/products/entities/product.entity';
 import {
   Column,
   CreateDateColumn,

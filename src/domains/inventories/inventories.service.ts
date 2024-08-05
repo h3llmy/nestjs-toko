@@ -3,7 +3,7 @@ import { UpdateInventoryDto } from './dto/update-inventory.dto';
 import { InventoriesRepository } from './inventories.repository';
 import { Inventory } from './entities/inventory.entity';
 import { DeepPartial, In, SaveOptions } from 'typeorm';
-import { ITransactionManager } from '@app/common';
+import { ITransactionManager } from '@libs/database';
 
 @Injectable()
 export class InventoriesService {

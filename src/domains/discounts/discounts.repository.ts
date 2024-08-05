@@ -1,4 +1,4 @@
-import { DefaultRepository } from '@app/common';
+import { DefaultRepository } from '@libs/database';
 import { Discount } from './entities/discount.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';

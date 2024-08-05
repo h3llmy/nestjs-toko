@@ -29,16 +29,16 @@ import {
   BasicErrorSchema,
   BasicSuccessSchema,
   ErrorMessageSchema,
-  IPaginationResponse,
   paginationSchemaFactory,
   Permission,
   validationErrorSchemaFactory,
-} from '@app/common';
+} from '@libs/common';
 import { CreateDiscountErrorValidationDto } from './dto/create-discount-error-validation.dto';
 import { DiscountDto } from './dto/discount.dto';
 import { CacheInterceptor, CacheKey } from '@nestjs/cache-manager';
 import { Discount } from './entities/discount.entity';
 import { DeepPartial } from 'typeorm';
+import { IPaginationResponse } from '@libs/database';
 
 @ApiTags('Discounts')
 @Controller('discounts')

@@ -4,53 +4,6 @@
   "sourceRoot": "src",
   "compilerOptions": {
     "deleteOutDir": false,
-    "webpack": true
-  },
-  "projects": {
-    "common": {
-      "type": "library",
-      "root": "libs/common",
-      "entryFile": "index",
-      "sourceRoot": "libs/common/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/common/tsconfig.lib.json"
-      }
-    },
-    "encryption": {
-      "type": "library",
-      "root": "libs/encryption",
-      "entryFile": "index",
-      "sourceRoot": "libs/encryption/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/encryption/tsconfig.lib.json"
-      }
-    },
-    "randomize": {
-      "type": "library",
-      "root": "libs/randomize",
-      "entryFile": "index",
-      "sourceRoot": "libs/randomize/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/randomize/tsconfig.lib.json"
-      }
-    },
-    "payment-gateway": {
-      "type": "library",
-      "root": "libs/payment-gateway",
-      "entryFile": "index",
-      "sourceRoot": "libs/payment-gateway/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/payment-gateway/tsconfig.lib.json"
-      }
-    },
-    "auth-token": {
-      "type": "library",
-      "root": "libs/auth-token",
-      "entryFile": "index",
-      "sourceRoot": "libs/auth-token/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/auth-token/tsconfig.lib.json"
-      }
-    }
+    "webpack": false
   }
 }
