@@ -33,6 +33,8 @@
       "@libs/auth-token/*": ["src/libs/auth-token/src/*"],
       "@libs/database": ["src/libs/database/src"],
       "@libs/database/*": ["src/libs/database/src/*"],
+      "@libs/csv": ["src/libs/csv/src"],
+      "@libs/csv/*": ["src/libs/csv/src/*"],
       "@domains/auth": ["src/domains/auth"],
       "@domains/auth/*": ["src/domains/auth/*"],
       "@domains/discounts": ["src/domains/discounts"],
@@ -50,7 +52,9 @@
       "@domains/roles": ["src/domains/roles"],
       "@domains/roles/*": ["src/domains/roles/*"],
       "@domains/users": ["src/domains/users"],
-      "@domains/users/*": ["src/domains/users/*"]
+      "@domains/users/*": ["src/domains/users/*"],
+      "@domains/report": ["src/domains/report"],
+      "@domains/report/*": ["src/domains/report/*"]
     }
   }
 }

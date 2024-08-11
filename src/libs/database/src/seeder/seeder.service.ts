@@ -1,6 +1,5 @@
-import { Injectable, Logger } from '@nestjs/common';
-import { glob } from 'glob';
-import { SEEDER_FILES_PATH } from './config/seeder.config';
+import { Inject, Injectable, Logger } from '@nestjs/common';
+import { SEEDER_MODULE_NAME } from './config/seeder.config';
 import { ISeederRunner } from './seeder.interface';
 import { DataSource } from 'typeorm';
 import 'reflect-metadata';
@@ -9,38 +8,28 @@ import 'reflect-metadata';
 export class SeederService {
   private readonly logger = new Logger(SeederService.name, { timestamp: true });
 
-  constructor(private readonly dataSource: DataSource) {}
+  constructor(
+    private readonly dataSource: DataSource,
+    @Inject(SEEDER_MODULE_NAME)
+    private readonly seederProviders: ISeederRunner[],
+  ) {}
 
   /**
    * Asynchronously seeds the database by importing and running all seeder classes found in the specified SEEDER_FILES_PATH.
    *
    * @return {Promise<void>} A promise that resolves when the seeding process is complete.
    */
-  async seed(): Promise<void> {
+  async runSeeder(): Promise<void> {
     this.logger.log('Seeding...');
-    const modules = await glob(SEEDER_FILES_PATH);
 
-    for (const module of modules) {
-      const importedModule = await import(module);
-
-      // Iterate through all properties in importedModule
-      for (const key of Object.keys(importedModule)) {
-        const seederClass = importedModule[key];
-
-        if (typeof seederClass === 'function') {
-          const isSeeder = Reflect.getMetadata('isSeederClass', seederClass);
-
-          if (isSeeder) {
-            const moduleConstructor: ISeederRunner = new seederClass();
-            this.logger.log(`Seeding ${seederClass.name}...`);
-            try {
-              await moduleConstructor.run(this.dataSource);
-              this.logger.log(`Seeding ${seederClass.name} Success`);
-            } catch (error) {
-              this.logger.error(`Seeding ${seederClass.name} Failed`, error);
-            }
-          }
-        }
+    for (const seederProvider of this.seederProviders) {
+      const seederName = seederProvider.constructor.name;
+      this.logger.log(`Seeding ${seederName}...`);
+      try {
+        await seederProvider.run(this.dataSource);
+        this.logger.log(`Seeding ${seederName} Success`);
+      } catch (error) {
+        this.logger.error(`Seeding ${seederName} Failed`, error);
       }
     }
 
