@@ -37,3 +37,12 @@ export interface ISeederRunner {
 export interface ISeederData {
   [roleName: string]: string[];
 }
+
+export interface ISeederOption {
+  /**
+   * The priority of the seeder. The seeder with the highest priority will be run last.
+   *
+   * @default 0
+   */
+  priority: number;
+}

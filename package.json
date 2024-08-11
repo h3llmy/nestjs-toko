@@ -54,6 +54,7 @@
     "passport": "^0.7.0",
     "passport-jwt": "^4.0.1",
     "pg": "^8.12.0",
+    "pg-query-stream": "^4.6.0",
     "qs": "^6.13.0",
     "reflect-metadata": "^0.2.2",
     "rxjs": "^7.8.1",
@@ -64,8 +65,6 @@
     "@automock/jest": "^2.1.0",
     "@nestjs/cli": "^10.4.2",
     "@nestjs/schematics": "^10.1.3",
-    "@swc/cli": "^0.4.0",
-    "@swc/core": "^1.7.6",
     "@types/bcrypt": "^5.0.2",
     "@types/jest": "^29.5.12",
     "@types/node": "^22.1.0",
@@ -122,6 +121,7 @@
       "^@libs/payment-gateway(|/.*)$": "<rootDir>/src/libs/payment-gateway/src/$1",
       "^@libs/auth-token(|/.*)$": "<rootDir>/src/libs/auth-token/src/$1",
       "^@libs/database(|/.*)$": "<rootDir>/src/libs/database/src/$1",
+      "^@libs/csv(|/.*)$": "<rootDir>/src/libs/csv/src/$1",
       "^@domains/auth(|/.*)$": "<rootDir>/src/domains/auth/$1",
       "^@domains/discounts(|/.*)$": "<rootDir>/src/domains/discounts/$1",
       "^@domains/inventories(|/.*)$": "<rootDir>/src/domains/inventories/$1",
@@ -130,7 +130,8 @@
       "^@domains/product-category(|/.*)$": "<rootDir>/src/domains/product-category/$1",
       "^@domains/products(|/.*)$": "<rootDir>/src/domains/products/$1",
       "^@domains/roles(|/.*)$": "<rootDir>/src/domains/roles/$1",
-      "^@domains/users(|/.*)$": "<rootDir>/src/domains/users/$1"
+      "^@domains/users(|/.*)$": "<rootDir>/src/domains/users/$1",
+      "^@domains/report(|/.*)$": "<rootDir>/src/domains/report/$1"
     }
   },
   "keywords": [

@@ -135,11 +135,11 @@ export class BasicAuthService {
       throw new BadRequestException('User already verified');
     }
 
-    this.usersServices.update(credential.id, {
+    const updatedUser = await this.usersServices.update(credential.id, {
       emailVerifiedAt: Date.now(),
     });
 
-    return this.authTokenService.createLoginToken(user);
+    return this.authTokenService.createLoginToken(updatedUser);
   }
 
   /**

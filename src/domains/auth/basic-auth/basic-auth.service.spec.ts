@@ -171,6 +171,79 @@ describe('BasicAuthService', () => {
     });
   });
 
+  describe('verifyEmail', () => {
+    it('should verify the user email', async () => {
+      authTokenService.verifyRegisterToken.mockReturnValue(userMock);
+      usersServices.findOne.mockResolvedValue({
+        ...userMock,
+        emailVerifiedAt: null,
+      });
+
+      usersServices.update.mockResolvedValue(userMock);
+      authTokenService.createLoginToken.mockReturnValue({
+        accessToken: 'some access token',
+        refreshToken: 'some refresh token',
+      });
+
+      const tokens = await authService.verifyEmail('some token');
+      expect(tokens).toEqual({
+        accessToken: 'some access token',
+        refreshToken: 'some refresh token',
+      });
+
+      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
+        'some token',
+      );
+      expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
+      expect(usersServices.update).toHaveBeenCalledWith(userMock.id, {
+        emailVerifiedAt: expect.any(Number),
+      });
+      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(userMock);
+    });
+    it('should throw an error if the user is not found', async () => {
+      authTokenService.verifyRegisterToken.mockReturnValue(userMock);
+      usersServices.findOne.mockResolvedValue(null);
+
+      usersServices.update.mockResolvedValue(userMock);
+      authTokenService.createLoginToken.mockReturnValue({
+        accessToken: 'some access token',
+        refreshToken: 'some refresh token',
+      });
+
+      await expect(authService.verifyEmail('some token')).rejects.toThrow(
+        NotFoundException,
+      );
+
+      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
+        'some token',
+      );
+      expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
+      expect(usersServices.update).not.toHaveBeenCalled();
+      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
+    });
+    it('should throw an error if the user is already verified', async () => {
+      authTokenService.verifyRegisterToken.mockReturnValue(userMock);
+      usersServices.findOne.mockResolvedValue(userMock);
+
+      usersServices.update.mockResolvedValue(userMock);
+      authTokenService.createLoginToken.mockReturnValue({
+        accessToken: 'some access token',
+        refreshToken: 'some refresh token',
+      });
+
+      await expect(authService.verifyEmail('some token')).rejects.toThrow(
+        BadRequestException,
+      );
+
+      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
+        'some token',
+      );
+      expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
+      expect(usersServices.update).not.toHaveBeenCalled();
+      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
+    });
+  });
+
   describe('login', () => {
     it('should authenticate a user and return tokens', async () => {
       const loginDto: LoginDto = {

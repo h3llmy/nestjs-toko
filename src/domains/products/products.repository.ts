@@ -27,9 +27,6 @@ export class ProductsRepository extends DefaultRepository<Product> {
     const productsWithDiscounts = productDiscounts.filter(
       (pd) => pd.discountId,
     );
-    const productsWithoutDiscounts = productDiscounts.filter(
-      (pd) => !pd.discountId,
-    );
 
     const uniqueProductIdsWithDiscounts = [
       ...new Set(productsWithDiscounts.map((pd) => pd.productId)),
@@ -37,37 +34,20 @@ export class ProductsRepository extends DefaultRepository<Product> {
     const uniqueDiscountIds = [
       ...new Set(productsWithDiscounts.map((pd) => pd.discountId)),
     ];
-    const uniqueProductIdsWithoutDiscounts = [
-      ...new Set(productsWithoutDiscounts.map((pd) => pd.productId)),
-    ];
 
-    const queryBuilder = this.createQueryBuilder('product');
+    const queryBuilder = this.createQueryBuilder('product')
+      .leftJoinAndSelect('product.inventory', 'inventory')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.discounts', 'discount');
 
     if (uniqueProductIdsWithDiscounts.length > 0) {
       queryBuilder
-        .leftJoinAndSelect('product.inventory', 'inventory')
-        .leftJoinAndSelect('product.category', 'category')
-        .leftJoinAndSelect('product.discounts', 'discount')
         .where('product.id IN (:...uniqueProductIdsWithDiscounts)', {
           uniqueProductIdsWithDiscounts,
         })
         .andWhere('discount.id IN (:...uniqueDiscountIds)', {
           uniqueDiscountIds,
         });
-    }
-
-    if (uniqueProductIdsWithoutDiscounts.length > 0) {
-      if (uniqueProductIdsWithDiscounts.length > 0) {
-        queryBuilder.orWhere(
-          'product.id IN (:...uniqueProductIdsWithoutDiscounts)',
-          { uniqueProductIdsWithoutDiscounts },
-        );
-      } else {
-        queryBuilder.where(
-          'product.id IN (:...uniqueProductIdsWithoutDiscounts)',
-          { uniqueProductIdsWithoutDiscounts },
-        );
-      }
     }
 
     const products = await queryBuilder.getMany();

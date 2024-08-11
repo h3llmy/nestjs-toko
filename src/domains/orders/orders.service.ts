@@ -27,6 +27,7 @@ import { Order, OrderStatus } from './entities/order.entity';
 import { Product } from '@domains/products/entities/product.entity';
 import { PaginationOrderDto } from './dto/pagination-order.dto';
 import { IPaginationPayload, IPaginationResponse } from '@libs/database';
+import { ReadStream } from 'typeorm/platform/PlatformTools';
 
 // TODO: add send email to customer when order created / updated
 @Injectable()
@@ -38,6 +39,16 @@ export class OrdersService {
     private readonly productService: ProductsService,
     private readonly dataSource: DataSource,
   ) {}
+
+  findReadableStream(): Promise<ReadStream> {
+    const tableName = this.orderRepository.getTableName();
+    return this.dataSource
+      .getRepository(Order)
+      .createQueryBuilder(tableName)
+      .leftJoinAndSelect(`${tableName}.orderDetails`, 'orderDetails')
+      .leftJoinAndSelect(`${tableName}.user`, 'user')
+      .stream();
+  }
 
   /**
    * Increases the inventory quantity for each product in the given order.
