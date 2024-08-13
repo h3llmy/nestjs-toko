@@ -4,12 +4,16 @@ import { User } from '../entities/user.entity';
 import { Role } from '@domains/roles/entities/role.entity';
 import { ConfigService } from '@nestjs/config';
 import { NotFoundException } from '@nestjs/common';
+import { EncryptionService } from '@libs/encryption';
 
 @Seeder({
   priority: 1,
 })
 export class UserSeeder implements ISeederRunner {
-  constructor(private readonly configService: ConfigService) {}
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly encryptionService: EncryptionService,
+  ) {}
 
   async run(dataSource: DataSource): Promise<void> {
     const userRepository = dataSource.getRepository(User);
@@ -24,7 +28,9 @@ export class UserSeeder implements ISeederRunner {
       {
         username: this.configService.getOrThrow<string>('ADMIN_USERNAME'),
         email: this.configService.getOrThrow<string>('ADMIN_EMAIL'),
-        password: this.configService.getOrThrow<string>('ADMIN_PASSWORD'),
+        password: this.encryptionService.hash(
+          this.configService.getOrThrow<string>('ADMIN_PASSWORD'),
+        ),
         emailVerifiedAt: Date.now(),
         role: adminRole,
       },

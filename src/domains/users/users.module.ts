@@ -5,7 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './entities/user.entity';
 import { UserRepository } from './users.repository';
 import { EncryptionModule } from '@libs/encryption';
-import { UserSubscribers } from './entities/user.subscribers';
+import { UserSubscribers } from './entities/user.subscriber';
 import { RolesModule } from '@domains/roles/roles.module';
 
 @Module({
