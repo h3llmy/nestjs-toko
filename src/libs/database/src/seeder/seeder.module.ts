@@ -48,15 +48,13 @@ export class SeederModule {
    */
   private static createSeederProviders(
     providersValue: {
-      constructor: new (...args: any[]) => any;
+      constructor: new () => any;
       priority: number;
     }[],
   ): Provider {
     return {
       provide: SEEDER_MODULE_NAME,
-      useFactory: async (
-        ...args: any[]
-      ): Promise<(new (...args: any[]) => any)[]> => {
+      useFactory: async (): Promise<(new () => any)[]> => {
         return providersValue
           .sort((a, b) => a.priority - b.priority)
           .map((seederClass) => seederClass.constructor);
@@ -67,7 +65,7 @@ export class SeederModule {
 
   private static async importSeederModule() {
     const providersValue: Array<{
-      constructor: new (...args: any[]) => any;
+      constructor: new () => any;
       priority: number;
     }> = [];
     const modules = await glob(SEEDER_FILES_PATH, {
