@@ -11,7 +11,7 @@ export class SeederService {
   constructor(
     private readonly dataSource: DataSource,
     @Inject(SEEDER_MODULE_NAME)
-    private readonly seederProviders: any[],
+    private readonly seederProviders: (new (...args: any[]) => ISeederRunner)[],
     private readonly moduleRef: ModuleRef,
   ) {}
 

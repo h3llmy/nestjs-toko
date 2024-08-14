@@ -92,7 +92,7 @@
       "mjml": "^5.0.0-alpha.0"
     },
     "midtrans-client": {
-      "axios": "^1.7.2"
+      "axios": "^1.7.4"
     }
   },
   "jest": {
