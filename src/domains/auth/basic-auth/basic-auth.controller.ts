@@ -94,7 +94,7 @@ export class BasicAuthController {
   async resendEmail(
     @Body() createAuthDto: ResendRegisterEmailDto,
   ): Promise<BasicSuccessSchema> {
-    const user = await this.basicAuthService.resendEmail(createAuthDto);
+    const user = await this.basicAuthService.validateResendEmail(createAuthDto);
     const token = this.authTokenService.generateRegisterToken({
       id: user.id,
     });

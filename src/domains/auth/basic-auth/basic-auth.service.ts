@@ -8,13 +8,7 @@ import { EncryptionService } from '@libs/encryption';
 import { ConfigService } from '@nestjs/config';
 import { RandomizeService } from '@libs/randomize';
 import { LoginDto } from './dto/login-user.dto';
-import { MailerService } from '@nestjs-modules/mailer';
-import {
-  ILoginTokenPayload,
-  IRegisterTokenPayload,
-  AuthTokenService,
-  AuthTokenSchema,
-} from '@libs/auth-token';
+import { ILoginTokenPayload, IRegisterTokenPayload } from '@libs/auth-token';
 import { ForgetPasswordDto } from './dto/forget-password.dto';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { SocialAuthResponse } from '../social-auth.abstract';
@@ -29,9 +23,7 @@ export class BasicAuthService {
   constructor(
     private readonly usersServices: UsersService,
     private readonly encryptionService: EncryptionService,
-    protected readonly authTokenService: AuthTokenService,
     protected readonly configService: ConfigService,
-    protected readonly mailerService: MailerService,
     protected readonly randomizeService: RandomizeService,
   ) {}
 
@@ -43,7 +35,9 @@ export class BasicAuthService {
    * @throws {NotFoundException} If the user with the specified email address is not found.
    * @throws {BadRequestException} If the user with the specified email address is already verified.
    */
-  async resendEmail(resendEmailDto: ResendRegisterEmailDto): Promise<User> {
+  async validateResendEmail(
+    resendEmailDto: ResendRegisterEmailDto,
+  ): Promise<User> {
     const user = await this.usersServices.findOneByEmail(resendEmailDto.email);
 
     if (!user)
@@ -143,12 +137,12 @@ export class BasicAuthService {
    *
    * @param {SocialAuthType} socialType - The social authentication type.
    * @param {SocialAuthResponse} socialData - The social authentication response containing the user's ID, username, email, and social ID.
-   * @return {Promise<AuthTokenSchema>} A promise that resolves to an authentication token schema containing the access and refresh tokens.
+   * @return {Promise<User>} A promise that resolves to the user entity associated with the provided social login credentials.
    */
   async validateSocialLogin(
     socialType: SocialAuthType,
     socialData: SocialAuthResponse,
-  ): Promise<AuthTokenSchema> {
+  ): Promise<User> {
     const user =
       (await this.usersServices.findOneBySocialId(socialType, socialData.id)) ??
       (await this.usersServices.registerSocial({
@@ -159,6 +153,6 @@ export class BasicAuthService {
         emailVerifiedAt: Date.now(),
       }));
 
-    return this.authTokenService.createLoginToken(user);
+    return user;
   }
 }

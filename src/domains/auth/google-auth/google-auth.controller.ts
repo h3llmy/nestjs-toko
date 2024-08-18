@@ -12,7 +12,7 @@ import {
   ApiUnprocessableEntityResponse,
 } from '@nestjs/swagger';
 import { SocialAuthType } from '../social-auth.enum';
-import { AuthTokenSchema } from '@libs/auth-token';
+import { AuthTokenSchema, AuthTokenService } from '@libs/auth-token';
 import {
   BasicErrorSchema,
   ErrorMessageSchema,
@@ -26,6 +26,7 @@ export class GoogleAuthController {
   constructor(
     private readonly googleAuthService: GoogleAuthService,
     private readonly basicAuthService: BasicAuthService,
+    private readonly authTokenService: AuthTokenService,
   ) {}
 
   @Post('login')
@@ -53,9 +54,10 @@ export class GoogleAuthController {
   async login(@Body() loginDto: GoogleAuthLoginDto): Promise<AuthTokenSchema> {
     const socialProfile = await this.googleAuthService.getProfile(loginDto);
 
-    return this.basicAuthService.validateSocialLogin(
+    const user = await this.basicAuthService.validateSocialLogin(
       SocialAuthType.GOOGLE,
       socialProfile,
     );
+    return this.authTokenService.createLoginToken(user);
   }
 }

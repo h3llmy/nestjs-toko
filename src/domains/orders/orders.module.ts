@@ -11,12 +11,14 @@ import {
   PaymentGatewayModule,
   paymentGatewayConfig,
 } from '@libs/payment-gateway';
+import { MailModule } from '@domains/mail/mail.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([Order, OrderDetails]),
     ProductsModule,
     PaymentGatewayModule.forRootAsync(paymentGatewayConfig),
+    MailModule,
   ],
   controllers: [OrdersController],
   providers: [OrdersService, OrderRepository, OrderDetailsRepository],

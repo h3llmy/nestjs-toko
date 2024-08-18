@@ -32,7 +32,9 @@ import compression from '@fastify/compress';
   app.register(helmet);
   app.register(compression);
 
-  app.enableCors();
+  app.enableCors({
+    origin: '*',
+  });
 
   app.enableVersioning({
     type: VersioningType.URI,
@@ -61,4 +63,6 @@ import compression from '@fastify/compress';
   await app.listen(port, () =>
     logger.log(`Nest application run on port ${port}`),
   );
+
+  app.enableShutdownHooks();
 })();

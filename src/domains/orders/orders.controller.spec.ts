@@ -15,10 +15,13 @@ import { ProductCategory } from '@domains/product-category/entities/product-cate
 import { Discount } from '@domains/discounts/entities/discount.entity';
 import { IPaginationResponse } from '@libs/database';
 import { Role } from '@domains/roles/entities/role.entity';
+import { MailService } from '@domains/mail/mail.service';
+import { Product } from '@domains/products/entities/product.entity';
 
 describe('OrdersController', () => {
   let orderController: OrdersController;
   let orderService: jest.Mocked<OrdersService>;
+  let mailService: jest.Mocked<MailService>;
 
   const mockRole: Role = {
     id: '1',
@@ -60,7 +63,7 @@ describe('OrdersController', () => {
     updatedAt: new Date(),
   };
 
-  const mockProduct = {
+  const mockProduct: Product = {
     id: '1',
     name: 'Test Product',
     price: 10,
@@ -116,11 +119,13 @@ describe('OrdersController', () => {
 
     orderController = unit;
     orderService = unitRef.get<OrdersService>(OrdersService);
+    mailService = unitRef.get<MailService>(MailService);
   });
 
   it('should be defined', () => {
     expect(orderController).toBeDefined();
     expect(orderService).toBeDefined();
+    expect(mailService).toBeDefined();
   });
 
   describe('create', () => {
@@ -143,12 +148,19 @@ describe('OrdersController', () => {
         redirect_url: 'https://example.com/token',
         token: 'token',
       };
-      orderService.create.mockResolvedValue(paymentOrderResponseDto);
+      orderService.create.mockResolvedValue({
+        ...paymentOrderResponseDto,
+        ...mockOrder,
+      });
+      mailService.sendCreateOrderMail.mockResolvedValue(undefined);
 
       const response = await orderController.create(createOrderDto, user);
 
       expect(response).toEqual(paymentOrderResponseDto);
       expect(orderService.create).toHaveBeenCalledWith(createOrderDto, user);
+      expect(mailService.sendCreateOrderMail).toHaveBeenCalledWith(user, {
+        ...mockOrder,
+      });
     });
   });
 
