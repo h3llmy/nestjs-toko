@@ -1,8 +1,10 @@
+import { Order } from '@domains/orders/entities/order.entity';
 import { User } from '@domains/users/entities/user.entity';
 import { MailerService } from '@nestjs-modules/mailer';
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { SentMessageInfo } from 'nodemailer';
+import { DeepPartial } from 'typeorm';
 
 @Injectable()
 export class MailService {
@@ -59,6 +61,28 @@ export class MailService {
       context: {
         forgetPasswordLink,
         user,
+      },
+    });
+  }
+
+  /**
+   * Sends an email to the user when an order is created.
+   *
+   * @param {User} user - The user to send the order creation email to.
+   * @param {DeepPartial<Order>} order - The order that was created.
+   * @return {Promise<SentMessageInfo>} - The result of sending the email.
+   */
+  async sendCreateOrderMail(
+    user: User,
+    order: DeepPartial<Order>,
+  ): Promise<SentMessageInfo> {
+    return this.mailerService.sendMail({
+      template: 'order/order-created',
+      to: user.email,
+      subject: 'Create Order',
+      context: {
+        user,
+        order,
       },
     });
   }

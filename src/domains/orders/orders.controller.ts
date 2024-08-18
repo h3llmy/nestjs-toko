@@ -43,11 +43,15 @@ import { CreateOrderValidationErrorDto } from './dto/create-order-validation-err
 import { OrderDto } from './dto/order.dto';
 import { OrderNotificationValidationErrorDto } from './dto/order-notification-validator-error.dto';
 import { IPaginationResponse } from '@libs/database';
+import { MailService } from '@domains/mail/mail.service';
 
 @ApiTags('Orders')
 @Controller('orders')
 export class OrdersController {
-  constructor(private readonly ordersService: OrdersService) {}
+  constructor(
+    private readonly ordersService: OrdersService,
+    private readonly mailService: MailService,
+  ) {}
 
   @Post()
   @Permission('create order')
@@ -81,11 +85,19 @@ export class OrdersController {
     description: 'Service Unavailable',
     type: BasicErrorSchema,
   })
-  create(
+  async create(
     @Body() createOrderDto: CreateOrderDto,
     @Auth() user: User,
   ): Promise<PaymentOrderResponseDto> {
-    return this.ordersService.create(createOrderDto, user);
+    const { redirect_url, token, ...order } = await this.ordersService.create(
+      createOrderDto,
+      user,
+    );
+    this.mailService.sendCreateOrderMail(user, order);
+    return {
+      token,
+      redirect_url,
+    };
   }
 
   @Post('notification')

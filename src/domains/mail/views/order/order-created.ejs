@@ -92,7 +92,7 @@
 
       <h2>Order Summary</h2>
       <p><strong>Total:</strong> Rp.<%= order.totalAmount %></p>
-      <p><strong>status:</strong> <%= order.status %></p>
+      <p><strong>status:</strong> <%= order.status.charAt(0).toUpperCase() + order.status.slice(1) %></p>
 
       <p>
         If you have any questions about your order, please contact us at

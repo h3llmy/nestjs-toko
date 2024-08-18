@@ -1,14 +1,12 @@
 import { TestBed } from '@automock/jest';
 import { BasicAuthService } from './basic-auth.service';
 import { EncryptionService } from '@libs/encryption';
-import { MailerService } from '@nestjs-modules/mailer';
 import { RandomizeService } from '@libs/randomize';
 import { UsersService } from '@domains/users/users.service';
 import { User } from '@domains/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
 import { LoginDto } from './dto/login-user.dto';
-import { AuthTokenService } from '@libs/auth-token';
 import { Role } from '@domains/roles/entities/role.entity';
 import { SocialAuthType } from '../social-auth.enum';
 import { SocialAuthResponse } from '../social-auth.abstract';
@@ -17,9 +15,7 @@ describe('BasicAuthService', () => {
   let authService: BasicAuthService;
   let usersServices: jest.Mocked<UsersService>;
   let configService: jest.Mocked<ConfigService>;
-  let authTokenService: jest.Mocked<AuthTokenService>;
   let encryptionService: jest.Mocked<EncryptionService>;
-  let mailerService: jest.Mocked<MailerService>;
   let randomizeService: jest.Mocked<RandomizeService>;
 
   const mockRole: Role = {
@@ -47,8 +43,6 @@ describe('BasicAuthService', () => {
     authService = unit;
     usersServices = unitRef.get(UsersService);
     encryptionService = unitRef.get(EncryptionService);
-    mailerService = unitRef.get(MailerService);
-    authTokenService = unitRef.get(AuthTokenService);
     randomizeService = unitRef.get(RandomizeService);
     configService = unitRef.get(ConfigService);
   });
@@ -57,7 +51,6 @@ describe('BasicAuthService', () => {
     expect(authService).toBeDefined();
     expect(usersServices).toBeDefined();
     expect(encryptionService).toBeDefined();
-    expect(mailerService).toBeDefined();
     expect(randomizeService).toBeDefined();
     expect(configService).toBeDefined();
   });
@@ -70,7 +63,7 @@ describe('BasicAuthService', () => {
         emailVerifiedAt: null,
       });
 
-      const user = await authService.resendEmail({ email: mockEmail });
+      const user = await authService.validateResendEmail({ email: mockEmail });
 
       expect(user).toEqual({ ...userMock, emailVerifiedAt: null });
     });
@@ -80,7 +73,7 @@ describe('BasicAuthService', () => {
       usersServices.findOneByEmail.mockResolvedValue(null);
 
       await expect(
-        authService.resendEmail({ email: mockEmail }),
+        authService.validateResendEmail({ email: mockEmail }),
       ).rejects.toThrow(NotFoundException);
     });
 
@@ -92,14 +85,13 @@ describe('BasicAuthService', () => {
       });
 
       await expect(
-        authService.resendEmail({ email: mockEmail }),
+        authService.validateResendEmail({ email: mockEmail }),
       ).rejects.toThrow(BadRequestException);
     });
   });
 
   describe('verifyEmail', () => {
     it('should verify the user email', async () => {
-      authTokenService.verifyRegisterToken.mockReturnValue(userMock);
       usersServices.findOne.mockResolvedValue({
         ...userMock,
         emailVerifiedAt: null,
@@ -280,22 +272,16 @@ describe('BasicAuthService', () => {
     it('should validate a social login', async () => {
       const socialType = SocialAuthType.GOOGLE;
       const socialData: SocialAuthResponse = {
-        id: '1',
+        id: userMock.id,
         email: userMock.email,
         username: userMock.username,
       };
       usersServices.findOneBySocialId.mockResolvedValue(userMock);
-      authTokenService.createLoginToken.mockReturnValue({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
-      });
-      const tokens = await authService.validateSocialLogin(
+      const user = await authService.validateSocialLogin(
         socialType,
         socialData,
       );
-      expect(tokens.accessToken).toBeDefined();
-      expect(tokens.refreshToken).toBeDefined();
-      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(userMock);
+      expect(user).toEqual(userMock);
       expect(usersServices.findOneBySocialId).toHaveBeenCalledWith(
         socialType,
         socialData.id,
@@ -306,23 +292,17 @@ describe('BasicAuthService', () => {
     it('should create and validate a social login when user does not exist', async () => {
       const socialType = SocialAuthType.GOOGLE;
       const socialData: SocialAuthResponse = {
-        id: '1',
+        id: userMock.id,
         email: userMock.email,
         username: userMock.username,
       };
       usersServices.findOneBySocialId.mockResolvedValue(null);
       usersServices.registerSocial.mockResolvedValue(userMock);
-      authTokenService.createLoginToken.mockReturnValue({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
-      });
-      const tokens = await authService.validateSocialLogin(
+      const user = await authService.validateSocialLogin(
         socialType,
         socialData,
       );
-      expect(tokens.accessToken).toBeDefined();
-      expect(tokens.refreshToken).toBeDefined();
-      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(userMock);
+      expect(user).toEqual(userMock);
       expect(usersServices.findOneBySocialId).toHaveBeenCalledWith(
         socialType,
         socialData.id,

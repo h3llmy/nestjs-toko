@@ -106,7 +106,7 @@ describe('BasicAuthController', () => {
     });
 
     it('should resend an email', async () => {
-      basicAuthService.resendEmail.mockResolvedValue(mockUser);
+      basicAuthService.validateResendEmail.mockResolvedValue(mockUser);
       authTokenService.generateRegisterToken.mockReturnValue('token');
       mailService.sendRegisterMail.mockResolvedValue(null);
 
@@ -115,7 +115,7 @@ describe('BasicAuthController', () => {
       });
 
       expect(user).toEqual({ message: 'Resend email success' });
-      expect(basicAuthService.resendEmail).toHaveBeenCalledWith({
+      expect(basicAuthService.validateResendEmail).toHaveBeenCalledWith({
         email: mockRegisterUserDto.email,
       });
       expect(authTokenService.generateRegisterToken).toHaveBeenCalledWith({
@@ -128,7 +128,7 @@ describe('BasicAuthController', () => {
     });
 
     it('should throw an error if user already exists', async () => {
-      basicAuthService.resendEmail.mockRejectedValue(
+      basicAuthService.validateResendEmail.mockRejectedValue(
         new BadRequestException(
           `email ${mockRegisterUserDto.email} is already in use`,
         ),

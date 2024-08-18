@@ -29,7 +29,6 @@ import { PaginationOrderDto } from './dto/pagination-order.dto';
 import { IPaginationPayload, IPaginationResponse } from '@libs/database';
 import { ReadStream } from 'typeorm/platform/PlatformTools';
 
-// TODO: add send email to customer when order created / updated
 @Injectable()
 export class OrdersService {
   constructor(
@@ -40,6 +39,7 @@ export class OrdersService {
     private readonly dataSource: DataSource,
   ) {}
 
+  // TODO: add test cases
   findReadableStream(): Promise<ReadStream> {
     const tableName = this.orderRepository.getTableName();
     return this.dataSource
@@ -86,7 +86,7 @@ export class OrdersService {
   async create(
     createOrderDto: CreateOrderDto,
     user: User,
-  ): Promise<PaymentOrderResponseDto> {
+  ): Promise<PaymentOrderResponseDto & DeepPartial<Order>> {
     const transaction = this.dataSource.createQueryRunner();
     await transaction.startTransaction();
 
@@ -215,7 +215,7 @@ export class OrdersService {
 
       await transaction.commitTransaction();
 
-      return paymentResponse;
+      return { ...paymentResponse, ...savedOrder };
     } catch (error) {
       await transaction.rollbackTransaction();
       throw error;

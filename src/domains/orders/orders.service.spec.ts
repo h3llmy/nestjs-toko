@@ -257,7 +257,16 @@ describe('OrdersService', () => {
 
       const result = await orderService.create(createOrderDto, user);
 
-      expect(result).toEqual(paymentOrderResponseDto);
+      expect(result).toEqual({
+        ...paymentOrderResponseDto,
+        orderDetails: mockSavedOrderItems,
+        user,
+        totalAmount: 19,
+        createdAt: expect.any(Date),
+        deletedAt: null,
+        id: '1',
+        status: OrderStatus.PENDING,
+      });
       expect(dataSource.createQueryRunner).toHaveBeenCalled();
       expect(queryRunner.startTransaction).toHaveBeenCalled();
       expect(queryRunner.commitTransaction).toHaveBeenCalled();
