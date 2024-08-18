@@ -7,10 +7,8 @@ import { UsersService } from '@domains/users/users.service';
 import { User } from '@domains/users/entities/user.entity';
 import { ConfigService } from '@nestjs/config';
 import { BadRequestException, NotFoundException } from '@nestjs/common';
-import { RefreshTokenDto } from './dto/refresh-token.dto';
 import { LoginDto } from './dto/login-user.dto';
-import { ResetPasswordDto } from './dto/reset-password.dto';
-import { AuthTokenService, ILoginTokenPayload } from '@libs/auth-token';
+import { AuthTokenService } from '@libs/auth-token';
 import { Role } from '@domains/roles/entities/role.entity';
 import { SocialAuthType } from '../social-auth.enum';
 import { SocialAuthResponse } from '../social-auth.abstract';
@@ -64,97 +62,26 @@ describe('BasicAuthService', () => {
     expect(configService).toBeDefined();
   });
 
-  describe('register', () => {
-    it('should register a user and send a confirmation email', async () => {
-      const jwtMock = 'some jwt token';
-
-      const webUrl = configService.getOrThrow<string>('WEB_URL');
-      const webVerifyRoute =
-        configService.getOrThrow<string>('WEB_VERIFY_ROUTE');
-      const confirmationLink = `${webUrl}/${webVerifyRoute}/${jwtMock}`;
-
-      usersServices.register.mockResolvedValue(userMock);
-      authTokenService.generateRegisterToken.mockReturnValue(jwtMock);
-      mailerService.sendMail.mockResolvedValue(null);
-
-      const user = await authService.register({
-        email: 'testing@example.com',
-        username: 'test',
-        password: 'test',
-        confirmPassword: 'test',
-      });
-
-      expect(user).toEqual({ message: 'Registration Success' });
-      expect(usersServices.register).toHaveBeenCalled();
-      expect(mailerService.sendMail).toHaveBeenCalledWith({
-        template: 'auth/basic-auth/views/email/register',
-        to: 'testing@example.com',
-        subject: 'Registration Email',
-        context: {
-          confirmationLink,
-          user: userMock,
-        },
-      });
-    });
-
-    it('should reject duplicate user', async () => {
-      const mockEmail = 'test@example.com';
-      usersServices.register.mockRejectedValue(
-        new BadRequestException(`email ${mockEmail} is already in use`),
-      );
-
-      await expect(
-        authService.register({
-          email: mockEmail,
-          username: 'test',
-          password: 'test',
-          confirmPassword: 'test',
-        }),
-      ).rejects.toThrow(BadRequestException);
-
-      expect(usersServices.register).toHaveBeenCalled();
-      expect(mailerService.sendMail).not.toHaveBeenCalled();
-      expect(authTokenService.generateRegisterToken).not.toHaveBeenCalled();
-    });
-  });
-
   describe('resendEmail', () => {
     it('should send a confirmation email', async () => {
       const mockEmail = 'test@example.com';
-      const webUrl = configService.getOrThrow<string>('WEB_URL');
-      const webVerifyRoute =
-        configService.getOrThrow<string>('WEB_VERIFY_ROUTE');
-      const confirmationLink = `${webUrl}/${webVerifyRoute}/${mockEmail}`;
       usersServices.findOneByEmail.mockResolvedValue({
         ...userMock,
         emailVerifiedAt: null,
       });
-      mailerService.sendMail.mockResolvedValue(null);
-      authTokenService.generateRegisterToken.mockReturnValue(mockEmail);
 
-      await authService.resendEmail({ email: mockEmail });
+      const user = await authService.resendEmail({ email: mockEmail });
 
-      expect(mailerService.sendMail).toHaveBeenCalledWith({
-        template: 'auth/basic-auth/views/email/register',
-        to: mockEmail,
-        subject: 'Registration Email',
-        context: {
-          confirmationLink,
-          user: { ...userMock, emailVerifiedAt: null },
-        },
-      });
+      expect(user).toEqual({ ...userMock, emailVerifiedAt: null });
     });
 
     it('should throw an error if the user is not found', async () => {
       const mockEmail = 'test@example.com';
       usersServices.findOneByEmail.mockResolvedValue(null);
-      authTokenService.generateRegisterToken.mockReturnValue(mockEmail);
 
       await expect(
         authService.resendEmail({ email: mockEmail }),
       ).rejects.toThrow(NotFoundException);
-
-      expect(mailerService.sendMail).not.toHaveBeenCalled();
     });
 
     it('should throw an error if the user is already verified', async () => {
@@ -163,7 +90,6 @@ describe('BasicAuthService', () => {
         ...userMock,
         emailVerifiedAt: Date.now(),
       });
-      authTokenService.generateRegisterToken.mockReturnValue(mockEmail);
 
       await expect(
         authService.resendEmail({ email: mockEmail }),
@@ -180,67 +106,40 @@ describe('BasicAuthService', () => {
       });
 
       usersServices.update.mockResolvedValue(userMock);
-      authTokenService.createLoginToken.mockReturnValue({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
-      });
 
-      const tokens = await authService.verifyEmail('some token');
-      expect(tokens).toEqual({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
-      });
+      const user = await authService.verifyEmail({ id: userMock.id });
+      expect(user).toEqual(userMock);
 
-      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
-        'some token',
-      );
       expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
       expect(usersServices.update).toHaveBeenCalledWith(userMock.id, {
         emailVerifiedAt: expect.any(Number),
       });
-      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(userMock);
     });
+
     it('should throw an error if the user is not found', async () => {
-      authTokenService.verifyRegisterToken.mockReturnValue(userMock);
       usersServices.findOne.mockResolvedValue(null);
 
       usersServices.update.mockResolvedValue(userMock);
-      authTokenService.createLoginToken.mockReturnValue({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
-      });
 
-      await expect(authService.verifyEmail('some token')).rejects.toThrow(
-        NotFoundException,
-      );
+      await expect(
+        authService.verifyEmail({ id: userMock.id }),
+      ).rejects.toThrow(NotFoundException);
 
-      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
-        'some token',
-      );
       expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
       expect(usersServices.update).not.toHaveBeenCalled();
-      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
+
     it('should throw an error if the user is already verified', async () => {
-      authTokenService.verifyRegisterToken.mockReturnValue(userMock);
       usersServices.findOne.mockResolvedValue(userMock);
 
       usersServices.update.mockResolvedValue(userMock);
-      authTokenService.createLoginToken.mockReturnValue({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
-      });
 
-      await expect(authService.verifyEmail('some token')).rejects.toThrow(
-        BadRequestException,
-      );
+      await expect(
+        authService.verifyEmail({ id: userMock.id }),
+      ).rejects.toThrow(BadRequestException);
 
-      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
-        'some token',
-      );
       expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
       expect(usersServices.update).not.toHaveBeenCalled();
-      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
   });
 
@@ -253,15 +152,10 @@ describe('BasicAuthService', () => {
 
       usersServices.findOneByEmail.mockResolvedValue(userMock);
       encryptionService.match.mockReturnValue(true);
-      authTokenService.createLoginToken.mockReturnValue({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
-      });
 
-      const tokens = await authService.login(loginDto);
+      const user = await authService.login(loginDto);
 
-      expect(tokens.accessToken).toBeDefined();
-      expect(tokens.refreshToken).toBeDefined();
+      expect(user).toEqual(userMock);
       expect(usersServices.findOneByEmail).toHaveBeenCalledWith(loginDto.email);
       expect(encryptionService.match).toHaveBeenCalledWith(
         loginDto.password,
@@ -286,7 +180,6 @@ describe('BasicAuthService', () => {
         loginDto.password,
         userMock.password,
       );
-      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
 
     it('should throw an error if the user is not verified', async () => {
@@ -307,7 +200,6 @@ describe('BasicAuthService', () => {
         loginDto.password,
         unverifiedUser.password,
       );
-      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
 
     it('should throw an error if the user is login with social', async () => {
@@ -328,106 +220,59 @@ describe('BasicAuthService', () => {
       );
       expect(usersServices.findOneByEmail).toHaveBeenCalledWith(loginDto.email);
       expect(encryptionService.match).not.toHaveBeenCalled();
-      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
   });
 
   describe('forgetPassword', () => {
-    it('should initiate the password reset process and send an email', async () => {
+    it('should get user with basic auth', async () => {
+      usersServices.findOneByEmail.mockResolvedValue(userMock);
+      const user = await authService.forgetPassword({
+        email: userMock.email,
+      });
+      expect(user).toEqual(userMock);
+      expect(usersServices.findOneByEmail).toHaveBeenCalledWith(userMock.email);
+    });
+
+    it('should throw error if the user is logged in with social', async () => {
       usersServices.findOneByEmail.mockResolvedValue({
         ...userMock,
         socialType: SocialAuthType.GOOGLE,
       });
+
       await expect(
-        authService.forgetPassword({
-          email: 'test@example.com',
-        }),
+        authService.forgetPassword({ email: userMock.email }),
       ).rejects.toThrow(BadRequestException);
-      expect(usersServices.findOneByEmail).toHaveBeenCalledWith(
-        'test@example.com',
-      );
-      expect(
-        authTokenService.generateForgetPasswordToken,
-      ).not.toHaveBeenCalled();
-      expect(mailerService.sendMail).not.toHaveBeenCalledWith();
-    });
-    it('should throw error if the user is logged in with social', async () => {
-      const jwtMock = 'some jwt token';
-      const webUrl = configService.getOrThrow<string>('WEB_URL');
-      const forgetPasswordRoute = configService.getOrThrow<string>(
-        'WEB_FORGET_PASSWORD_ROUTE',
-      );
-      const redirectLink = `${webUrl}/${forgetPasswordRoute}/${jwtMock}`;
-      usersServices.findOneByEmail.mockResolvedValue(userMock);
-      authTokenService.generateForgetPasswordToken.mockReturnValue(jwtMock);
-      mailerService.sendMail.mockResolvedValue(null);
-      const result = await authService.forgetPassword({
-        email: 'test@example.com',
-      });
-      expect(result).toEqual({ message: 'Email Sended' });
-      expect(usersServices.findOneByEmail).toHaveBeenCalledWith(
-        'test@example.com',
-      );
-      expect(authTokenService.generateForgetPasswordToken).toHaveBeenCalled();
-      expect(mailerService.sendMail).toHaveBeenCalledWith({
-        to: 'test@example.com',
-        subject: 'Reset Password',
-        context: {
-          redirectLink,
-          user: userMock,
-        },
-        template: 'auth/basic-auth/views/email/forget-password',
-      });
+
+      expect(usersServices.findOneByEmail).toHaveBeenCalledWith(userMock.email);
     });
   });
 
-  describe('resetPassword', () => {
-    it("should reset the user's password", async () => {
-      const jwtMock = 'some jwt token';
-      const resetPasswordDto: ResetPasswordDto = {
-        password: 'newPassword',
-        confirmPassword: 'newPassword',
-      };
-
-      authTokenService.verifyForgetPasswordToken.mockReturnValue({ id: '1' });
-
-      const result = await authService.resetPassword(jwtMock, resetPasswordDto);
-
-      expect(result).toEqual({ message: 'Password has been updated' });
-      expect(authTokenService.verifyForgetPasswordToken).toHaveBeenCalled();
-      expect(usersServices.update).toHaveBeenCalledWith(
-        '1',
-        { password: resetPasswordDto.password },
-        'Fail to update Password',
-      );
-    });
-  });
-
-  describe('refreshToken', () => {
+  describe('checkRefreshTokenCredential', () => {
     it('should refresh the access token', async () => {
-      const jwtMock = 'some jwt token';
-      const verifyPayload: ILoginTokenPayload = {
-        id: '1',
-        email: 'test@example.com',
-        username: 'test',
-      };
-      const refreshTokenDto: RefreshTokenDto = { refreshToken: jwtMock };
-
-      authTokenService.verifyRefreshToken.mockReturnValue(verifyPayload);
-
       usersServices.findOne.mockResolvedValue(userMock);
 
-      authTokenService.createLoginToken.mockReturnValue({
-        accessToken: 'some access token',
-        refreshToken: 'some refresh token',
+      const user = await authService.checkRefreshTokenCredential({
+        email: userMock.email,
+        id: userMock.id,
+        username: userMock.username,
       });
 
-      const tokens = await authService.refreshToken(refreshTokenDto);
+      expect(user).toEqual(userMock);
+      expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
+    });
 
-      expect(tokens.accessToken).toBeDefined();
-      expect(tokens.refreshToken).toBeDefined();
-      expect(authTokenService.verifyRefreshToken).toHaveBeenCalled();
-      expect(usersServices.findOne).toHaveBeenCalledWith('1');
+    it('should throw error if the user is not found', async () => {
+      usersServices.findOne.mockResolvedValue(null);
+
+      await expect(
+        authService.checkRefreshTokenCredential({
+          email: userMock.email,
+          id: userMock.id,
+          username: userMock.username,
+        }),
+      ).rejects.toThrow(BadRequestException);
+
+      expect(usersServices.findOne).toHaveBeenCalledWith(userMock.id);
     });
   });
 

@@ -30,12 +30,19 @@ import { ResetPasswordErrorValidationDto } from './dto/reset-password-error-vali
 import { RefreshTokenErrorValidationDto } from './dto/refresh-token-error-validation';
 import { ResendRegisterEmailDto } from './dto/resend-register-email.dto';
 import { ResendRegisterEmailErrorValidationDto } from './dto/resend-register-email-error-validation.dto';
-import { AuthTokenSchema } from '@libs/auth-token';
+import { AuthTokenSchema, AuthTokenService } from '@libs/auth-token';
+import { MailService } from '@domains/mail/mail.service';
+import { UsersService } from '@domains/users/users.service';
 
 @ApiTags('Auth')
 @Controller('auth')
 export class BasicAuthController {
-  constructor(private readonly basicAuthService: BasicAuthService) {}
+  constructor(
+    private readonly basicAuthService: BasicAuthService,
+    private readonly userService: UsersService,
+    private readonly authTokenService: AuthTokenService,
+    private readonly mailService: MailService,
+  ) {}
 
   @Post('register')
   @ApiOperation({ summary: 'Register a new user' })
@@ -55,10 +62,15 @@ export class BasicAuthController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  register(
+  async register(
     @Body() createAuthDto: RegisterUserDto,
   ): Promise<BasicSuccessSchema> {
-    return this.basicAuthService.register(createAuthDto);
+    const user = await this.userService.register(createAuthDto);
+    const token = this.authTokenService.generateRegisterToken({
+      id: user.id,
+    });
+    this.mailService.sendRegisterMail(user, token);
+    return { message: 'Registration Success' };
   }
 
   @Post('resend-email')
@@ -79,10 +91,15 @@ export class BasicAuthController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  resendEmail(
+  async resendEmail(
     @Body() createAuthDto: ResendRegisterEmailDto,
   ): Promise<BasicSuccessSchema> {
-    return this.basicAuthService.resendEmail(createAuthDto);
+    const user = await this.basicAuthService.resendEmail(createAuthDto);
+    const token = this.authTokenService.generateRegisterToken({
+      id: user.id,
+    });
+    this.mailService.sendRegisterMail(user, token);
+    return { message: 'Resend email success' };
   }
 
   @Post('verify-email/:token')
@@ -104,8 +121,10 @@ export class BasicAuthController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  verifyEmail(@Param('token') token: string): Promise<AuthTokenSchema> {
-    return this.basicAuthService.verifyEmail(token);
+  async verifyEmail(@Param('token') token: string): Promise<AuthTokenSchema> {
+    const credential = this.authTokenService.verifyRegisterToken(token);
+    const user = await this.basicAuthService.verifyEmail(credential);
+    return this.authTokenService.createLoginToken(user);
   }
 
   @Post('login')
@@ -131,8 +150,9 @@ export class BasicAuthController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  login(@Body() loginDto: LoginDto): Promise<AuthTokenSchema> {
-    return this.basicAuthService.login(loginDto);
+  async login(@Body() loginDto: LoginDto): Promise<AuthTokenSchema> {
+    const user = await this.basicAuthService.login(loginDto);
+    return this.authTokenService.createLoginToken(user);
   }
 
   @Post('forget-password')
@@ -158,10 +178,15 @@ export class BasicAuthController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  forgetPassword(
+  async forgetPassword(
     @Body() forgetPasswordDto: ForgetPasswordDto,
   ): Promise<BasicSuccessSchema> {
-    return this.basicAuthService.forgetPassword(forgetPasswordDto);
+    const user = await this.basicAuthService.forgetPassword(forgetPasswordDto);
+    const token = this.authTokenService.generateForgetPasswordToken({
+      id: user.id,
+    });
+    this.mailService.sendForgetPasswordMail(user, token);
+    return { message: 'Email sent successfully' };
   }
 
   @Put('reset-password/:token')
@@ -183,11 +208,19 @@ export class BasicAuthController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  resetPassword(
+  async resetPassword(
     @Param('token') token: string,
     @Body() resetPasswordDto: ResetPasswordDto,
   ): Promise<BasicSuccessSchema> {
-    return this.basicAuthService.resetPassword(token, resetPasswordDto);
+    const credential = this.authTokenService.verifyForgetPasswordToken(token);
+    await this.userService.update(
+      credential.id,
+      {
+        password: resetPasswordDto.password,
+      },
+      'Fail to update Password',
+    );
+    return { message: 'Password has been updated' };
   }
 
   @Post('refresh-token')
@@ -212,9 +245,14 @@ export class BasicAuthController {
     description: 'Too many requests',
     type: ErrorMessageSchema,
   })
-  refreshToken(
+  async refreshToken(
     @Body() refreshTokenDto: RefreshTokenDto,
   ): Promise<AuthTokenSchema> {
-    return this.basicAuthService.refreshToken(refreshTokenDto);
+    const credential = this.authTokenService.verifyRefreshToken(
+      refreshTokenDto.refreshToken,
+    );
+    const user =
+      await this.basicAuthService.checkRefreshTokenCredential(credential);
+    return this.authTokenService.createLoginToken(user);
   }
 }

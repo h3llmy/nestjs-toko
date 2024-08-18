@@ -139,7 +139,8 @@
       "^@domains/products(|/.*)$": "<rootDir>/src/domains/products/$1",
       "^@domains/roles(|/.*)$": "<rootDir>/src/domains/roles/$1",
       "^@domains/users(|/.*)$": "<rootDir>/src/domains/users/$1",
-      "^@domains/report(|/.*)$": "<rootDir>/src/domains/report/$1"
+      "^@domains/report(|/.*)$": "<rootDir>/src/domains/report/$1",
+      "^@domains/mail(|/.*)$": "<rootDir>/src/domains/mail/$1"
     }
   },
   "keywords": [

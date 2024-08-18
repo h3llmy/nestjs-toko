@@ -54,7 +54,9 @@
       "@domains/users": ["src/domains/users"],
       "@domains/users/*": ["src/domains/users/*"],
       "@domains/report": ["src/domains/report"],
-      "@domains/report/*": ["src/domains/report/*"]
+      "@domains/report/*": ["src/domains/report/*"],
+      "@domains/mail": ["src/domains/mail"],
+      "@domains/mail/*": ["src/domains/mail/*"]
     }
   }
 }
