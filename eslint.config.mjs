@@ -39,7 +39,6 @@ export default [
 
       parserOptions: {
         project: 'tsconfig.json',
-        tsconfigRootDir: 'C:\\Users\\helmy\\Code\\nestjs-boilerplate',
       },
     },
 

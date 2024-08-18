@@ -14,7 +14,9 @@ export class ValidationErrorHandler extends ValidationPipe {
       skipMissingProperties: false,
       whitelist: true,
       transform: true,
-      exceptionFactory: (errors: ValidationError[]) => {
+      exceptionFactory: (
+        errors: ValidationError[],
+      ): UnprocessableEntityException => {
         const errorResponse = {
           message: 'Unprocessable Entity Exception',
           error: this.extractErrors(errors),

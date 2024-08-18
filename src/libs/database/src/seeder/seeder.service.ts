@@ -2,7 +2,7 @@ import { Inject, Injectable, Logger } from '@nestjs/common';
 import { SEEDER_MODULE_NAME } from './config/seeder.config';
 import { ISeederRunner } from './seeder.interface';
 import { DataSource } from 'typeorm';
-import 'reflect-metadata';
+import { ModuleRef } from '@nestjs/core';
 
 @Injectable()
 export class SeederService {
@@ -11,7 +11,8 @@ export class SeederService {
   constructor(
     private readonly dataSource: DataSource,
     @Inject(SEEDER_MODULE_NAME)
-    private readonly seederProviders: ISeederRunner[],
+    private readonly seederProviders: (new (...args: any[]) => ISeederRunner)[],
+    private readonly moduleRef: ModuleRef,
   ) {}
 
   /**
@@ -23,10 +24,14 @@ export class SeederService {
     this.logger.log('Seeding...');
 
     for (const seederProvider of this.seederProviders) {
-      const seederName = seederProvider.constructor.name;
+      const module: ISeederRunner = this.moduleRef.get(seederProvider, {
+        strict: false,
+      });
+
+      const seederName = module.constructor.name;
       this.logger.log(`Seeding ${seederName}...`);
       try {
-        await seederProvider.run(this.dataSource);
+        await module.run(this.dataSource);
         this.logger.log(`Seeding ${seederName} Success`);
       } catch (error) {
         this.logger.error(`Seeding ${seederName} Failed`, error);

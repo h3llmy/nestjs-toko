@@ -1,0 +1,112 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Order Confirmation</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        line-height: 1.6;
+        margin: 0;
+        padding: 0;
+        background-color: #f4f4f4;
+      }
+      .container {
+        width: 80%;
+        margin: auto;
+        overflow: hidden;
+        background: #fff;
+        padding: 20px;
+        border-radius: 8px;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+      h1 {
+        color: #333;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 8px;
+        text-align: left;
+      }
+      th {
+        background: #f4f4f4;
+      }
+      .footer {
+        text-align: center;
+        padding: 10px;
+        font-size: 0.9em;
+        color: #777;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Order Created</h1>
+      <p>Hi <%= user.username %>,</p>
+      <p>
+        Thank you for your order! We're excited to let you know that we've
+        received your order and are currently processing it. Below are the
+        details of your order:
+      </p>
+
+      <h2>Order Details</h2>
+      <p><strong>Order Number:</strong> <%= order.id %></p>
+      <p><strong>Order Date:</strong> <%= order.createdAt %></p>
+
+      <h2>Items Ordered</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Product</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Discount Name</th>
+            <th>Discount</th>
+            <th>Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          <% order.orderDetails.forEach(item => { %>
+          <tr>
+            <td><%= item.productName %></td>
+            <td><%= item.quantity %></td>
+            <td>Rp.<%= item.product.price %></td>
+            <td><%= item.discountName ?? '-' %></td>
+            <td><%= item.discountPercentage ?? '-' %></td>
+            <td>Rp.<%= item.totalPrice %></td>
+          </tr>
+          <% }); %>
+        </tbody>
+      </table>
+
+      <h2>Order Summary</h2>
+      <p><strong>Total:</strong> Rp.<%= order.totalAmount %></p>
+      <p><strong>status:</strong> <%= order.status %></p>
+
+      <p>
+        If you have any questions about your order, please contact us at
+        <a href="mailto:support@example.com">support@example.com</a>.
+      </p>
+
+      <p>Thank you for shopping with us!</p>
+
+      <div class="footer">
+        <p>
+          &copy; <%= new Date().getFullYear() %> Your Company Name. All rights
+          reserved.
+        </p>
+      </div>
+    </div>
+  </body>
+</html>

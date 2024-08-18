@@ -5,10 +5,16 @@ import { BasicAuthService } from './basic-auth.service';
 import { RegisterUserDto } from './dto/register-user.dto';
 import { BadRequestException } from '@nestjs/common';
 import { Role } from '@domains/roles/entities/role.entity';
+import { MailService } from '@domains/mail/mail.service';
+import { AuthTokenService } from '@libs/auth-token';
+import { UsersService } from '@domains/users/users.service';
 
 describe('BasicAuthController', () => {
   let authController: BasicAuthController;
-  let authService: jest.Mocked<BasicAuthService>;
+  let basicAuthService: jest.Mocked<BasicAuthService>;
+  let userService: jest.Mocked<UsersService>;
+  let authTokenService: jest.Mocked<AuthTokenService>;
+  let mailService: jest.Mocked<MailService>;
 
   const mockRole: Role = {
     id: '1',
@@ -40,12 +46,18 @@ describe('BasicAuthController', () => {
     const { unit, unitRef } = TestBed.create(BasicAuthController).compile();
 
     authController = unit;
-    authService = unitRef.get(BasicAuthService);
+    basicAuthService = unitRef.get(BasicAuthService);
+    userService = unitRef.get(UsersService);
+    authTokenService = unitRef.get(AuthTokenService);
+    mailService = unitRef.get(MailService);
   });
 
   it('should be defined', () => {
     expect(authController).toBeDefined();
-    expect(authService).toBeDefined();
+    expect(basicAuthService).toBeDefined();
+    expect(userService).toBeDefined();
+    expect(authTokenService).toBeDefined();
+    expect(mailService).toBeDefined();
   });
 
   describe('register', () => {
@@ -54,18 +66,25 @@ describe('BasicAuthController', () => {
     });
 
     it('should register a new user', async () => {
-      authService.register.mockResolvedValue({
-        message: 'Registration Success',
-      });
+      userService.register.mockResolvedValue(mockUser);
+      authTokenService.generateRegisterToken.mockReturnValue('token');
+      mailService.sendRegisterMail.mockResolvedValue(null);
 
       const user = await authController.register(mockRegisterUserDto);
 
       expect(user).toEqual({ message: 'Registration Success' });
-      expect(authService.register).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(userService.register).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(authTokenService.generateRegisterToken).toHaveBeenCalledWith({
+        id: mockUser.id,
+      });
+      expect(mailService.sendRegisterMail).toHaveBeenCalledWith(
+        mockUser,
+        'token',
+      );
     });
 
     it('should throw an error if user already exists', async () => {
-      authService.register.mockRejectedValue(
+      userService.register.mockRejectedValue(
         new BadRequestException(
           `email ${mockRegisterUserDto.email} is already in use`,
         ),
@@ -75,7 +94,9 @@ describe('BasicAuthController', () => {
         authController.register(mockRegisterUserDto),
       ).rejects.toThrow(BadRequestException);
 
-      expect(authService.register).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(userService.register).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(authTokenService.generateRegisterToken).not.toHaveBeenCalled();
+      expect(mailService.sendRegisterMail).not.toHaveBeenCalled();
     });
   });
 
@@ -85,26 +106,39 @@ describe('BasicAuthController', () => {
     });
 
     it('should resend an email', async () => {
-      authService.resendEmail.mockResolvedValue({
-        message: 'Resend email success',
+      basicAuthService.resendEmail.mockResolvedValue(mockUser);
+      authTokenService.generateRegisterToken.mockReturnValue('token');
+      mailService.sendRegisterMail.mockResolvedValue(null);
+
+      const user = await authController.resendEmail({
+        email: mockRegisterUserDto.email,
       });
 
-      const user = await authController.resendEmail(mockRegisterUserDto);
-
       expect(user).toEqual({ message: 'Resend email success' });
-      expect(authService.resendEmail).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(basicAuthService.resendEmail).toHaveBeenCalledWith({
+        email: mockRegisterUserDto.email,
+      });
+      expect(authTokenService.generateRegisterToken).toHaveBeenCalledWith({
+        id: mockUser.id,
+      });
+      expect(mailService.sendRegisterMail).toHaveBeenCalledWith(
+        mockUser,
+        'token',
+      );
     });
 
     it('should throw an error if user already exists', async () => {
-      authService.resendEmail.mockRejectedValue(
+      basicAuthService.resendEmail.mockRejectedValue(
         new BadRequestException(
           `email ${mockRegisterUserDto.email} is already in use`,
         ),
       );
 
       await expect(
-        authController.resendEmail(mockRegisterUserDto),
+        authController.resendEmail({ email: mockRegisterUserDto.email }),
       ).rejects.toThrow(BadRequestException);
+      expect(authTokenService.generateRegisterToken).not.toHaveBeenCalled();
+      expect(mailService.sendRegisterMail).not.toHaveBeenCalled();
     });
   });
 
@@ -114,7 +148,9 @@ describe('BasicAuthController', () => {
     });
 
     it('should verify the user email', async () => {
-      authService.verifyEmail.mockResolvedValue({
+      authTokenService.verifyRegisterToken.mockReturnValue({ id: mockUser.id });
+      basicAuthService.verifyEmail.mockResolvedValue(mockUser);
+      authTokenService.createLoginToken.mockReturnValue({
         accessToken: 'some access token',
         refreshToken: 'some refresh token',
       });
@@ -126,17 +162,27 @@ describe('BasicAuthController', () => {
         refreshToken: 'some refresh token',
       });
 
-      expect(authService.verifyEmail).toHaveBeenCalledWith('some token');
+      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
+        'some token',
+      );
+      expect(basicAuthService.verifyEmail).toHaveBeenCalledWith({
+        id: mockUser.id,
+      });
+      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(mockUser);
     });
 
     it('should throw an error if token is invalid', async () => {
-      authService.verifyEmail.mockRejectedValue(
-        new BadRequestException('invalid token'),
+      basicAuthService.verifyEmail.mockRejectedValue(
+        new BadRequestException('User already verified'),
       );
 
       await expect(authController.verifyEmail('some token')).rejects.toThrow(
         BadRequestException,
       );
+      expect(authTokenService.verifyRegisterToken).toHaveBeenCalledWith(
+        'some token',
+      );
+      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
   });
 
@@ -146,26 +192,30 @@ describe('BasicAuthController', () => {
     });
 
     it('should login a user', async () => {
-      authService.login.mockResolvedValue({
+      basicAuthService.login.mockResolvedValue(mockUser);
+      authTokenService.createLoginToken.mockReturnValue({
         accessToken: 'some access token',
         refreshToken: 'some refresh token',
       });
+
       const user = await authController.login(mockRegisterUserDto);
       expect(user).toEqual({
         accessToken: 'some access token',
         refreshToken: 'some refresh token',
       });
-      expect(authService.login).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(basicAuthService.login).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(mockUser);
     });
 
     it('should throw an error if user not found', async () => {
-      authService.login.mockRejectedValue(
+      basicAuthService.login.mockRejectedValue(
         new BadRequestException('invalid credentials'),
       );
       await expect(authController.login(mockRegisterUserDto)).rejects.toThrow(
         BadRequestException,
       );
-      expect(authService.login).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(basicAuthService.login).toHaveBeenCalledWith(mockRegisterUserDto);
+      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
   });
 
@@ -175,22 +225,31 @@ describe('BasicAuthController', () => {
     });
 
     it('should forget password', async () => {
-      authService.forgetPassword.mockResolvedValue({
-        message: 'forget password success',
-      });
+      basicAuthService.forgetPassword.mockResolvedValue(mockUser);
+      authTokenService.generateForgetPasswordToken.mockReturnValue('token');
+      mailService.sendForgetPasswordMail.mockResolvedValue(null);
+
       const user = await authController.forgetPassword(mockUser);
-      expect(user).toEqual({ message: 'forget password success' });
-      expect(authService.forgetPassword).toHaveBeenCalledWith(mockUser);
+
+      expect(user).toEqual({ message: 'Email sent successfully' });
+      expect(basicAuthService.forgetPassword).toHaveBeenCalledWith(mockUser);
+      expect(authTokenService.generateForgetPasswordToken).toHaveBeenCalledWith(
+        { id: mockUser.id },
+      );
+      expect(mailService.sendForgetPasswordMail).toHaveBeenCalledWith(
+        mockUser,
+        'token',
+      );
     });
 
     it('should throw an error if user not found', async () => {
-      authService.forgetPassword.mockRejectedValue(
+      basicAuthService.forgetPassword.mockRejectedValue(
         new BadRequestException('invalid credentials'),
       );
       await expect(authController.forgetPassword(mockUser)).rejects.toThrow(
         BadRequestException,
       );
-      expect(authService.forgetPassword).toHaveBeenCalledWith(mockUser);
+      expect(basicAuthService.forgetPassword).toHaveBeenCalledWith(mockUser);
     });
   });
 
@@ -200,35 +259,16 @@ describe('BasicAuthController', () => {
     });
 
     it('should reset password', async () => {
-      authService.resetPassword.mockResolvedValue({
-        message: 'reset password success',
+      authTokenService.verifyForgetPasswordToken.mockReturnValue({
+        id: mockUser.id,
       });
+      userService.update.mockResolvedValue(mockUser);
 
       const user = await authController.resetPassword('some token', {
         password: 'some password',
         confirmPassword: 'some password',
       });
-      expect(user).toEqual({ message: 'reset password success' });
-      expect(authService.resetPassword).toHaveBeenCalledWith('some token', {
-        password: 'some password',
-        confirmPassword: 'some password',
-      });
-    });
-
-    it('should throw an error if user not found', async () => {
-      authService.resetPassword.mockRejectedValue(
-        new BadRequestException('invalid credentials'),
-      );
-      await expect(
-        authController.resetPassword('some token', {
-          password: 'some password',
-          confirmPassword: 'some password',
-        }),
-      ).rejects.toThrow(BadRequestException);
-      expect(authService.resetPassword).toHaveBeenCalledWith('some token', {
-        password: 'some password',
-        confirmPassword: 'some password',
-      });
+      expect(user).toEqual({ message: 'Password has been updated' });
     });
   });
 
@@ -238,10 +278,17 @@ describe('BasicAuthController', () => {
     });
 
     it('should refresh token', async () => {
-      authService.refreshToken.mockResolvedValue({
+      authTokenService.verifyRefreshToken.mockReturnValue({
+        id: mockUser.id,
+        email: mockUser.email,
+        username: mockUser.username,
+      });
+      basicAuthService.checkRefreshTokenCredential.mockResolvedValue(mockUser);
+      authTokenService.createLoginToken.mockReturnValue({
         accessToken: 'some access token',
         refreshToken: 'some refresh token',
       });
+
       const user = await authController.refreshToken({
         refreshToken: 'some refresh token',
       });
@@ -249,13 +296,23 @@ describe('BasicAuthController', () => {
         accessToken: 'some access token',
         refreshToken: 'some refresh token',
       });
-      expect(authService.refreshToken).toHaveBeenCalledWith({
-        refreshToken: 'some refresh token',
-      });
+      expect(basicAuthService.checkRefreshTokenCredential).toHaveBeenCalledWith(
+        {
+          id: mockUser.id,
+          email: mockUser.email,
+          username: mockUser.username,
+        },
+      );
+      expect(authTokenService.createLoginToken).toHaveBeenCalledWith(mockUser);
     });
 
     it('should throw an error if token is invalid', async () => {
-      authService.refreshToken.mockRejectedValue(
+      authTokenService.verifyRefreshToken.mockReturnValue({
+        id: mockUser.id,
+        email: mockUser.email,
+        username: mockUser.username,
+      });
+      basicAuthService.checkRefreshTokenCredential.mockRejectedValue(
         new BadRequestException('invalid token'),
       );
       await expect(
@@ -263,9 +320,14 @@ describe('BasicAuthController', () => {
           refreshToken: 'some refresh token',
         }),
       ).rejects.toThrow(BadRequestException);
-      expect(authService.refreshToken).toHaveBeenCalledWith({
-        refreshToken: 'some refresh token',
-      });
+      expect(basicAuthService.checkRefreshTokenCredential).toHaveBeenCalledWith(
+        {
+          id: mockUser.id,
+          email: mockUser.email,
+          username: mockUser.username,
+        },
+      );
+      expect(authTokenService.createLoginToken).not.toHaveBeenCalled();
     });
   });
 });

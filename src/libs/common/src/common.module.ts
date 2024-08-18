@@ -1,4 +1,3 @@
-import { MailerModule } from '@nestjs-modules/mailer';
 import { Global, Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
@@ -7,7 +6,6 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { configModuleConfig } from './config/configModule.config';
 import { throttlerModuleConfig } from './config/throttlerModule.config';
 import { cacheModuleConfig } from './config/cacheModule.config';
-import { mailerModuleConfig } from './config/mailerModule.config';
 
 @Global()
 @Module({
@@ -15,7 +13,6 @@ import { mailerModuleConfig } from './config/mailerModule.config';
     ConfigModule.forRoot(configModuleConfig),
     ThrottlerModule.forRootAsync(throttlerModuleConfig),
     CacheModule.registerAsync(cacheModuleConfig),
-    MailerModule.forRootAsync(mailerModuleConfig),
   ],
   providers: [
     {

@@ -11,7 +11,7 @@ export class ReportService {
     private readonly randomizeService: RandomizeService,
   ) {}
 
-  async createReport() {
+  async createReport(): Promise<string | null> {
     const stream = await this.orderService.findReadableStream();
     return new Promise<string>((resolve, rejects) => {
       const reportPath = `report-${this.randomizeService.stringNumber(10)}-${Date.now()}`;

@@ -11,6 +11,7 @@ import { PassportModule } from '@nestjs/passport';
 import { RandomizeModule } from '@libs/randomize';
 import { AuthTokenModule } from '@libs/auth-token';
 import { RolesModule } from '@domains/roles/roles.module';
+import { MailModule } from '@domains/mail/mail.module';
 
 @Module({
   imports: [
@@ -20,6 +21,7 @@ import { RolesModule } from '@domains/roles/roles.module';
     RandomizeModule,
     AuthTokenModule,
     RolesModule,
+    MailModule,
   ],
   controllers: [BasicAuthController],
   providers: [
