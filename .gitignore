@@ -2,6 +2,9 @@
 /dist
 /node_modules
 
+# storage
+/public/*
+
 # Logs
 *.log
 npm-debug.log*

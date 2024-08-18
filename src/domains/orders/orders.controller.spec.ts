@@ -16,6 +16,7 @@ import { Discount } from '@domains/discounts/entities/discount.entity';
 import { IPaginationResponse } from '@libs/database';
 import { Role } from '@domains/roles/entities/role.entity';
 import { MailService } from '@domains/mail/mail.service';
+import { Product } from '@domains/products/entities/product.entity';
 
 describe('OrdersController', () => {
   let orderController: OrdersController;
@@ -62,7 +63,7 @@ describe('OrdersController', () => {
     updatedAt: new Date(),
   };
 
-  const mockProduct = {
+  const mockProduct: Product = {
     id: '1',
     name: 'Test Product',
     price: 10,
