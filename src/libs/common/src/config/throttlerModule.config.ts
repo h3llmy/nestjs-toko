@@ -1,10 +1,9 @@
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { ConfigService } from '@nestjs/config';
 import { ThrottlerAsyncOptions } from '@nestjs/throttler';
 import { Redis } from 'ioredis';
 import { ThrottlerStorageRedisService } from 'nestjs-throttler-storage-redis';
 
 export const throttlerModuleConfig: ThrottlerAsyncOptions = {
-  imports: [ConfigModule],
   inject: [ConfigService],
   useFactory: (config: ConfigService) => ({
     throttlers: [

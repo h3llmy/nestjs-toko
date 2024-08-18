@@ -12,6 +12,7 @@ import helmet from '@fastify/helmet';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import { version, name, description } from 'package.json';
+import compression from '@fastify/compress';
 
 (async () => {
   const routePrefix: string = 'api';
@@ -29,6 +30,7 @@ import { version, name, description } from 'package.json';
   const port: number = configService.get<number>('PORT', 3000);
 
   app.register(helmet);
+  app.register(compression);
 
   app.enableCors();
 

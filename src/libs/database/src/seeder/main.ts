@@ -8,7 +8,7 @@ import readline from 'readline';
 import { Logger } from '@nestjs/common';
 
 // Function to prompt user for confirmation
-async function getConfirmation(question: string): Promise<boolean> {
+const getConfirmation = async (question: string): Promise<boolean> => {
   const rl = readline.createInterface({
     input: process.stdin,
     output: process.stdout,
@@ -20,7 +20,7 @@ async function getConfirmation(question: string): Promise<boolean> {
       resolve(answer.toLowerCase() === 'y');
     });
   });
-}
+};
 
 (async () => {
   const logger = new Logger('Seeder');
