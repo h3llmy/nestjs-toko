@@ -60,7 +60,7 @@ export class SwaggerConfig {
       document,
       {
         customCss: `.swagger-ui .topbar { display: none }`,
-        customSiteTitle: 'Nest API Documentation',
+        customSiteTitle: name,
       },
     );
   }
