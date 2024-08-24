@@ -1,6 +1,6 @@
 import { INestApplication } from '@nestjs/common';
 import { DocumentBuilder, OpenAPIObject, SwaggerModule } from '@nestjs/swagger';
-import { version, name, description } from 'package.json';
+import { version, name, description } from '../../../../../package.json';
 
 export interface ISwaggerSetupOption {
   prefix: string;
@@ -10,12 +10,28 @@ export interface ISwaggerSetupOption {
 export class SwaggerConfig {
   private static swaggerSetupOption: ISwaggerSetupOption;
 
+  /**
+   * Configures the Swagger setup with the provided options.
+   *
+   * @param {ISwaggerSetupOption} option - The options for the Swagger setup.
+   * @return {void} No return value.
+   */
+  /**
+   * Sets the document options for the OpenAPI specification.
+   *
+   * @return {Omit<OpenAPIObject, 'paths'>} The OpenAPI document options.
+   */
   static setup(option: ISwaggerSetupOption): void {
     this.swaggerSetupOption = option;
     const document = this.setDocumentOption();
     this.setupModule(document);
   }
 
+  /**
+   * Sets the document options for the OpenAPI specification.
+   *
+   * @return {Omit<OpenAPIObject, 'paths'>} The OpenAPI document options.
+   */
   private static setDocumentOption(): Omit<OpenAPIObject, 'paths'> {
     return new DocumentBuilder()
       .setTitle(name)
@@ -25,6 +41,12 @@ export class SwaggerConfig {
       .build();
   }
 
+  /**
+   * Sets up the Swagger module with the provided options.
+   *
+   * @param {Omit<OpenAPIObject, 'paths'>} swaggerOptions - The OpenAPI document options.
+   * @return {void} No return value.
+   */
   private static setupModule(
     swaggerOptions: Omit<OpenAPIObject, 'paths'>,
   ): void {
