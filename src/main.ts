@@ -60,9 +60,11 @@ import compression from '@fastify/compress';
     customCss: `.swagger-ui .topbar { display: none }`,
   });
 
-  await app.listen(port, () =>
-    logger.log(`Nest application run on port ${port}`),
-  );
+  await app.listen(port, '0.0.0.0', async () => {
+    const appUrl = await app.getUrl();
+    logger.log(`Nest application run on ${appUrl}`);
+    logger.log(`Nest documentation available on ${appUrl}/${routePrefix}/docs`);
+  });
 
   app.enableShutdownHooks();
 })();

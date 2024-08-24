@@ -29,6 +29,7 @@ import { IncreaseStockDto } from './dto/increase-stock.dto';
 import { Inventory } from './entities/inventory.entity';
 import { InventoryDto } from './dto/inventory.dto';
 import { InventoriesErrorValidationDto } from './dto/increase-stock-error-validation.dto';
+import { DecreaseStockDto } from './dto/decrees-stock.dto';
 
 @ApiTags('Inventories')
 @Controller('inventories')
@@ -130,6 +131,44 @@ export class InventoriesController {
     @Body() increaseStockDto: IncreaseStockDto,
   ): Promise<Inventory> {
     const updatedStock = await this.inventoriesService.addStock(
+      id,
+      increaseStockDto.quantity,
+    );
+    if (!updatedStock)
+      throw new NotFoundException(`Inventory with id ${id} not found`);
+    return updatedStock;
+  }
+
+  @Patch('decrease-stock/:id')
+  @Permission('decree inventory stock by id')
+  @ApiOperation({ summary: 'decrease inventory stock by id' })
+  @ApiParam({ name: 'id', description: 'Inventory id' })
+  @ApiBearerAuth()
+  @ApiOkResponse({
+    description: 'decrease inventory stock by id',
+    type: InventoryDto,
+  })
+  @ApiUnauthorizedResponse({
+    description: 'Unauthorized',
+    type: BasicErrorSchema,
+  })
+  @ApiNotFoundResponse({
+    description: 'Inventory not found',
+    type: BasicErrorSchema,
+  })
+  @ApiUnprocessableEntityResponse({
+    description: 'Unprocessable entity',
+    type: validationErrorSchemaFactory(InventoriesErrorValidationDto),
+  })
+  @ApiTooManyRequestsResponse({
+    description: 'Too many requests',
+    type: BasicErrorSchema,
+  })
+  async decreaseStock(
+    @Param('id', new ParseUUIDPipe()) id: string,
+    @Body() increaseStockDto: DecreaseStockDto,
+  ): Promise<Inventory> {
+    const updatedStock = await this.inventoriesService.decreesStock(
       id,
       increaseStockDto.quantity,
     );
