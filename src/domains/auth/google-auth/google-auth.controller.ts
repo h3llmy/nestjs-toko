@@ -21,10 +21,7 @@ import {
 import { GoogleAuthLoginErrorValidationDto } from './dto/google-auth-login-error-validation.dto';
 
 @ApiTags('Auth')
-@Controller({
-  path: 'auth/google',
-  version: ['2'],
-})
+@Controller('auth/google')
 export class GoogleAuthController {
   constructor(
     private readonly googleAuthService: GoogleAuthService,

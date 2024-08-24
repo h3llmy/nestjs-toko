@@ -8,6 +8,7 @@ import { Reflector } from '@nestjs/core';
 import { User } from '@domains/users/entities/user.entity';
 import { RolesService } from '@domains/roles/roles.service';
 import { DeepPartial } from 'typeorm';
+import { Permissions } from '@domains/permissions/entities/permission.entity';
 
 /**
  * Guard to check permissions for accessing routes.
@@ -55,7 +56,9 @@ export class PermissionsGuard implements CanActivate {
     }
 
     const userPermissions = new Set(
-      user?.role?.permissions?.map((permission) => permission.name) || [],
+      user?.role?.permissions?.map(
+        (permission: DeepPartial<Permissions>) => permission.name,
+      ) || [],
     );
 
     // Check if user has any of the required roles
