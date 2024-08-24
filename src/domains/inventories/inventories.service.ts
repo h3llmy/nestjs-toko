@@ -55,10 +55,12 @@ export class InventoriesService {
   }
 
   /**
-   * Increments the quantity of an inventory item by 1.
+   * Increments the stock of an inventory item by the specified quantity.
    *
    * @param {string} id - The ID of the inventory item.
-   * @return {Promise<Inventory>} - A promise that resolves to the updated quantity.
+   * @param {number} quantity - The amount by which to increment the stock.
+   * @param {ITransactionManager} [option] - An optional transaction manager to use for the update.
+   * @return {Promise<Inventory>} A promise that resolves to the updated inventory item.
    */
   async addStock(
     id: string,
