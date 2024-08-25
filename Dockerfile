@@ -1,4 +1,4 @@
-FROM node:20.13.1-alpine AS builder
+FROM node:18-alpine AS builder
 WORKDIR /usr/api
 COPY package*.json ./
 COPY tsconfig*.json ./
@@ -6,12 +6,12 @@ RUN npm install
 COPY . ./
 RUN npm run build
 
-FROM node:20.13.1-alpine
+FROM node:18-alpine
 WORKDIR /usr/api
 COPY --from=builder /usr/api/package*.json ./
-RUN npm install --omit=dev --ignore-scripts
 COPY --from=builder /usr/api/dist ./dist
+RUN npm install --omit=dev
 
-EXPOSE ${PORT}
+EXPOSE 5000
 
 CMD [ "npm", "run", "start:prod" ]

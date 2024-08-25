@@ -1,5 +1,5 @@
 import { EncryptionService } from './encryption.service';
-import bcrypt from 'bcryptjs';
+import * as bcrypt from 'bcrypt';
 import { TestBed } from '@automock/jest';
 
 describe('EncryptionService', () => {

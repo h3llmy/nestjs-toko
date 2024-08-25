@@ -6,6 +6,9 @@ export class ApplicationAdapter extends FastifyAdapter {
     super({
       maxParamLength: 500,
       querystringParser: (str) => QueryString.parse(str),
+      logger: {
+        file: 'logs/app.log',
+      },
     });
   }
 }
