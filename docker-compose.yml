@@ -6,18 +6,16 @@ services:
     restart: always
     build: .
     ports:
-      - '5000:5000'
+      - '${PORT}:${PORT}'
     env_file:
       - .env
-    environment:
-      - HUSKY=0
     depends_on:
-      - postgre
+      - postgres
       - redis
     networks:
       - internal_network
 
-  postgre:
+  postgres:
     image: postgres:latest
     container_name: postgres
     restart: always
@@ -28,7 +26,7 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
     ports:
-      - '5432:5432'
+      - '${POSTGRES_PORT}:${POSTGRES_PORT}'
     networks:
       - internal_network
 
@@ -37,7 +35,9 @@ services:
     container_name: redis
     restart: always
     ports:
-      - '6379:6379'
+      - '${REDIS_PORT}:${REDIS_PORT}'
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
     networks:
       - internal_network
 

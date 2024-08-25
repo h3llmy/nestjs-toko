@@ -18,7 +18,10 @@ function createTypeOrmConfig(
       configService.get<string>('NODE_ENV', 'development') === 'development',
     synchronize:
       configService.get<string>('RUN_MIGRATIONS', 'false') === 'true',
-    ssl: { rejectUnauthorized: false },
+    ssl:
+      configService.get<string>('POSTGRES_SSL', 'false') === 'true'
+        ? { rejectUnauthorized: false }
+        : false,
     logging: configService.get<string>('POSTGRES_LOGGING', 'false') === 'true',
   };
 }
