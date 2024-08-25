@@ -9,8 +9,8 @@ RUN npm run build
 FROM node:18-alpine
 WORKDIR /usr/api
 COPY --from=builder /usr/api/package*.json ./
+RUN npm install --omit=dev --ignore-scripts
 COPY --from=builder /usr/api/dist ./dist
-RUN npm install --omit=dev
 
 EXPOSE 5000
 

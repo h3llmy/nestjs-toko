@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { compareSync, genSaltSync, hashSync } from 'bcrypt';
+import bcrypt from 'bcryptjs';
 
 @Injectable()
 export class EncryptionService {
@@ -15,9 +15,9 @@ export class EncryptionService {
    * console.log(hashedPassword);
    * ```
    */
-  hash(password: string | Buffer): string {
-    const salt = genSaltSync(10);
-    return hashSync(password, salt);
+  hash(password: string): string {
+    const salt = bcrypt.genSaltSync(10);
+    return bcrypt.hashSync(password, salt);
   }
 
   /**
@@ -33,7 +33,7 @@ export class EncryptionService {
    * console.log(isMatch); // true or false
    * ```
    */
-  match(password: string | Buffer, hashedPassword: string): boolean {
-    return compareSync(password, hashedPassword);
+  match(password: string, hashedPassword: string): boolean {
+    return bcrypt.compareSync(password, hashedPassword);
   }
 }
