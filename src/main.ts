@@ -7,11 +7,10 @@ import {
   ValidationErrorHandler,
   JwtExceptionsFilter,
   ApplicationAdapter,
+  SwaggerConfig,
 } from '@libs/common';
 import helmet from '@fastify/helmet';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
-import { version, name, description } from 'package.json';
 import compression from '@fastify/compress';
 
 (async () => {
@@ -48,16 +47,9 @@ import compression from '@fastify/compress';
 
   app.setGlobalPrefix(routePrefix);
 
-  const options = new DocumentBuilder()
-    .setTitle(name)
-    .setDescription(description)
-    .setVersion(version)
-    .addBearerAuth()
-    .build();
-
-  const document = SwaggerModule.createDocument(app, options);
-  SwaggerModule.setup(`${routePrefix}/docs`, app, document, {
-    customCss: `.swagger-ui .topbar { display: none }`,
+  SwaggerConfig.setup({
+    prefix: routePrefix,
+    app,
   });
 
   await app.listen(port, '0.0.0.0', async () => {

@@ -17,3 +17,5 @@ export * from './dto/errorMessage.schema';
 export * from './dto/pagination.schema';
 
 export * from './adapter/fastify.adapter';
+
+export * from './swagger/swagger-setup';

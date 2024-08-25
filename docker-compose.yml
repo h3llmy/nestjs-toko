@@ -9,6 +9,8 @@ services:
       - '5000:5000'
     env_file:
       - .env
+    environment:
+      - HUSKY=0
     depends_on:
       - postgre
       - redis
