@@ -6,16 +6,41 @@ import { IPaginationResponse } from '@libs/database';
 import { NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { MimeType } from 'nestjs-formdata-interceptor';
+import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
+import { Inventory } from '@domains/inventories/entities/inventory.entity';
+import { ProductImages } from './entities/product-images.entity';
 
 describe('ProductsController', () => {
   let controller: ProductsController;
   let productsService: jest.Mocked<ProductsService>;
+
+  const mockCategory: ProductCategory = {
+    id: '1',
+    name: 'category 1',
+    createdAt: new Date(),
+    updatedAt: new Date(),
+  };
+
+  const mockProductInventory: Inventory = {
+    id: '1',
+    quantity: 10,
+    updatedAt: new Date(),
+  };
+
+  const mockProductImages: ProductImages = {
+    id: '1',
+    url: 'something',
+  };
 
   const mockProduct: Product = {
     id: '1',
     name: 'Test Product',
     price: 10,
     description: 'Test Product',
+    category: mockCategory,
+    inventory: mockProductInventory,
+    images: [mockProductImages],
     deletedAt: null,
     updatedAt: new Date(),
     createdAt: new Date(),
@@ -52,6 +77,20 @@ describe('ProductsController', () => {
         description: mockProduct.description,
         quantity: 10,
         categoryId: '1',
+        images: [
+          {
+            buffer: Buffer.from('test'),
+            encoding: 'base64',
+            fileExtension: 'jpg',
+            fileName: 'test.jpg',
+            fileNameFull: 'test.jpg',
+            fileSize: 100,
+            hash: 'test',
+            save: jest.fn(),
+            mimetype: MimeType['image/jpeg'],
+            originalFileName: 'test.jpg',
+          },
+        ],
       };
       productsService.create.mockResolvedValue(mockProduct);
       expect(await controller.create(mockCreateProduct)).toEqual(mockProduct);

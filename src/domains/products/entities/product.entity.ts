@@ -14,6 +14,7 @@ import {
 } from 'typeorm';
 import { Discount } from '@domains/discounts/entities/discount.entity';
 import { OrderDetails } from '@domains/orders/entities/orderDetails.entity';
+import { ProductImages } from './product-images.entity';
 
 @Entity('Products')
 export class Product {
@@ -33,6 +34,11 @@ export class Product {
     cascade: true,
   })
   inventory?: Inventory;
+
+  @OneToMany(() => ProductImages, (images) => images.product, {
+    cascade: true,
+  })
+  images?: ProductImages[];
 
   @ManyToOne(() => ProductCategory, (category) => category.product, {
     cascade: true,

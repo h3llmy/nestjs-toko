@@ -17,7 +17,7 @@ export enum OrderStatus {
   REFUND = 'refund',
 }
 
-@Entity('orders')
+@Entity('Orders')
 export class Order {
   @PrimaryGeneratedColumn('uuid')
   id: string;

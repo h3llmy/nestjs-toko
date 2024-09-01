@@ -6,10 +6,11 @@ import { Product } from './entities/product.entity';
 import { ProductsRepository } from './products.repository';
 import { InventoriesModule } from '@domains/inventories/inventories.module';
 import { ProductCategoryModule } from '@domains/product-category/product-category.module';
+import { ProductImages } from './entities/product-images.entity';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([Product]),
+    TypeOrmModule.forFeature([Product, ProductImages]),
     InventoriesModule,
     ProductCategoryModule,
   ],

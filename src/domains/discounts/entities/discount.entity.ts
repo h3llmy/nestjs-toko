@@ -13,7 +13,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 
-@Entity('discounts')
+@Entity('Discounts')
 export class Discount {
   @PrimaryGeneratedColumn('uuid')
   id: string;

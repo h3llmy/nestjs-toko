@@ -16,6 +16,7 @@ import { CreateProductDto } from './dto/create-product.dto';
 import { UpdateProductDto } from './dto/update-product.dto';
 import {
   ApiBearerAuth,
+  ApiConsumes,
   ApiCreatedResponse,
   ApiNotFoundResponse,
   ApiOkResponse,
@@ -51,6 +52,7 @@ export class ProductsController {
   @Permission('create product')
   @ApiBearerAuth()
   @ApiOperation({ summary: 'Create new product' })
+  @ApiConsumes('multipart/form-data')
   @ApiCreatedResponse({
     description: 'Product created successfully',
     type: ProductInventoryDto,

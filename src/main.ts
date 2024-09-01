@@ -12,6 +12,8 @@ import {
 import helmet from '@fastify/helmet';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from '@fastify/compress';
+import multipart from 'fastify-multipart';
+import { FormdataInterceptor } from 'nestjs-formdata-interceptor';
 
 (async () => {
   const routePrefix: string = 'api';
@@ -28,6 +30,7 @@ import compression from '@fastify/compress';
 
   const port: number = configService.get<number>('PORT', 3000);
 
+  app.register(multipart);
   app.register(helmet);
   app.register(compression);
 
@@ -40,6 +43,14 @@ import compression from '@fastify/compress';
     defaultVersion: ['1'],
     prefix: 'v',
   });
+
+  app.useGlobalInterceptors(
+    new FormdataInterceptor({
+      customFileName(context, originalFileName) {
+        return `${Date.now()}-${originalFileName}`;
+      },
+    }),
+  );
 
   app.useGlobalPipes(new ValidationErrorHandler());
 

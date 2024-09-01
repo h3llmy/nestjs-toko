@@ -10,7 +10,6 @@ import {
 } from '@libs/database';
 import { Product } from './entities/product.entity';
 import {
-  DataSource,
   DeepPartial,
   FindManyOptions,
   FindOptionsRelations,
@@ -18,7 +17,6 @@ import {
   SaveOptions,
   UpdateResult,
 } from 'typeorm';
-import { InventoriesService } from '@domains/inventories/inventories.service';
 import { ProductCategoryService } from '@domains/product-category/product-category.service';
 
 @Injectable()
@@ -26,8 +24,6 @@ export class ProductsService {
   constructor(
     private readonly productRepository: ProductsRepository,
     private readonly productsCategoryService: ProductCategoryService,
-    private readonly inventoryService: InventoriesService,
-    private readonly dataSource: DataSource,
   ) {}
 
   getProductWithDiscounts(
@@ -45,46 +41,28 @@ export class ProductsService {
    * @param {CreateProductDto} createProductDto - The data to create the product.
    * @return {Promise<Product>} The saved product.
    */
-  async create(createProductDto: CreateProductDto): Promise<Product> {
-    const transaction = this.dataSource.createQueryRunner();
-    await transaction.startTransaction();
+  async create({
+    images,
+    quantity,
+    ...createProductDto
+  }: CreateProductDto): Promise<Product> {
+    const productCategoryCheck = await this.productsCategoryService.findOne(
+      createProductDto.categoryId,
+    );
 
-    try {
-      const productCategoryCheck = await this.productsCategoryService.findOne(
-        createProductDto.categoryId,
-      );
+    if (!productCategoryCheck)
+      throw new NotFoundException('Product category not found');
 
-      if (!productCategoryCheck)
-        throw new NotFoundException('Product category not found');
+    const product: Product = await this.productRepository.save({
+      ...createProductDto,
+      inventory: {
+        quantity,
+      },
+      images: images.map((image) => ({ url: image.save<string>() })),
+      category: productCategoryCheck,
+    });
 
-      const product = await this.productRepository.saveEntity(
-        { ...createProductDto, category: productCategoryCheck },
-        { session: transaction },
-      );
-
-      await this.inventoryService.saveEntity(
-        {
-          quantity: createProductDto.quantity,
-          product: product,
-        },
-        { session: transaction },
-      );
-
-      await transaction.commitTransaction();
-
-      return await this.productRepository.findOne({
-        where: { id: product.id },
-        relations: {
-          inventory: true,
-          category: true,
-        },
-      });
-    } catch (error) {
-      await transaction.rollbackTransaction();
-      throw error;
-    } finally {
-      await transaction.release();
-    }
+    return product;
   }
 
   /**
@@ -133,6 +111,7 @@ export class ProductsService {
     query.relations = {
       category: true,
       inventory: true,
+      images: true,
     };
 
     return this.productRepository.findPagination(query);
@@ -183,6 +162,7 @@ export class ProductsService {
       relations: {
         inventory: true,
         category: true,
+        images: true,
       },
     });
   }

@@ -5,19 +5,15 @@ import { Product } from './entities/product.entity';
 import { IPaginationResponse } from '@libs/database';
 import { NotFoundException } from '@nestjs/common';
 import { CreateProductDto } from './dto/create-product.dto';
-import { DataSource, QueryRunner } from 'typeorm';
 import { Inventory } from '@domains/inventories/entities/inventory.entity';
-import { InventoriesService } from '@domains/inventories/inventories.service';
 import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
 import { ProductCategoryService } from '@domains/product-category/product-category.service';
 import { UpdateProductDto } from './dto/update-product.dto';
+import { MimeType } from 'nestjs-formdata-interceptor';
 
 describe('ProductsService', () => {
   let service: ProductsService;
   let productsRepository: jest.Mocked<ProductsRepository>;
-  let dataSource: jest.Mocked<DataSource>;
-  let queryRunner: jest.Mocked<QueryRunner>;
-  let inventoryServices: jest.Mocked<InventoriesService>;
   let productCategoryService: jest.Mocked<ProductCategoryService>;
 
   const mockInventory: Inventory = {
@@ -40,6 +36,12 @@ describe('ProductsService', () => {
     price: 10,
     description: 'Test Product',
     deletedAt: null,
+    images: [
+      {
+        id: '1',
+        url: 'something',
+      },
+    ],
     inventory: mockInventory,
     category: mockCategory,
     createdAt: new Date(),
@@ -70,23 +72,7 @@ describe('ProductsService', () => {
 
     service = unit;
     productsRepository = unitRef.get(ProductsRepository);
-    inventoryServices = unitRef.get(InventoriesService);
-    dataSource = unitRef.get(DataSource);
     productCategoryService = unitRef.get(ProductCategoryService);
-
-    // Mock QueryRunner
-    queryRunner = {
-      connect: jest.fn(),
-      startTransaction: jest.fn(),
-      commitTransaction: jest.fn(),
-      rollbackTransaction: jest.fn(),
-      release: jest.fn(),
-      manager: {
-        getRepository: jest.fn(),
-      },
-    } as unknown as jest.Mocked<QueryRunner>;
-
-    dataSource.createQueryRunner = jest.fn().mockReturnValue(queryRunner);
   });
 
   it('should be defined', () => {
@@ -102,53 +88,42 @@ describe('ProductsService', () => {
         description: 'Test Product',
         quantity: 10,
         categoryId: '1',
+        images: [
+          {
+            buffer: Buffer.from('test'),
+            encoding: 'base64',
+            fileExtension: 'jpg',
+            fileName: 'test.jpg',
+            fileNameFull: 'test.jpg',
+            fileSize: 100,
+            hash: 'test',
+            save: jest.fn().mockReturnValue('something'),
+            mimetype: MimeType['image/jpeg'],
+            originalFileName: 'test.jpg',
+          },
+        ],
       };
 
-      productsRepository.saveEntity.mockResolvedValueOnce({
-        ...mockCreateProduct,
-        id: '1',
-      });
+      productsRepository.save.mockResolvedValueOnce(mockProductInventory);
       productCategoryService.findOne.mockResolvedValue(mockCategory);
-      productsRepository.findOne.mockResolvedValueOnce(mockProductInventory);
 
       const result = await service.create(mockCreateProduct);
 
-      expect(dataSource.createQueryRunner).toHaveBeenCalledTimes(1);
-      expect(queryRunner.startTransaction).toHaveBeenCalledTimes(1);
-      expect(productsRepository.saveEntity).toHaveBeenCalledWith(
-        {
-          ...mockCreateProduct,
-          category: {
-            ...mockCategory,
-            id: '1',
-          },
+      expect(productsRepository.save).toHaveBeenCalledWith({
+        name: mockCreateProduct.name,
+        price: mockCreateProduct.price,
+        description: mockCreateProduct.description,
+        categoryId: mockCreateProduct.categoryId,
+        category: {
+          ...mockCategory,
+          id: '1',
         },
-        {
-          session: queryRunner,
-        },
-      );
-      expect(productCategoryService.findOne).toHaveBeenCalledWith('1');
-      expect(productsRepository.findOne).toHaveBeenCalledWith({
-        where: { id: '1' },
-        relations: {
-          inventory: true,
-          category: true,
+        images: [{ url: 'something' }],
+        inventory: {
+          quantity: mockCreateProduct.quantity,
         },
       });
-      expect(inventoryServices.saveEntity).toHaveBeenCalledWith(
-        {
-          quantity: mockCreateProduct.quantity,
-          product: {
-            ...mockCreateProduct,
-            id: '1',
-          },
-        },
-        {
-          session: queryRunner,
-        },
-      );
-      expect(queryRunner.commitTransaction).toHaveBeenCalledTimes(1);
-      expect(queryRunner.release).toHaveBeenCalledTimes(1);
+      expect(productCategoryService.findOne).toHaveBeenCalledWith('1');
       expect(result).toEqual(mockProductInventory);
     });
 
@@ -159,6 +134,20 @@ describe('ProductsService', () => {
         description: 'Test Product',
         quantity: 10,
         categoryId: '1',
+        images: [
+          {
+            buffer: Buffer.from('test'),
+            encoding: 'base64',
+            fileExtension: 'jpg',
+            fileName: 'test.jpg',
+            fileNameFull: 'test.jpg',
+            fileSize: 100,
+            hash: 'test',
+            save: jest.fn().mockReturnValue('something'),
+            mimetype: MimeType['image/jpeg'],
+            originalFileName: 'test.jpg',
+          },
+        ],
       };
 
       productCategoryService.findOne.mockRejectedValue(
@@ -169,37 +158,8 @@ describe('ProductsService', () => {
         NotFoundException,
       );
 
-      expect(productsRepository.saveEntity).not.toHaveBeenCalled();
-      expect(inventoryServices.saveEntity).not.toHaveBeenCalled();
-      expect(queryRunner.commitTransaction).not.toHaveBeenCalled();
+      expect(productsRepository.save).not.toHaveBeenCalled();
       expect(productCategoryService.findOne).toHaveBeenCalledWith('1');
-      expect(queryRunner.rollbackTransaction).toHaveBeenCalledTimes(1);
-      expect(queryRunner.release).toHaveBeenCalledTimes(1);
-    });
-    it('should rollback transaction on error', async () => {
-      const mockCreateProduct: CreateProductDto = {
-        name: 'Test Product',
-        price: 10,
-        description: 'Test Product',
-        quantity: 10,
-        categoryId: '1',
-      };
-
-      productCategoryService.findOne.mockResolvedValue(mockCategory);
-
-      productsRepository.saveEntity.mockRejectedValue(
-        new Error('Create error'),
-      );
-
-      await expect(service.create(mockCreateProduct)).rejects.toThrow(
-        'Create error',
-      );
-
-      expect(inventoryServices.saveEntity).not.toHaveBeenCalled();
-      expect(queryRunner.commitTransaction).not.toHaveBeenCalled();
-      expect(productCategoryService.findOne).toHaveBeenCalledWith('1');
-      expect(queryRunner.rollbackTransaction).toHaveBeenCalledTimes(1);
-      expect(queryRunner.release).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -235,6 +195,7 @@ describe('ProductsService', () => {
         relations: {
           category: true,
           inventory: true,
+          images: true,
         },
       });
       expect(products).toEqual(mockProductsPagination);
@@ -279,6 +240,25 @@ describe('ProductsService', () => {
 
       expect(await service.update(mockProduct.id, mockUpdateProduct)).toEqual(
         mockProduct,
+      );
+      expect(productCategoryService.findOne).toHaveBeenCalledWith(
+        mockCategory.id,
+      );
+      expect(productsRepository.updateAndFind).toHaveBeenCalledWith(
+        { id: mockProduct.id },
+        {
+          name: 'Test Product',
+          price: 10,
+          category: mockCategory,
+          description: 'Test Product',
+        },
+        {
+          relations: {
+            category: true,
+            inventory: true,
+            images: true,
+          },
+        },
       );
     });
   });

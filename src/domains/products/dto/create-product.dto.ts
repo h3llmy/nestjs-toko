@@ -1,4 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsNotEmpty,
   IsNumber,
@@ -7,8 +8,29 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
+import {
+  FileData,
+  HasMimeType,
+  IsFileData,
+  MimeType,
+} from 'nestjs-formdata-interceptor';
 
 export class CreateProductDto {
+  @ApiProperty({
+    required: true,
+    type: 'string',
+    format: 'binary',
+    isArray: true,
+    name: 'images[]',
+  })
+  @IsFileData({ each: true })
+  @IsNotEmpty({ each: true })
+  @HasMimeType(
+    [MimeType['image/jpeg'], MimeType['image/png'], MimeType['image/webp']],
+    { each: true },
+  )
+  images: FileData[];
+
   @ApiProperty({
     description: 'Product name',
     example: 'Product 1',
@@ -22,6 +44,7 @@ export class CreateProductDto {
     description: 'Product price',
     example: 100000,
   })
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   price: number;
@@ -38,6 +61,7 @@ export class CreateProductDto {
     description: 'Product quantity',
     example: 10,
   })
+  @Type(() => Number)
   @IsNumber()
   @IsNotEmpty()
   @Min(0)

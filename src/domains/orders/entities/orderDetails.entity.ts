@@ -4,7 +4,7 @@ import { Product } from '@domains/products/entities/product.entity';
 import { Discount } from '@domains/discounts/entities/discount.entity';
 import { ProductCategory } from '@domains/product-category/entities/product-category.entity';
 
-@Entity('orderDetails')
+@Entity('OrderDetails')
 export class OrderDetails {
   @PrimaryGeneratedColumn('uuid')
   id: string;
