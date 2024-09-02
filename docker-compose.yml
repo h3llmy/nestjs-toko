@@ -9,9 +9,23 @@ services:
       - '${PORT}:${PORT}'
     env_file:
       - .env
+    volumes:
+      - .:/usr/src/app
     depends_on:
       - postgres
       - redis
+    networks:
+      - internal_network
+
+  seeder:
+    container_name: seeder
+    build:
+      context: .
+      dockerfile: ./Dockerfile.seeder
+    env_file:
+      - .env
+    depends_on:
+      - postgres
     networks:
       - internal_network
 
@@ -38,6 +52,8 @@ services:
       - '${REDIS_PORT}:${REDIS_PORT}'
     environment:
       - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: >
+      --requirepass ${REDIS_PASSWORD}
     networks:
       - internal_network
 

@@ -12,7 +12,7 @@ import {
 import helmet from '@fastify/helmet';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from '@fastify/compress';
-import multipart from 'fastify-multipart';
+import multipart from '@fastify/multipart';
 import { FormdataInterceptor } from 'nestjs-formdata-interceptor';
 
 (async () => {
