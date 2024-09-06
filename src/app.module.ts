@@ -11,6 +11,7 @@ import { RolesModule } from '@domains/roles/roles.module';
 import { PermissionsModule } from '@domains/permissions/permissions.module';
 import { DatabaseModule } from '@libs/database';
 import { ReportModule } from '@domains/report/report.module';
+import { PostageModule } from './domains/postage/postage.module';
 
 @Module({
   imports: [
@@ -26,6 +27,7 @@ import { ReportModule } from '@domains/report/report.module';
     RolesModule,
     PermissionsModule,
     ReportModule,
+    PostageModule,
   ],
 })
 export class AppModule {}
