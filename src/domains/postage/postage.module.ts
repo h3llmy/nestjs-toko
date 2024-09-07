@@ -8,5 +8,6 @@ import { rajaOngkirHttpConfig } from './config/rajaongkir.http.config';
   imports: [HttpModule.registerAsync(rajaOngkirHttpConfig)],
   providers: [PostageService],
   controllers: [PostageController],
+  exports: [PostageService],
 })
 export class PostageModule {}

@@ -47,7 +47,9 @@ export class PermissionsGuard implements CanActivate {
     let isPublicRole: boolean = false;
 
     if (!user) {
-      const publicRole = await this.roleService.findOneByName('public');
+      const publicRole = await this.roleService.findOneByName('public', {
+        permissions: true,
+      });
       if (!publicRole) throw new UnauthorizedException('Unauthorized user');
       user = {
         role: publicRole,

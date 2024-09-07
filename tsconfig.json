@@ -56,7 +56,9 @@
       "@domains/report": ["src/domains/report"],
       "@domains/report/*": ["src/domains/report/*"],
       "@domains/mail": ["src/domains/mail"],
-      "@domains/mail/*": ["src/domains/mail/*"]
+      "@domains/mail/*": ["src/domains/mail/*"],
+      "@domains/postage": ["src/domains/postage"],
+      "@domains/postage/*": ["src/domains/postage/*"]
     }
   }
 }

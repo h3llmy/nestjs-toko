@@ -106,7 +106,9 @@ describe('PermissionsGuard', () => {
         context.getHandler(),
         context.getClass(),
       ]);
-      expect(rolesService.findOneByName).toHaveBeenCalledWith('public');
+      expect(rolesService.findOneByName).toHaveBeenCalledWith('public', {
+        permissions: true,
+      });
     });
     it('should throw error if public role is not found', async () => {
       const requiredPermission = ['success'];
@@ -122,7 +124,9 @@ describe('PermissionsGuard', () => {
         context.getHandler(),
         context.getClass(),
       ]);
-      expect(rolesService.findOneByName).toHaveBeenCalledWith('public');
+      expect(rolesService.findOneByName).toHaveBeenCalledWith('public', {
+        permissions: true,
+      });
     });
     it('should throw error if public role permission not match', async () => {
       const requiredPermission = ['failed'];
@@ -138,7 +142,9 @@ describe('PermissionsGuard', () => {
         context.getHandler(),
         context.getClass(),
       ]);
-      expect(rolesService.findOneByName).toHaveBeenCalledWith('public');
+      expect(rolesService.findOneByName).toHaveBeenCalledWith('public', {
+        permissions: true,
+      });
     });
   });
 });

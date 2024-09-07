@@ -72,13 +72,17 @@ export class RolesService {
   }
 
   /**
-   * Finds a role by its name.
+   * Retrieves a role from the role repository by its name.
    *
    * @param {string} name - The name of the role to find.
+   * @param {FindOptionsRelations<Role>} [relations] - The relations to include in the result.
    * @return {Promise<Role | null>} A promise that resolves to the found role, or null if not found.
    */
-  findOneByName(name: string): Promise<Role | null> {
-    return this.roleRepository.findOne({ where: { name } });
+  findOneByName(
+    name: string,
+    relations?: FindOptionsRelations<Role>,
+  ): Promise<Role | null> {
+    return this.roleRepository.findOne({ where: { name }, relations });
   }
 
   /**

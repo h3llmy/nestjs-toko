@@ -1,5 +1,6 @@
 import { Controller, Get, Param, Query } from '@nestjs/common';
 import {
+  ApiBearerAuth,
   ApiOkResponse,
   ApiOperation,
   ApiTags,
@@ -26,6 +27,7 @@ export class PostageController {
 
   @Get('provinces')
   @Permission('get all provinces')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all provinces' })
   @ApiOkResponse({
     type: PostageProvinceDto,
@@ -46,6 +48,7 @@ export class PostageController {
 
   @Get('city/:provinceId')
   @Permission('get all cities')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get all cities' })
   @ApiOkResponse({
     type: CityDto,
@@ -68,6 +71,7 @@ export class PostageController {
 
   @Get('price')
   @Permission('get price')
+  @ApiBearerAuth()
   @ApiOperation({ summary: 'Get price' })
   @ApiOkResponse({
     type: PriceCostDto,

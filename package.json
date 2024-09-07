@@ -145,7 +145,8 @@
       "^@domains/roles(|/.*)$": "<rootDir>/src/domains/roles/$1",
       "^@domains/users(|/.*)$": "<rootDir>/src/domains/users/$1",
       "^@domains/report(|/.*)$": "<rootDir>/src/domains/report/$1",
-      "^@domains/mail(|/.*)$": "<rootDir>/src/domains/mail/$1"
+      "^@domains/mail(|/.*)$": "<rootDir>/src/domains/mail/$1",
+      "^@domains/postage(|/.*)$": "<rootDir>/src/domains/postage/$1"
     }
   },
   "keywords": [
