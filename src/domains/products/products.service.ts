@@ -58,7 +58,12 @@ export class ProductsService {
       inventory: {
         quantity,
       },
-      images: images.map((image) => ({ url: image.save<string>() })),
+      images: await Promise.all(
+        images.map(async (image) => {
+          const url = await image.save<Promise<string>>();
+          return { url };
+        }),
+      ),
       category: productCategoryCheck,
     });
 

@@ -85,7 +85,6 @@ describe('ProductsController', () => {
             fileName: 'test.jpg',
             fileNameFull: 'test.jpg',
             fileSize: 100,
-            hash: 'test',
             save: jest.fn(),
             mimetype: MimeType['image/jpeg'],
             originalFileName: 'test.jpg',

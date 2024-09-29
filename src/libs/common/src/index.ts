@@ -19,3 +19,6 @@ export * from './dto/pagination.schema';
 export * from './adapter/fastify.adapter';
 
 export * from './swagger/swagger-setup';
+
+export * from './multipartFormdataInterceptor/multipart-formdata.interceptor';
+export * from './multipartFormdataInterceptor/s3FileSaver';

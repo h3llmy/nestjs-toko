@@ -13,7 +13,7 @@ import helmet from '@fastify/helmet';
 import { NestFastifyApplication } from '@nestjs/platform-fastify';
 import compression from '@fastify/compress';
 import multipart from '@fastify/multipart';
-import { FormdataInterceptor } from 'nestjs-formdata-interceptor';
+import { MultipartFormDataInterceptor } from '@libs/common';
 
 (async () => {
   const routePrefix: string = 'api';
@@ -44,13 +44,7 @@ import { FormdataInterceptor } from 'nestjs-formdata-interceptor';
     prefix: 'v',
   });
 
-  app.useGlobalInterceptors(
-    new FormdataInterceptor({
-      customFileName(context, originalFileName) {
-        return `${Date.now()}-${originalFileName}`;
-      },
-    }),
-  );
+  app.useGlobalInterceptors(new MultipartFormDataInterceptor(configService));
 
   app.useGlobalPipes(new ValidationErrorHandler());
 
