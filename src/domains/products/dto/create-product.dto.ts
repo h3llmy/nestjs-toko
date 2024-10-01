@@ -1,3 +1,4 @@
+import { S3FileData } from '@libs/common';
 import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
@@ -8,12 +9,7 @@ import {
   MaxLength,
   Min,
 } from 'class-validator';
-import {
-  FileData,
-  HasMimeType,
-  IsFileData,
-  MimeType,
-} from 'nestjs-formdata-interceptor';
+import { HasMimeType, IsFileData, MimeType } from 'nestjs-formdata-interceptor';
 
 export class CreateProductDto {
   @ApiProperty({
@@ -29,7 +25,7 @@ export class CreateProductDto {
     [MimeType['image/jpeg'], MimeType['image/png'], MimeType['image/webp']],
     { each: true },
   )
-  images: FileData[];
+  images: S3FileData[];
 
   @ApiProperty({
     description: 'Product name',

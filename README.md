@@ -9,6 +9,7 @@
 - **Discount Management**: Create and manage discounts for products.
 - **Inventory Management**: Track and manage product inventory.
 - **Order Management**: Handle customer orders, including creation, update, and status tracking.
+- **S3 file management**: Handle file management.
 - **Payment Gateway Integration**: Integration with [Midtrans](https://midtrans.com/) for processing payments.
 - **Order Notification**: Notify customers about their order status.
 

@@ -5,6 +5,7 @@ import {
   S3Client,
 } from '@aws-sdk/client-s3';
 import { FileData, IFileSaver } from 'nestjs-formdata-interceptor';
+import { ExecutionContext } from '@nestjs/common';
 
 export class S3FileSaver implements IFileSaver {
   private readonly s3Client: S3Client = new S3Client({
@@ -19,9 +20,9 @@ export class S3FileSaver implements IFileSaver {
 
   constructor(private readonly configService: ConfigService) {}
 
-  async save(fileData: FileData) {
+  async save(fileData: FileData, context: ExecutionContext, bucket: string) {
     const uploadParams: PutObjectCommandInput = {
-      Bucket: this.configService.get<string>('S3_BUCKET'),
+      Bucket: bucket,
       Key: fileData.fileNameFull,
       Body: fileData.buffer,
       ContentType: fileData.mimetype,
@@ -32,7 +33,7 @@ export class S3FileSaver implements IFileSaver {
 
     const s3Endpoint = await this.s3Client.config.endpoint();
 
-    const fileUrl = `${process.env.S3_ENDPOINT}${s3Endpoint.path}${uploadParams.Bucket}/${uploadParams.Key}`;
+    const fileUrl = `${this.configService.get<string>('S3_ENDPOINT')}${s3Endpoint.path}${uploadParams.Bucket}/${uploadParams.Key}`;
 
     return fileUrl;
   }

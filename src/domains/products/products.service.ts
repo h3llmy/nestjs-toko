@@ -60,7 +60,7 @@ export class ProductsService {
       },
       images: await Promise.all(
         images.map(async (image) => {
-          const url = await image.save<Promise<string>>();
+          const url = await image.save('development');
           return { url };
         }),
       ),
