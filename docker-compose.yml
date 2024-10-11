@@ -67,26 +67,9 @@ services:
     networks:
       - internal_network
 
-  minio:
-    image: minio/minio:latest
-    container_name: minio
-    environment:
-      MINIO_ROOT_USER: ${S3_USER}
-      MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
-    ports:
-      - '9000:9000'
-      - '9001:9001'
-    volumes:
-      - minio_data:/data
-      - minio_config:/root/.minio
-    command: server /data --console-address ":9001"
-    restart: unless-stopped
-
 networks:
   internal_network:
     driver: bridge
 
 volumes:
   postgres_data:
-  minio_data:
-  minio_config:
