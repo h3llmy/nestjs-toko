@@ -41,6 +41,12 @@ services:
       - '${POSTGRES_PORT}:${POSTGRES_PORT}'
     networks:
       - internal_network
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER} -d ${POSTGRES_DB}']
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 10s
 
   redis:
     image: redis:latest
@@ -54,6 +60,11 @@ services:
       --requirepass ${REDIS_PASSWORD}
     networks:
       - internal_network
+    healthcheck:
+      test: ['CMD', 'redis-cli', '-a', '${REDIS_PASSWORD}', 'ping']
+      interval: 30s
+      timeout: 10s
+      retries: 5
 
   nginx:
     image: nginx:latest
@@ -66,6 +77,27 @@ services:
       - api
     networks:
       - internal_network
+    healthcheck:
+      test: ['CMD-SHELL', 'curl -f http://localhost || exit 1']
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  minio:
+    image: minio/minio:latest
+    container_name: minio
+    environment:
+      MINIO_ROOT_USER: ${S3_USER}
+      MINIO_ROOT_PASSWORD: ${S3_PASSWORD}
+    ports:
+      - '9000:9000'
+      - '9001:9001'
+    volumes:
+      - storage-minio:/data
+      - minio_data:/data
+      - minio_config:/root/.minio
+    command: server /data --console-address ":9001"
+    restart: unless-stopped
 
 networks:
   internal_network:
@@ -73,3 +105,7 @@ networks:
 
 volumes:
   postgres_data:
+  storage-minio:
+    external: true
+  minio_data:
+  minio_config:
